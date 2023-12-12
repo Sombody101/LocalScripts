@@ -18,6 +18,11 @@ alias .loader='ed $HOME/LocalScripts/.loader.bashrc'
 alias drive='[[ $DRIVE != DRIVE_NOT_FOUND ]] && cd $DRIVE || warn Drive not found : $DRIVE'
 alias refresh='using .cmds.sh'
 
+EVANS="/mnt/c/Users/evans/"
+alias evans='cd $EVANS'
+alias docs='cd $EVANS/OneDrive/Documents/'
+alias down='cd $EVANS/Downloads'
+
 back() {
     local arg=${1:-1}
     local dir=""
