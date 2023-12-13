@@ -195,7 +195,7 @@ MountDrives() {
     return 3
 }
 
-if [[ $(whoami) != "bench" ]]; then
+if [[ $(whoami) == "bench" ]]; then
     using ".EMERGENCY_SD_SPAWNER.sh"
 else
     MountDrives
