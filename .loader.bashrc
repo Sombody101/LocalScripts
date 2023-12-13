@@ -178,7 +178,7 @@ MountDrives() {
     for letter in {a..z}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs $letter: /mnt/$letter &>/dev/null || echo $(red)Unable to mount drive $letter:\\ :: NOT_CONNECTED
-            [[ -d /mnt/$letter/.BACKUPS/ ]] && DRIVE=/mnt/$letter && break
+            [[ -d "/mnt/$letter/.BACKUPS/" ]] && DRIVE=/mnt/$letter && break
         fi
     done
 
@@ -186,15 +186,15 @@ MountDrives() {
         export DRIVE=DRIVE_NOT_FOUND
         return 1
     else
-        source $DRIVE/.BACKUPS/.LOADER/.BACKUP.sh
-        echo $DRIVE >$HOME/.active_drive
+        source "$DRIVE/.BACKUPS/.LOADER/.BACKUP.sh"
+        echo $DRIVE >"$HOME/.active_drive"
         export DRIVE
         return 0
     fi
 
     return 3
 }
-MountDrives
+[[ $(whoami) != "bench" ]] && MountDrives
 
 if [[ $DRIVE == "DRIVE_NOT_FOUND" ]] || [[ $DRIVE =~ EMERGENCY ]]; then
     using ".EMERGENCY_SD_SPAWNER.sh"
