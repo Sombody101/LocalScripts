@@ -5,7 +5,7 @@ ___full_backup_path="$HOME/LocalScripts/.EMERGENCY_BACKUPS"
 white 2>"$NULL" # Set text color
 
 write() {
-    if [[ $server == TRUE ]]; then
+    if [[ $server != TRUE ]]; then
         echo "$*"
     fi
 }
