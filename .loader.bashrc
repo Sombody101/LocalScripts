@@ -194,10 +194,13 @@ MountDrives() {
 
     return 3
 }
-[[ $(whoami) != "bench" ]] && MountDrives
-
-if [[ $DRIVE == "DRIVE_NOT_FOUND" ]] || [[ $DRIVE =~ EMERGENCY ]]; then
+if [[ $(whoami) != "bench" ]]; then
     using ".EMERGENCY_SD_SPAWNER.sh"
+else
+    MountDrives
+    if [[ $DRIVE == "DRIVE_NOT_FOUND" ]] || [[ $DRIVE =~ EMERGENCY ]]; then
+        using ".EMERGENCY_SD_SPAWNER.sh"
+    fi
 fi
 
 DRIVE_BIN="$BACKS/bin"
