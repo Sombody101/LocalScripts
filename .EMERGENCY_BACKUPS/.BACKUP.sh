@@ -17,17 +17,17 @@ newnav() {
     local name=$1
     local path=$2
     shift 2
-    
+
     eval "
-    $name() { 
-        cd \"$path\"/\$(pathify \$*) || warn \"Failed to locate \$(pathify \$*)\"; 
+    $name() {
+        cd \"$path\"/\$(pathify \$*) || warn \"Failed to locate \$(pathify \$*)\";
     }
     "
 }
 
 occ() {
     while :; do
-        asyncform "$HOME"
+        form -a
     done
 }
 

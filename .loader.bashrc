@@ -73,31 +73,43 @@ alias cs='cd $HOME/cs'
 alias aform='form -a'
 
 using() {
-    local Found
+    local FOUND
     local T_ITEM
 
-    if [[ "$1" == "."* ]]; then
-        for item in "$HOME/LocalScripts/."*; do
-            [[ "$item" == *"$1"* ]] && {
-                source "$item" 2>/dev/null
-                Found=TRUE
-                T_ITEM="$item"
-                return 0
-            }
-        done
-    else
-        for item in "$HOME/LocalScripts/"*; do
-            [[ "$item" == *"$1"* ]] && {
-                source "$item" 2>/dev/null
-                Found=TRUE
-                T_ITEM="$item"
-                return 0
-            }
-        done
+    #if [[ "$1" == "."* ]]; then
+    #    for item in "$HOME/LocalScripts/."*; do
+    #        [[ "$item" == *"$1"* ]] && {
+    #            source "$item" 2>/dev/null
+    #            Found=TRUE
+    #            T_ITEM="$item"
+    #            return 0
+    #        }
+    #    done
+    #else
+    #    for item in "$HOME/LocalScripts/"*; do
+    #        [[ "$item" == *"$1"* ]] && {
+    #            source "$item" 2>/dev/null
+    #            Found=TRUE
+    #            T_ITEM="$item"
+    #            return 0
+    #        }
+    #    done
+    #fi
+
+    if [[ -f "$HOME/LocalScripts/$1" ]]; then
+        source "$HOME/LocalScripts/$1" 2>/dev/null
+        FOUND=TRUE
+        T_ITEM="$HOME/LocalScripts/$1"
+        return 0;
     fi
 
-    [[ "$Found" == TRUE ]] || [[ -f "$HOME/LocalScripts/$1" ]] || source "$1" 2>/dev/null && Found=TRUE
-    [[ "$Found" == TRUE ]] || { [[ "$2" != "-f" ]] && warn "Unable to find \"$1\""; }
+    [[ $Found != TRUE ]] && [[ -f "$HOME/LocalScripts/$1" ]] || { 
+        source "$1" 2>/dev/null && Found=TRUE 
+    }
+
+    [[ $Found != TRUE ]] && { 
+        [[ "$2" != "-f" ]] && warn "Unable to find \"$1\""; 
+    }
 
     [[ "$2" == "-o" ]] && [[ "$Found" == TRUE ]] && {
         echo "$(blue)'$T_ITEM' found [$1]."
@@ -158,12 +170,14 @@ ConnectDrives() {
 MountDrives() {
     [[ -d $DRIVE/.BACKUPS/ ]] && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
     [[ -d $(cat $HOME/.active_drive)/.BACKUPS/ ]] && export DRIVE=$(cat "$HOME"/.active_drive) && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
+
     for letter in {a..z}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs $letter: /mnt/$letter &>/dev/null || echo $(red)Unable to mount drive $letter:\\ :: NOT_CONNECTED
             [[ -d /mnt/$letter/.BACKUPS/ ]] && DRIVE=/mnt/$letter && break
         fi
     done
+
     if [[ $DRIVE == "" ]]; then
         export DRIVE=DRIVE_NOT_FOUND
         return 1
@@ -173,6 +187,7 @@ MountDrives() {
         export DRIVE
         return 0
     fi
+
     return 3
 }
 MountDrives
