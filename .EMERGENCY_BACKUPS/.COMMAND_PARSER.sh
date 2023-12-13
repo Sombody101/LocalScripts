@@ -36,6 +36,7 @@ command_not_found_handle() {
             echo "$out"
             return 0
         }
+
         # Check if the variable is set
         #if [ -n "$val" ]; then
         #   echo "$((val))"

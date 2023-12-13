@@ -76,31 +76,34 @@ using() {
     local Found
     local T_ITEM
 
-    if [[ $1 == "."* ]]; then
-        for item in $HOME/LocalScripts/.*; do
-            [[ $item == *"$1"* ]] && {
+    if [[ "$1" == "."* ]]; then
+        for item in "$HOME/LocalScripts/."*; do
+            [[ "$item" == *"$1"* ]] && {
                 source "$item" 2>/dev/null
                 Found=TRUE
-                T_ITEM=$item
+                T_ITEM="$item"
                 return 0
             }
         done
     else
-        for item in $HOME/LocalScripts/*; do
-            [[ $item == *"$1"* ]] && {
+        for item in "$HOME/LocalScripts/"*; do
+            [[ "$item" == *"$1"* ]] && {
                 source "$item" 2>/dev/null
                 Found=TRUE
-                T_ITEM=$item
+                T_ITEM="$item"
                 return 0
             }
         done
     fi
-    [[ "$Found" == TRUE ]] || [[ -f $HOME/LocalScripts/$1 ]] || source "$1" 2>/dev/null && Found=TRUE
-    [[ "$Found" == TRUE ]] || echo "$(red)"Unable to find \""$1"\"
+
+    [[ "$Found" == TRUE ]] || [[ -f "$HOME/LocalScripts/$1" ]] || source "$1" 2>/dev/null && Found=TRUE
+    [[ "$Found" == TRUE ]] || { [[ "$2" != "-f" ]] && warn "Unable to find \"$1\""; }
+
     [[ "$2" == "-o" ]] && [[ "$Found" == TRUE ]] && {
         echo "$(blue)'$T_ITEM' found [$1]."
         return 0
     }
+
     unset Found T_ITEM
 }
 

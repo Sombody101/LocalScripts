@@ -5,6 +5,9 @@ using "HappyTime.sh"
 using "Text.sh"
 using "Utils.sh"
 
+# Source the independant file for each computer if it's there
+using -f "$HOME/.ind.sh"
+
 blue
 echo -ne 'Imported     '
 [[ $(cat $HOME/ACTIVE_UI) == "KALI" ]] && echo
