@@ -25,6 +25,10 @@ LockDevice() {
     echo "UBUNTU" >"$HOME/ACTIVE_UI"
 }
 
+warn() {
+    echo "$(red)$*$(norm)"
+}
+
 if [[ $(cat "$HOME/ACTIVE_UI") == "KALI" ]]; then
     # override default virtualenv indicator in prompt
     VIRTUAL_ENV_DISABLE_PROMPT=1
@@ -96,19 +100,19 @@ using() {
     #    done
     #fi
 
-    if [[ -f "$HOME/LocalScripts/$1" ]]; then
+    if [ -f "$HOME/LocalScripts/$1"* ]; then
         source "$HOME/LocalScripts/$1" 2>/dev/null
         FOUND=TRUE
         T_ITEM="$HOME/LocalScripts/$1"
         return 0;
     fi
 
-    [[ $Found != TRUE ]] && [[ -f "$HOME/LocalScripts/$1" ]] || { 
-        source "$1" 2>/dev/null && Found=TRUE 
+    [[ $Found != TRUE ]] && {
+        source "$1" 2>/dev/null && Found=TRUE
     }
 
-    [[ $Found != TRUE ]] && { 
-        [[ "$2" != "-f" ]] && warn "Unable to find \"$1\""; 
+    [[ $Found != TRUE ]] && {
+        [[ "$2" != "-f" ]] && warn "Unable to find \"$1\""
     }
 
     [[ "$2" == "-o" ]] && [[ "$Found" == TRUE ]] && {
