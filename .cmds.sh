@@ -6,7 +6,7 @@ using "Text.sh"
 using "Utils.sh"
 
 # Source the independant file for each computer if it's there
-using -f "$HOME/.ind.sh"
+using "$HOME/.ind.sh" -f
 
 blue
 echo -ne 'Imported     '

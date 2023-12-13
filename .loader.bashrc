@@ -217,13 +217,14 @@ compAll() {
 chckusr() {
     u="$@"
     if [[ $u == "" ]]; then
-        echo "$(red)"No arguments provided.
+        warn "No arguments provided."
         return
     fi
-    echo "$(blue)"Checking with method one..."$(norm)"
-    maigret "$u" || echo "$(red)"Error checking with method one...
-    echo "$(blue)"Checking with method two..."$(norm)"
-    python3 "$HOME"/sherlock/sherlock "$u" || echo "$(red)"Error checking with method two...
+
+    echo "$(blue)Checking with method one...$(norm)"
+    maigret "$u" || warn "Error checking with method one..."
+    echo "$(blue)Checking with method two...$(norm)"
+    python3 "$HOME/sherlock/sherlock" "$u" || echo "$(red)Error checking with method two..."
 }
 
 newProj() {
@@ -240,8 +241,8 @@ listPath() {
     done
 }
 
-using "$HOME"/GitSetup/gitScripts.sh
+using "$HOME/GitSetup/gitScripts.sh" -f
 # Alias all cs projects
-for folder in $HOME/cs/*; do
+for folder in "$HOME/cs/"*; do
     alias "p_${folder//$HOME\/cs\//}"="cd $folder"
 done
