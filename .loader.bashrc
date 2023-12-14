@@ -41,6 +41,8 @@ case $(hostname) in
     *)          unknown=TRUE ;;
 esac
 
+[ -v WSL_DISTRO_NAME ] && WSL=TRUE
+
 warn() {
     : "$FILE: warn [TEMPORARY]"
     echo "$(red)$*$(norm)"
@@ -197,7 +199,7 @@ MountDrives() {
     : "$FILE: MountDrives"
 
     # OS check
-    [ -v WSL_DISTRO_NAME ] && {
+    [ ! -v WSL ] && {
         warn "!WSL:$WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
         return 1
     }
