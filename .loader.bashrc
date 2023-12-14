@@ -195,6 +195,13 @@ ConnectDrives() {
 
 MountDrives() {
     : "$FILE: MountDrives"
+
+    # OS check
+    [ -v WSL_DISTRO_NAME ] && {
+        warn "!WSL:$WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
+        return 1
+    }
+
     [[ -d $DRIVE/.BACKUPS/ ]] && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
     [[ -d $(cat $HOME/.active_drive)/.BACKUPS/ ]] && export DRIVE=$(cat "$HOME"/.active_drive) && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
 
