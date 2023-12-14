@@ -7,7 +7,8 @@ HappyTime() {
         echo $(red)No arguments provided
         return
     fi
-    while true; do
+
+    while :; do
         norm
         #black
         #write "$@"
