@@ -207,10 +207,11 @@ MountDrives() {
     return 3
 }
 
-if [[ $(whoami) == "bench" ]]; then
+if [ -v server ]; then
+    # Skip right to loading "emergency" functions (No external media to load from)
     using ".EMERGENCY_SD_SPAWNER.sh"
 else
-    MountDrives
+    MountDrives # Assumes this is WSL
     if [[ $DRIVE == "DRIVE_NOT_FOUND" ]] || [[ $DRIVE =~ EMERGENCY ]]; then
         using ".EMERGENCY_SD_SPAWNER.sh"
     fi
