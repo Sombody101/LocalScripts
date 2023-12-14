@@ -2,8 +2,12 @@
 # This version of .bashrc was designed with WSL (Windows Sub-system for Linux) in mind.
 # It will boot on other versions of bash, but some commands will not work.
 
+FILE=".loader.bashrc"
+
 # Security
 LockDevice() {
+    : "$FILE: LockDevice"
+
     clear
     trap : SIGINT
     >"$HOME/.DEVICE_LOCKED"
@@ -38,6 +42,7 @@ case $(hostname) in
 esac
 
 warn() {
+    : "$FILE: warn [TEMPORARY]"
     echo "$(red)$*$(norm)"
 }
 
@@ -88,7 +93,11 @@ alias ref='exec $SHELL'
 alias cs='cd $HOME/cs'
 alias aform='form -a'
 
+# Set search dir:
+# USING_DIR=
 using() {
+    : ".loader.bashrc: using"
+
     local FOUND
     local T_ITEM
 
@@ -176,6 +185,7 @@ using() {
 using .cmds.sh
 
 ConnectDrives() {
+    : "$FILE: ConnectDrives"
     for letter in {a..z}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs $letter: /mnt/$letter &>/dev/null || echo $(red)Unable to mount drive :: NOT_CONNECTED
@@ -184,6 +194,7 @@ ConnectDrives() {
 }
 
 MountDrives() {
+    : "$FILE: MountDrives"
     [[ -d $DRIVE/.BACKUPS/ ]] && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
     [[ -d $(cat $HOME/.active_drive)/.BACKUPS/ ]] && export DRIVE=$(cat "$HOME"/.active_drive) && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
 
@@ -222,6 +233,7 @@ DRIVE_BIN="$BACKS/bin"
 alias impPacks='source $DRIVE/.BACKUPS/.LOADER/.BACKUP.SH || echo $(red)No drive found : Some commands unavailable'
 
 hax() {
+    : "$FILE: hax"
     cp -r $DRIVE/.HackerMan_Assets $HOME/LocalScripts && bash $HOME/LocalScripts/.HackerMan_Assets/HackermanConsole.sh
 }
 
@@ -232,6 +244,7 @@ alias lua='luajit-2.1.0-beta3'
 alias msbuild='/mnt/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe'
 
 compAll() {
+    : "$FILE: compAll"
     declare -a platforms=("x86" "x64" "ARM" "ARM64")
 
     local count=1
@@ -251,6 +264,7 @@ compAll() {
 }
 
 chckusr() {
+    : "$FILE: chckusr"
     u="$@"
     if [[ $u == "" ]]; then
         warn "No arguments provided."
@@ -264,11 +278,13 @@ chckusr() {
 }
 
 newProj() {
+    : "$FILE: newProj"
     mkdir "$HOME/cs/$1" && cd "$_"
     dotnet new console
 }
 
 listPath() {
+    : "$FILE: listPath"
     local tmp=$PATH
     IFS=':'
     read -ra arr <<<"$tmp"
