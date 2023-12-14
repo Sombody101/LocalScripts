@@ -9,11 +9,15 @@ LockDevice() {
     >"$HOME/.DEVICE_LOCKED"
     echo -ne "\e[31mDont use computers that arent yours\n"
     while :; do
-        read key
-        [[ $key == "Device::Unlock" ]] && echo -ne "\e[32mWelcome back\n" && break
+        [[ $(read -r) == "Device::Unlock" ]] && {
+            echo -ne "\e[32mWelcome back\n"
+            break
+        }
+
         clear
         echo -ne "\e[31mDont use computers that arent yours\n"
     done
+
     rm "$HOME/.DEVICE_LOCKED"
 }
 [ -f "$HOME/.DEVICE_LOCKED" ] && LockDevice
@@ -24,6 +28,14 @@ LockDevice() {
     echo "No ACTIVE_UI : Creating one (UBUNTU)"
     echo "UBUNTU" >"$HOME/ACTIVE_UI"
 }
+
+case $(hostname) in
+    *"School")  sdev=TRUE    ;;
+    "DESKTOP"*) hdev=TRUE    ;;
+    "bench")    server=TRUE  ;;
+    "rasp"*)    server=TRUE  ;;
+    *)          unknown=TRUE ;;
+esac
 
 warn() {
     echo "$(red)$*$(norm)"
