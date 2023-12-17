@@ -2,8 +2,10 @@
 
 NULL=/dev/null
 alias grep='grep --color=auto'
+FILE=".BACKUP.sh"
 
 newnav() {
+    : "$FILE: newnav"
     [[ $1 == "" ]] && {
         warn No arguments provided
         return 1
@@ -26,18 +28,21 @@ newnav() {
 }
 
 occ() {
+    : "$FILE: occ"
     while :; do
         form -a
     done
 }
 
 pathify() {
+    : "$FILE: pathify"
     IFS="/"
     echo "$*"
     unset IFS
 }
 
 addPath() {
+    : "$FILE: addPath"
     [[ "$1" == "" ]] && {
         warn "No path given to add to \$PATH"
         return 1
@@ -47,15 +52,15 @@ addPath() {
 }
 
 showPath() {
+    : "$FILE: showPath"
     tr ':' '\n' <<<"$PATH"
 }
 
 BACKS="$DRIVE/.BACKUPS/.LOADER"
-[[ "$EMERGENCY_SD_VERSION" != "" ]] && BACKS="$HOME/LocalScripts/.EMERGENCY_BACKUPS"
+[ -v EMERGENCY_SD_VERSION ] && BACKS="$HOME/LocalScripts/.EMERGENCY_BACKUPS"
 CST="$BACKS/cstools"
 CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"
-
 
 qunalias() { unalias "$1" 2>$NULL; }
 
@@ -77,34 +82,39 @@ using "$BACKS/.UTILS.sh"
 using "$BACKS/TASKLIST/TASKLIST.sh"
 using "$CST_M"
 using "$ST"
-using "$BACKS"/.EMERGENCY_FUNCTIONS_MODULE/.EMERGENCY_SD_FAILURE.sh
+
+[ ! -v EMERGENCY_SD_VERSION ] && using "$BACKS"/.EMERGENCY_FUNCTIONS_MODULE/.EMERGENCY_SD_FAILURE.sh
 
 addPath "$DRIVE/.BACKUPS/.LOADER/bin"
-
 
 # Cleanup
 unset newNav qunalias
 
 vs() {
+    : "$FILE: vs"
     local inp=$*
     [[ $inp == "" ]] && inp="."
     (code "$inp" &)
 }
 
 __padRight() {
+    : "$FILE: __padRight"
     printf '\e[34m%-16s\e[33m%s\e[32m' "$(hostname)" "($1)" >"$HOME"/.__TEMP_INFO.INFO
 }
 
-warn() {
-    echo -ne "$(trace): $(red)$*$(norm)\n"
+__padLeft() {
+    : "$FILE: __padLeft"
+    printf '%s%*s' "\e[35m[$1]" "$(($2 - ${#1}))" ""
 }
 
-__padLeft() {
-    printf '%s%*s' "\e[35m[$1]" "$(($2 - ${#1}))" ""
+warn() {
+    : "$FILE: warn"
+    echo -ne "$(trace): $(red)$*$(norm)\n"
 }
 
 # Better to use the command "basename"
 GetName() {
+    : "$FILE: GetName"
     [[ "$*" == "" ]] && warn "No files provided" && return 1
     local DRIVE
     local NUM=0
@@ -121,10 +131,12 @@ GetName() {
 }
 
 RemoveLast() {
+    : "$FILE: RemoveLast"
     echo "${1%/*}"
 }
 
 GetDrive() {
+    : "$FILE: GetDrive"
     local ARGS="$*"
     for letter in {a..z}; do
         if [ -d /mnt/"$letter"/.BACKUPS/ ]; then
@@ -137,6 +149,7 @@ GetDrive() {
 }
 
 GetDate() {
+    : "$FILE: GetDate"
     DATE=$(date +"%Y/%m/%d %T")
     DATE=${DATE//\//:}
     DATE=${DATE// /_}
@@ -145,6 +158,7 @@ GetDate() {
 
 # These functions will soon become obsolete as a C# implementation is underway
 backup() {
+    : "$FILE: backup"
     local text="$*"
     GetDate
     GetDrive
@@ -165,6 +179,7 @@ backup() {
 }
 
 backups() {
+    : "$FILE: backups"
     GetDrive
     [[ $DRIVE == "" ]] && {
         warn No SDCard
@@ -209,6 +224,7 @@ backups() {
 }
 
 pack() {
+    : "$FILE: pack"
     [[ "$*" == "" ]] && warn No files provided && return 1
     local files
     local DRIVE
@@ -241,6 +257,7 @@ pack() {
 }
 
 unback() {
+    : "$FILE: unback"
     [[ "$*" == "" ]] && warn No files provided && return 1
     if [[ $1 =~ ^[0-9]+$ ]]; then
         echo Accepted &>/dev/null
@@ -274,6 +291,7 @@ unback() {
 }
 
 cont() {
+    : "$FILE: cont"
     # Check if input data is acceptable
     [[ "$*" == "" ]] && backups - && return 1
     if [[ $1 =~ ^[0-9]+$ ]]; then
@@ -367,6 +385,7 @@ cont() {
 }
 
 goto() {
+    : "$FILE: goto"
     [[ "$*" == "" ]] && warn No files provided && return 1
     local DRIVE=$(GetDrive -o)
     local NUM=0
@@ -390,6 +409,7 @@ goto() {
 }
 
 overwrite() {
+    : "$FILE: overwrite"
     [[ "$*" == "" ]] && warn No files provided && return 1
     [[ "$2" == "" ]] && warn No replacement files provided && return 1
     if [[ $1 =~ ^[0-9]+$ ]]; then
@@ -439,6 +459,7 @@ overwrite() {
 # Need to fix trap "trap"
 # It sets trap every time, meaning theres multiple layers of a trapped function
 form() {
+    : "$FILE: form"
     local A=$*
     [[ $1 == "-a" ]] && {
         asyncform "${A//-a/}"
@@ -513,6 +534,7 @@ form() {
 
 # Not fully working
 asyncform() {
+    : "$FILE: asyncform"
     local DIR=${1:-.}               # use the first argument as the directory, or '.' if not provided
     local HEADER=$(realpath "$DIR") # get the absolute path of the directory
     local LAP=0                     # line number
@@ -575,6 +597,7 @@ asyncform() {
 }
 
 count_lines() {
+    : "$FILE: count_lines"
     # Check if the directory path is provided
     if [[ -z "$1" ]]; then
         warn "Directory path is missing."
