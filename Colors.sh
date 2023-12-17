@@ -82,6 +82,6 @@ fromRGB() {
     [[ $R == "" ]] && warn "No value for red, green, or blue (0-255)" && return 1
     [[ $R == "" ]] && warn "No value for green, or blue (0-255)" && return 1
     [[ $B == "" ]] && warn "No value for blue (0-255)" && return 1
-    printf 'alias %s=echo -ne \x1b[38;2;%s;%s;%sm\n' $colorName $R $G $B>> $HOME/LocalScripts/ColorSheet.sh
-    using $HOME/LocalScripts/ColorSheet.sh
+    printf 'alias %s=echo -ne \x1b[38;2;%s;%s;%sm\n' "$colorName" "$R" "$G" "$B">> "$HOME/LocalScripts/ColorSheet.sh"
+    using "$HOME/LocalScripts/ColorSheet.sh"
 }

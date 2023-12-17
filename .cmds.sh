@@ -15,11 +15,11 @@ LINE=TRUE
 norm
 
 alias ed='sudo nano'
+alias drive='[[ $DRIVE != "DRIVE_NOT_FOUND" ]] && cd $DRIVE || warn "Drive not found : $DRIVE"'
+alias refresh='using .cmds.sh'
 alias .cmds.sh='ed $HOME/LocalScripts/.cmds.sh'
 alias .bashrc='ed $HOME/.bashrc'
 alias .loader='ed $HOME/LocalScripts/.loader.bashrc'
-alias drive='[[ $DRIVE != DRIVE_NOT_FOUND ]] && cd $DRIVE || warn Drive not found : $DRIVE'
-alias refresh='using .cmds.sh'
 
 EVANS="/mnt/c/Users/evans/"
 alias evans='cd $EVANS'
@@ -27,6 +27,7 @@ alias docs='cd $EVANS/OneDrive/Documents/'
 alias down='cd $EVANS/Downloads'
 
 back() {
+    : ".cmds.sh: back"
     local arg=${1:-1}
     local dir=""
     while [[ $arg -gt 0 ]]; do
@@ -36,11 +37,8 @@ back() {
     cd "$dir"
 }
 
-warn() {
-    echo -ne "$(red)$*$(norm)\n"
-}
-
 place() {
+    : ".cmds.sh: place"
     mv $DRIVE/Compressor/compress/bin/Debug/net7.0/win-x64/publish/compress.exe $HOME
     mv $DRIVE/Compressor/decompress/bin/Debug/net7.0/win-x64/publish/decompress.exe $HOME
     mv $HOME/decompress.exe $HOME/decompress
@@ -50,6 +48,7 @@ place() {
 }
 
 KALI() {
+    : ".cmds.sh: KALI"
     [[ $(cat $HOME/ACTIVE_UI) == "KALI" ]] && {
         echo Already in KALI
         return
@@ -59,6 +58,7 @@ KALI() {
 }
 
 UBUNTU() {
+    : ".cmds.sh: UBUNTU"
     [[ $(cat $HOME/ACTIVE_UI) == "UBUNTU" ]] && {
         echo Already in UBUNTU
         return
@@ -68,6 +68,7 @@ UBUNTU() {
 }
 
 ui() {
+    : ".cmds.sh: ui"
     if [[ $ACTIVE_UI == "KALI" ]]; then
         echo "$(blue)$ACTIVE_UI$(norm)"
     else

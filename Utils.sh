@@ -1,5 +1,8 @@
+#!/bin/bash
+
 padr () {
-    printf "%${$1}s" "${@:2}"
+    : "utils: padr"
+    printf "%${!1}s" "${@:2}"
 }
 
 padl () {
@@ -7,13 +10,29 @@ padl () {
 }
 
 reorderPath() {
-export PATH=$(echo $PATH | 
-    tr ':' '\n' | grep -v '^/mnt/c' | tr '\n' ':' | sed 's/:$//')$(echo $PATH | tr ':' '\n' | grep '^/mnt/c' | grep -v '^/mnt/c/Users' | tr '\n' ':' | sed 's/:$//')$(echo $PATH | tr ':' '\n' | grep '^/mnt/c/Users' | tr '\n' ':' | sed 's/:$//')
+    export PATH=$(echo "$PATH" | \
+        tr ':' '\n' | \
+        grep -v '^/mnt/c' | \
+        tr '\n' ':' | \
+        sed 's/:$//')$(echo "$PATH" | \
+        tr ':' '\n' | \
+        grep '^/mnt/c' | \
+        grep -v '^/mnt/c/Users' | \
+        tr '\n' ':' | \
+        sed 's/:$//')$(echo "$PATH" | \
+        tr ':' '\n' | \
+        grep '^/mnt/c/Users' | \
+        tr '\n' ':' | \
+        sed 's/:$//')
 }
 
 binToDec() {
+    : "utils: binToDec"
     for arg in "$@"; do
-        isnum $arg || { warn $arg contains non-binary character; return 1; }
+        isnum "$arg" || { 
+            warn "$arg contains non-binary character"
+            return 1
+        }
     done
 
     for arg in "$@"; do
@@ -22,8 +41,12 @@ binToDec() {
 }
 
 binToHex() {
+    : "utils: binToHex"
     for arg in "$@"; do
-        isnum $arg || { warn $arg contains non-binary character; return 1; }
+        isnum "$arg" || { 
+            warn "$arg contains non-binary character"
+            return 1
+        }
     done
 
     for arg in "$@"; do
@@ -32,8 +55,12 @@ binToHex() {
 }
 
 decToBin() {
+    : "utils: decToBin"
     for arg in "$@"; do
-        isnum $arg || { warn $arg contains non-binary character; return 1; }
+        isnum "$arg" || { 
+            warn "$arg contains non-binary character"
+            return 1
+        }
     done
 
     LC_ALL=C awk '{for (i = 1; i <= NF; i++) printf "%c", $i}'
@@ -41,6 +68,7 @@ decToBin() {
 }
 
 hexToBin() {
+    : "utils: hexToBin"
     xxd -r -p
     perl -pe 'chomp;$_=pack("H*",$_)'
 }

@@ -4,8 +4,8 @@
 
 HappyTime() {
     if [[ "$*" == "" ]]; then
-        echo $(red)No arguments provided
-        return
+        warn "No arguments provided"
+        return 1
     fi
 
     while :; do

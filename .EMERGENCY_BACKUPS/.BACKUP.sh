@@ -81,7 +81,6 @@ using "$BACKS"/.EMERGENCY_FUNCTIONS_MODULE/.EMERGENCY_SD_FAILURE.sh
 
 addPath "$DRIVE/.BACKUPS/.LOADER/bin"
 
-
 # Cleanup
 unset newNav qunalias
 

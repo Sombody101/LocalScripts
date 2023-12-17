@@ -4,6 +4,16 @@
 
 FILE=".loader.bashrc"
 
+# Determine machine
+[ -v WSL_DISTRO_NAME ] && WSL=TRUE
+case $(hostname) in
+    *"School")  sdev=TRUE    ;; # School laptop
+    "DESKTOP"*) hdev=TRUE    ;; # Home PC
+    "bench")    server=TRUE  ;; # Server
+    "rasp"*)    server=TRUE  ;; # RaspberryPi
+    *)          unknown=TRUE ;; # Anything else
+esac
+
 # Security
 LockDevice() {
     : "$FILE: LockDevice"
@@ -32,16 +42,6 @@ LockDevice() {
     echo "No ACTIVE_UI : Creating one (UBUNTU)"
     echo "UBUNTU" >"$HOME/ACTIVE_UI"
 }
-
-case $(hostname) in
-    *"School")  sdev=TRUE    ;;
-    "DESKTOP"*) hdev=TRUE    ;;
-    "bench")    server=TRUE  ;;
-    "rasp"*)    server=TRUE  ;;
-    *)          unknown=TRUE ;;
-esac
-
-[ -v WSL_DISTRO_NAME ] && WSL=TRUE
 
 warn() {
     : "$FILE: warn [TEMPORARY]"
@@ -130,61 +130,19 @@ using() {
         return 0;
     fi
 
-    [[ $Found != TRUE ]] && {
-        source "$1" 2>/dev/null && Found=TRUE
+    [[ $FOUND != TRUE ]] && {
+        source "$1" 2>/dev/null && FOUND=TRUE
     }
 
-    [[ $Found != TRUE ]] && {
+    [[ $FOUND != TRUE ]] && {
         [[ "$2" != "-f" ]] && warn "Unable to find \"$1\""
     }
 
-    [[ "$2" == "-o" ]] && [[ "$Found" == TRUE ]] && {
+    [[ "$2" == "-o" ]] && [[ "$FOUND" == TRUE ]] && {
         echo "$(blue)'$T_ITEM' found [$1]."
         return 0
     }
-
-    unset Found T_ITEM
 }
-
-#using() {
-#    local Found
-#    local T_ITEM
-#
-#    if [[ $1 =~ ^\. ]]; then
-#        for item in "$HOME"/LocalScripts/.*; do
-#            [[ "$item" =~ $1 ]] && {
-#                source "$item" 2>/dev/null
-#                Found=TRUE
-#                T_ITEM=$item
-#                return 0
-#            }
-#        done
-#    else
-#        for item in $HOME/LocalScripts/*; do
-#            [[ "$item" =~ $1 ]] && {
-#                source "$item" 2>/dev/null
-#                Found=TRUE
-#                T_ITEM=$item
-#                return 0
-#            }
-#        done
-#    fi
-#    [[ ! $Found ]] && [[ -f $HOME/LocalScripts/$1 ]] && {
-#        source $1 2>/dev/null
-#        Found=TRUE
-#    }
-#    [[ ! $Found ]] && {
-#        echo "$(red)Unable to find \"$1\""
-#        return 0
-#    }
-#    [[ $2 == "-o" ]] && [[ $Found ]] && {
-#        echo "$(blue)'$T_ITEM' found [$1]."
-#        return 0
-#    }
-#    unset Found T_ITEM
-#}
-
-using .cmds.sh
 
 ConnectDrives() {
     : "$FILE: ConnectDrives"
@@ -227,30 +185,10 @@ MountDrives() {
     return 3
 }
 
-if [ -v server ]; then
-    # Skip right to loading "emergency" functions (No external media to load from)
-    using ".EMERGENCY_SD_SPAWNER.sh"
-else
-    MountDrives # Assumes this is WSL
-    if [[ $DRIVE == "DRIVE_NOT_FOUND" ]] || [[ $DRIVE =~ EMERGENCY ]]; then
-        using ".EMERGENCY_SD_SPAWNER.sh"
-    fi
-fi
-
-DRIVE_BIN="$BACKS/bin"
-
-alias impPacks='source $DRIVE/.BACKUPS/.LOADER/.BACKUP.SH || echo $(red)No drive found : Some commands unavailable'
-
 hax() {
     : "$FILE: hax"
     cp -r $DRIVE/.HackerMan_Assets $HOME/LocalScripts && bash $HOME/LocalScripts/.HackerMan_Assets/HackermanConsole.sh
 }
-
-export DOTNET_ROOT="$HOME/dotnet"
-[[ ! $PATH =~ "$HOME/dotnet:/mnt/c/Users/evans/.platformio/penv/Scripts" ]] && export PATH="$PATH:$HOME/dotnet:/mnt/c/Users/evans/.platformio/penv/Scripts"
-
-alias lua='luajit-2.1.0-beta3'
-alias msbuild='/mnt/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe'
 
 compAll() {
     : "$FILE: compAll"
@@ -292,8 +230,8 @@ newProj() {
     dotnet new console
 }
 
-listPath() {
-    : "$FILE: listPath"
+showPath() {
+    : "$FILE: listPath [TEMPORARY]"
     local tmp=$PATH
     IFS=':'
     read -ra arr <<<"$tmp"
@@ -302,7 +240,30 @@ listPath() {
     done
 }
 
+alias impPacks='source "$DRIVE/.BACKUPS/.LOADER/.BACKUP.SH" || warn "No drive found : Some commands unavailable"'
+export DOTNET_ROOT="$HOME/dotnet"
+[[ ! $PATH =~ "$HOME/dotnet:/mnt/c/Users/evans/.platformio/penv/Scripts" ]] && export PATH="$PATH:$HOME/dotnet:/mnt/c/Users/evans/.platformio/penv/Scripts"
+
+[ -v WSL ] && {
+    alias lua='luajit-2.1.0-beta3'
+    alias msbuild='/mnt/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe'
+}
+
+using ".cmds.sh"
 using "$HOME/GitSetup/gitScripts.sh" -f
+
+if [ -v server ]; then
+    # Skip right to loading "emergency" functions (No external media to load from)
+    using ".EMERGENCY_SD_SPAWNER.sh"
+else
+    MountDrives # Assumes this is WSL
+    if [[ $DRIVE == "DRIVE_NOT_FOUND" ]] || [[ $DRIVE =~ EMERGENCY ]]; then
+        using ".EMERGENCY_SD_SPAWNER.sh"
+    fi
+fi
+
+DRIVE_BIN="$BACKS/bin"
+
 # Alias all cs projects
 for folder in "$HOME/cs/"*; do
     alias "p_${folder//$HOME\/cs\//}"="cd $folder"
