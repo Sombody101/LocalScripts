@@ -7,11 +7,11 @@ FILE=".loader.bashrc"
 # Determine machine
 [ -v WSL_DISTRO_NAME ] && WSL=TRUE
 case $(hostname) in
-    *"School")  sdev=TRUE    ;; # School laptop
-    "DESKTOP"*) hdev=TRUE    ;; # Home PC
-    "bench")    server=TRUE  ;; # Server
-    "rasp"*)    server=TRUE  ;; # RaspberryPi
-    *)          unknown=TRUE ;; # Anything else
+*"School") sdev=TRUE ;;  # School laptop
+"DESKTOP"*) hdev=TRUE ;; # Home PC
+"server") server=TRUE ;; # Server
+"rasp"*) server=TRUE ;;  # RaspberryPi
+*) unknown=TRUE ;;       # Anything else
 esac
 
 # Security
@@ -20,7 +20,7 @@ LockDevice() {
 
     clear
     trap : SIGINT
-    >"$HOME/.DEVICE_LOCKED"
+    : >"$HOME/.DEVICE_LOCKED"
     echo -ne "\e[31mDont use computers that arent yours\n"
     while :; do
         [[ $(read -r) == "Device::Unlock" ]] && {
@@ -94,6 +94,7 @@ alias downloads='cd /mnt/c/Users/evans/Downloads'
 alias ref='exec $SHELL'
 alias cs='cd $HOME/cs'
 alias aform='form -a'
+alias git='sudo git'
 
 # Set search dir:
 # USING_DIR=
@@ -103,31 +104,15 @@ using() {
     local FOUND
     local T_ITEM
 
-    #if [[ "$1" == "."* ]]; then
-    #    for item in "$HOME/LocalScripts/."*; do
-    #        [[ "$item" == *"$1"* ]] && {
-    #            source "$item" 2>/dev/null
-    #            Found=TRUE
-    #            T_ITEM="$item"
-    #            return 0
-    #        }
-    #    done
-    #else
-    #    for item in "$HOME/LocalScripts/"*; do
-    #        [[ "$item" == *"$1"* ]] && {
-    #            source "$item" 2>/dev/null
-    #            Found=TRUE
-    #            T_ITEM="$item"
-    #            return 0
-    #        }
-    #    done
-    #fi
-
-    if [ -f "$HOME/LocalScripts/$1"* ]; then
-        source "$HOME/LocalScripts/$1" 2>/dev/null
-        FOUND=TRUE
-        T_ITEM="$HOME/LocalScripts/$1"
-        return 0;
+    if [[ "$1" != "/"* ]]; then
+        for file in "$HOME/LocalScripts/$1"*; do
+            if [ -f "$file" ]; then
+                source "$file" 2>/dev/null
+                FOUND=TRUE
+                T_ITEM="$file"
+                return 0
+            fi
+        done
     fi
 
     [[ $FOUND != TRUE ]] && {
@@ -139,7 +124,7 @@ using() {
     }
 
     [[ "$2" == "-o" ]] && [[ "$FOUND" == TRUE ]] && {
-        echo "$(blue)'$T_ITEM' found [$1]."
+        echo "$(blue)'$T_ITEM' found [$1]$(norm)."
         return 0
     }
 }
@@ -147,8 +132,8 @@ using() {
 ConnectDrives() {
     : "$FILE: ConnectDrives"
     for letter in {a..z}; do
-        if [[ -d /mnt/$letter ]]; then
-            sudo mount -t drvfs $letter: /mnt/$letter &>/dev/null || echo $(red)Unable to mount drive :: NOT_CONNECTED
+        if [[ -d "/mnt/$letter" ]]; then
+            sudo mount -t drvfs "$letter": "/mnt/$letter" &>/dev/null || warn "Unable to mount drive :: NOT_CONNECTED"
         fi
     done
 }
@@ -162,8 +147,16 @@ MountDrives() {
         return 1
     }
 
-    [[ -d $DRIVE/.BACKUPS/ ]] && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
-    [[ -d $(cat $HOME/.active_drive)/.BACKUPS/ ]] && export DRIVE=$(cat "$HOME"/.active_drive) && source "$DRIVE"/.BACKUPS/.LOADER/.BACKUP.sh && return 0
+    [[ -d $DRIVE/.BACKUPS/ ]] && {
+        source "$DRIVE/.BACKUPS/.LOADER/.BACKUP.sh"
+        return 0
+    }
+
+    [[ -d $(cat "$HOME/.active_drive")/.BACKUPS/ ]] && {
+        export DRIVE=$(cat "$HOME"/.active_drive)
+        source "$DRIVE/.BACKUPS/.LOADER/.BACKUP.sh"
+        return 0
+    }
 
     for letter in {a..z}; do
         if [[ -d /mnt/$letter ]]; then
@@ -177,17 +170,15 @@ MountDrives() {
         return 1
     else
         source "$DRIVE/.BACKUPS/.LOADER/.BACKUP.sh"
-        echo $DRIVE >"$HOME/.active_drive"
+        echo "$DRIVE" >"$HOME/.active_drive"
         export DRIVE
         return 0
     fi
-
-    return 3
 }
 
 hax() {
     : "$FILE: hax"
-    cp -r $DRIVE/.HackerMan_Assets $HOME/LocalScripts && bash $HOME/LocalScripts/.HackerMan_Assets/HackermanConsole.sh
+    cp -r "$DRIVE/.HackerMan_Assets" "$HOME/LocalScripts" && bash "$HOME/LocalScripts/.HackerMan_Assets/HackermanConsole.sh"
 }
 
 compAll() {
@@ -199,9 +190,11 @@ compAll() {
         echo "$(magenta)"BUILD: $count"$(norm)"
         local count=$((count + 1))
         local buildPath="bin\Release\publish\\$platform"
-        msbuild /p:Configuration=Release /p:Platform="Any CPU" /p:PlatformTarget="$platform" /p:PublishDir=$buildPath /t:Clean /t:Publish || continue
+
+        msbuild /p:Configuration=Release /p:Platform="Any CPU" /p:PlatformTarget="$platform" /p:PublishDir="$buildPath" /t:Clean /t:Publish || continue
+
         [ -d "./bin/AllBinaries" ] || {
-            echo Creating binaries folder...
+            echo "Creating binaries folder..."
             sudo mkdir "./bin/AllBinaries"
         }
 
