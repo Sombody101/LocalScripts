@@ -245,7 +245,7 @@ export DOTNET_ROOT="$HOME/dotnet"
 using ".cmds.sh"
 using "$HOME/GitSetup/gitScripts.sh" -f
 
-if [ -v server ]; then
+if [ -v server ] || [ -v unknown ]; then
     # Skip right to loading "emergency" functions (No external media to load from)
     using ".EMERGENCY_SD_SPAWNER.sh"
 else
