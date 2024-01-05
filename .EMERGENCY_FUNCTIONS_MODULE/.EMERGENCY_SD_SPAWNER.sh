@@ -4,7 +4,7 @@ ___full_backup_path="$HOME/LocalScripts/.EMERGENCY_BACKUPS"
 
 white 2>"$NULL" # Set text color
 
-PRINT="[ -v server ] &&"
+PRINT="[ ! -v server ] && [ ! -v unknown ] &&"
 
 initialize_sd_backup() {
     DRIVE="$HOME/LocalScripts" # .BACKUP.sh uses $DRIVE to locate itself, so we need to redefine it from the SD to LocalScripts
