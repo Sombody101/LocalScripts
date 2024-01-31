@@ -46,13 +46,14 @@ toWin() {
 
 toWsl() {
     local path
+
     if [[ $* == "" ]]; then
         path="$(wslpath -u "$(pwd)")"
     else
         path="$(wslpath -u "$1")"
     fi
-    printf "%q" "$path" | tr -d "'"
-    echo
+
+    printf "%q\n" "$path" | tr -d "'"
 }
 
 findf() {
@@ -71,28 +72,57 @@ findf() {
     fi
 }
 
+# Get a command stack trace (debugging)
 trace() {
     local stack
 
     for f in "${FUNCNAME[@]:2}"; do
-        [[ $stack == "" ]] && stack="$(cyan)$f" || stack="$(cyan)$f$(yellow)>$(cyan)$stack"
+        [[ "$stack" == "" ]] && stack="$(cyan)$f" || stack="$(cyan)$f$(yellow)>$(cyan)$stack"
     done
 
     printf '%s' "$stack$(norm)"
 }
 
+# Print variables and their values (debugging)
+lvar() 
+{
+    local count=0
+    
+    for var in "$@"; do
+        echo "$count: $var: \`${!var}\`"
+        ((count++))
+    done
+}
+
+# Shits-n-giggles
 bday() {
-    target_date="2024-07-07 12:00:00"
-    current_epoch=$(date +%s)
-    target_epoch=$(date -d "$target_date" +%s)
-    seconds_remaining=$((target_epoch - current_epoch))
-    months=$((seconds_remaining / 2592000))
-    seconds_remaining=$((seconds_remaining % 2592000))
-    days=$((seconds_remaining / 86400))
-    seconds_remaining=$((seconds_remaining % 86400))
-    hours=$((seconds_remaining / 3600))
-    seconds_remaining=$((seconds_remaining % 3600))
-    minutes=$((seconds_remaining / 60))
-    seconds=$((seconds_remaining % 60))
+    local target_date="2024-07-07 12:00:00"
+    local current_epoch=$(date +%s)
+    local target_epoch=$(date -d "$target_date" +%s)
+    local seconds_remaining=$((target_epoch - current_epoch))
+    local months=$((seconds_remaining / 2592000))
+    local seconds_remaining=$((seconds_remaining % 2592000))
+    local days=$((seconds_remaining / 86400))
+    local seconds_remaining=$((seconds_remaining % 86400))
+    local hours=$((seconds_remaining / 3600))
+    local seconds_remaining=$((seconds_remaining % 3600))
+    local minutes=$((seconds_remaining / 60))
+    local seconds=$((seconds_remaining % 60))
+    echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
+}
+
+lday() {
+    local target_date="2024-05-28 12:00:00"
+    local current_epoch=$(date +%s)
+    local target_epoch=$(date -d "$target_date" +%s)
+    local seconds_remaining=$((target_epoch - current_epoch))
+    local months=$((seconds_remaining / 2592000))
+    local seconds_remaining=$((seconds_remaining % 2592000))
+    local days=$((seconds_remaining / 86400))
+    local seconds_remaining=$((seconds_remaining % 86400))
+    local hours=$((seconds_remaining / 3600))
+    local seconds_remaining=$((seconds_remaining % 3600))
+    local minutes=$((seconds_remaining / 60))
+    local seconds=$((seconds_remaining % 60))
     echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
 }

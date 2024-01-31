@@ -41,6 +41,11 @@ pathify() {
     unset IFS
 }
 
+warn() {
+    : "$FILE: warn"
+    echo -ne "$(trace): $(red)$*$(norm)\n"
+}
+
 addPath() {
     : "$FILE: addPath"
     [[ "$1" == "" ]] && {
@@ -61,6 +66,8 @@ BACKS="$DRIVE/.BACKUPS/.LOADER"
 CST="$BACKS/cstools"
 CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"
+GC="$BACKS/git_cmds/git_cmds.sh"
+APPS="$BACKS/.apps"
 
 qunalias() { unalias "$1" 2>$NULL; }
 
@@ -81,11 +88,13 @@ using "$BACKS/.UTILS.sh"
 #using "$BACKS/.EXTRAS.sh"
 using "$BACKS/TASKLIST/TASKLIST.sh"
 using "$CST_M"
+using "$GC" # -f # The file gets sourced, but using logs a "File Not Found" error, so -f
 using "$ST"
 
 [ ! -v EMERGENCY_SD_VERSION ] && using "$BACKS"/.EMERGENCY_FUNCTIONS_MODULE/.EMERGENCY_SD_FAILURE.sh
 
 addPath "$DRIVE/.BACKUPS/.LOADER/bin"
+[ -d "$APPS" ] && addPath "$APPS"
 
 # Cleanup
 unset newNav qunalias
@@ -105,11 +114,6 @@ __padRight() {
 __padLeft() {
     : "$FILE: __padLeft"
     printf '%s%*s' "\e[35m[$1]" "$(($2 - ${#1}))" ""
-}
-
-warn() {
-    : "$FILE: warn"
-    echo -ne "$(trace): $(red)$*$(norm)\n"
 }
 
 # Better to use the command "basename"

@@ -1,41 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "fScgMtpD7zsehY8h7l9rPbfDYOg8qArCwG14G/zIDk1W4RkP62OhY/JKecFONoYMmPBnUMhpyDw3qOqeg+5qOQ==",
-  "success": false,
+  "dgSpecHash": "SP5jSokwHSOvnuhlFNbXeXQ+q+uqHv119QhVWPAFo/nyh9lteusKt0FlJi87o7M8EenIs83kjfaHknYAwqNyGw==",
+  "success": true,
   "projectFilePath": "F:\\.BACKUPS\\.LOADER\\.UPDATED_BACKUP_MANAGER\\backup_src\\backups\\BackupManager\\backups.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\evans\\.nuget\\packages\\commandlineparser\\2.9.1\\commandlineparser.2.9.1.nupkg.sha512"
+    "C:\\Users\\evans\\.nuget\\packages\\commandlineparser\\2.9.1\\commandlineparser.2.9.1.nupkg.sha512",
+    "C:\\Users\\evans\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.25\\microsoft.netcore.app.ref.6.0.25.nupkg.sha512",
+    "C:\\Users\\evans\\.nuget\\packages\\microsoft.netcore.app.runtime.linux-x64\\6.0.25\\microsoft.netcore.app.runtime.linux-x64.6.0.25.nupkg.sha512",
+    "C:\\Users\\evans\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.25\\microsoft.windowsdesktop.app.ref.6.0.25.nupkg.sha512",
+    "C:\\Users\\evans\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.25\\microsoft.aspnetcore.app.ref.6.0.25.nupkg.sha512",
+    "C:\\Users\\evans\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.linux-x64\\6.0.25\\microsoft.aspnetcore.app.runtime.linux-x64.6.0.25.nupkg.sha512",
+    "C:\\Users\\evans\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\6.0.25\\microsoft.netcore.app.host.linux-x64.6.0.25.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1301",
-      "level": "Error",
-      "message": "Unable to load the service index for source https://nuget.emzi0767.com/api/v3/index.json.",
-      "libraryId": "Microsoft.NETCore.App.Runtime.linux-x64"
-    },
-    {
-      "code": "NU1301",
-      "level": "Error",
-      "message": "Unable to load the service index for source https://nuget.emzi0767.com/api/v3/index.json.",
-      "libraryId": "Microsoft.WindowsDesktop.App.Ref"
-    },
-    {
-      "code": "NU1301",
-      "level": "Error",
-      "message": "Unable to load the service index for source https://nuget.emzi0767.com/api/v3/index.json.",
-      "libraryId": "Microsoft.NETCore.App.Ref"
-    },
-    {
-      "code": "NU1301",
-      "level": "Error",
-      "message": "Unable to load the service index for source https://nuget.emzi0767.com/api/v3/index.json.",
-      "libraryId": "Microsoft.NETCore.App.Host.linux-x64"
-    },
-    {
-      "code": "NU1301",
-      "level": "Error",
-      "message": "Unable to load the service index for source https://nuget.emzi0767.com/api/v3/index.json.",
-      "libraryId": "Microsoft.AspNetCore.App.Ref"
-    }
-  ]
+  "logs": []
 }

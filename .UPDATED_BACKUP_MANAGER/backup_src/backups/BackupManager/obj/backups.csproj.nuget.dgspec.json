@@ -28,7 +28,7 @@
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {},
-          "https://nuget.emzi0767.com/api/v3/index.json": {},
+          "https://nuget.bepinex.dev/v3/index.json": {},
           "https://www.myget.org/F/discord-net/api/v3/index.json": {}
         },
         "frameworks": {
@@ -41,9 +41,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "default"
         }
       },
       "frameworks": {
