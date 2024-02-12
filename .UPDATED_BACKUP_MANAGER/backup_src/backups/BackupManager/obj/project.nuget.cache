@@ -1,16 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "SP5jSokwHSOvnuhlFNbXeXQ+q+uqHv119QhVWPAFo/nyh9lteusKt0FlJi87o7M8EenIs83kjfaHknYAwqNyGw==",
+  "dgSpecHash": "zkLlE+c58zJTakWE+7dC5wqMWeOJMNjLD6Y4apF/QDqfeHg+R0ldoxBzNwY2TQHgzKfF7gz8A/RABIn9nUUPtg==",
   "success": true,
-  "projectFilePath": "F:\\.BACKUPS\\.LOADER\\.UPDATED_BACKUP_MANAGER\\backup_src\\backups\\BackupManager\\backups.csproj",
+  "projectFilePath": "/mnt/d/.BACKUPS/.LOADER/.UPDATED_BACKUP_MANAGER/backup_src/backups/BackupManager/backups.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\evans\\.nuget\\packages\\commandlineparser\\2.9.1\\commandlineparser.2.9.1.nupkg.sha512",
-    "C:\\Users\\evans\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.25\\microsoft.netcore.app.ref.6.0.25.nupkg.sha512",
-    "C:\\Users\\evans\\.nuget\\packages\\microsoft.netcore.app.runtime.linux-x64\\6.0.25\\microsoft.netcore.app.runtime.linux-x64.6.0.25.nupkg.sha512",
-    "C:\\Users\\evans\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.25\\microsoft.windowsdesktop.app.ref.6.0.25.nupkg.sha512",
-    "C:\\Users\\evans\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.25\\microsoft.aspnetcore.app.ref.6.0.25.nupkg.sha512",
-    "C:\\Users\\evans\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.linux-x64\\6.0.25\\microsoft.aspnetcore.app.runtime.linux-x64.6.0.25.nupkg.sha512",
-    "C:\\Users\\evans\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\6.0.25\\microsoft.netcore.app.host.linux-x64.6.0.25.nupkg.sha512"
+    "/home/evan/.nuget/packages/commandlineparser/2.9.1/commandlineparser.2.9.1.nupkg.sha512",
+    "/home/evan/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/6.0.26/microsoft.netcore.app.runtime.linux-x64.6.0.26.nupkg.sha512",
+    "/home/evan/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/6.0.26/microsoft.aspnetcore.app.runtime.linux-x64.6.0.26.nupkg.sha512"
   ],
   "logs": []
 }

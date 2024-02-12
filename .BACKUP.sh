@@ -3,9 +3,10 @@
 NULL=/dev/null
 alias grep='grep --color=auto'
 FILE=".BACKUP.sh"
+export COLORTERM=truecolor
 
 newnav() {
-    : "$FILE: newnav"
+    : ".BACKUPS: newnav"
     [[ $1 == "" ]] && {
         warn No arguments provided
         return 1
@@ -28,26 +29,26 @@ newnav() {
 }
 
 occ() {
-    : "$FILE: occ"
+    : ".BACKUPS: occ"
     while :; do
-        form -a
+        form -a $*
     done
 }
 
 pathify() {
-    : "$FILE: pathify"
+    : ".BACKUPS: pathify"
     IFS="/"
     echo "$*"
     unset IFS
 }
 
 warn() {
-    : "$FILE: warn"
+    : ".BACKUPS: warn"
     echo -ne "$(trace): $(red)$*$(norm)\n"
 }
 
 addPath() {
-    : "$FILE: addPath"
+    : ".BACKUPS: addPath"
     [[ "$1" == "" ]] && {
         warn "No path given to add to \$PATH"
         return 1
@@ -57,7 +58,7 @@ addPath() {
 }
 
 showPath() {
-    : "$FILE: showPath"
+    : ".BACKUPS: showPath"
     tr ':' '\n' <<<"$PATH"
 }
 
@@ -86,39 +87,45 @@ newnav ... "$DRIVE/..."
 using "$BACKS/.COMMAND_PARSER.sh"
 using "$BACKS/.UTILS.sh"
 #using "$BACKS/.EXTRAS.sh"
+nloaded "$BACKS/.EXTRAS.sh (Unused)"
 using "$BACKS/TASKLIST/TASKLIST.sh"
 using "$CST_M"
 using "$GC" # -f # The file gets sourced, but using logs a "File Not Found" error, so -f
 using "$ST"
+using "$BACKS/SHOWCASE.sh"
 
 [ ! -v EMERGENCY_SD_VERSION ] && using "$BACKS"/.EMERGENCY_FUNCTIONS_MODULE/.EMERGENCY_SD_FAILURE.sh
 
 addPath "$DRIVE/.BACKUPS/.LOADER/bin"
 [ -d "$APPS" ] && addPath "$APPS"
+loaded "bin.apps ($DRIVE)"
 
 # Cleanup
 unset newNav qunalias
 
+# Register file
+loaded "$BACKS/.BACKUP.sh"
+
 vs() {
-    : "$FILE: vs"
-    local inp=$*
-    [[ $inp == "" ]] && inp="."
+    : ".BACKUPS: vs"
+    local inp="$*"
+    [[ "$inp" == "" ]] && inp="."
     (code "$inp" &)
 }
 
 __padRight() {
-    : "$FILE: __padRight"
+    : ".BACKUPS: __padRight"
     printf '\e[34m%-16s\e[33m%s\e[32m' "$(hostname)" "($1)" >"$HOME"/.__TEMP_INFO.INFO
 }
 
 __padLeft() {
-    : "$FILE: __padLeft"
+    : ".BACKUPS: __padLeft"
     printf '%s%*s' "\e[35m[$1]" "$(($2 - ${#1}))" ""
 }
 
 # Better to use the command "basename"
 GetName() {
-    : "$FILE: GetName"
+    : ".BACKUPS: GetName"
     [[ "$*" == "" ]] && warn "No files provided" && return 1
     local DRIVE
     local NUM=0
@@ -135,12 +142,12 @@ GetName() {
 }
 
 RemoveLast() {
-    : "$FILE: RemoveLast"
+    : ".BACKUPS: RemoveLast"
     echo "${1%/*}"
 }
 
 GetDrive() {
-    : "$FILE: GetDrive"
+    : ".BACKUPS: GetDrive"
     local ARGS="$*"
     for letter in {a..z}; do
         if [ -d /mnt/"$letter"/.BACKUPS/ ]; then
@@ -153,7 +160,7 @@ GetDrive() {
 }
 
 GetDate() {
-    : "$FILE: GetDate"
+    : ".BACKUPS: GetDate"
     DATE=$(date +"%Y/%m/%d %T")
     DATE=${DATE//\//:}
     DATE=${DATE// /_}
@@ -162,7 +169,7 @@ GetDate() {
 
 # These functions will soon become obsolete as a C# implementation is underway
 backup() {
-    : "$FILE: backup"
+    : ".BACKUPS: backup"
     local text="$*"
     GetDate
     GetDrive
@@ -183,7 +190,7 @@ backup() {
 }
 
 backups() {
-    : "$FILE: backups"
+    : ".BACKUPS: backups"
     GetDrive
     [[ $DRIVE == "" ]] && {
         warn No SDCard
@@ -228,7 +235,7 @@ backups() {
 }
 
 pack() {
-    : "$FILE: pack"
+    : ".BACKUPS: pack"
     [[ "$*" == "" ]] && warn No files provided && return 1
     local files
     local DRIVE
@@ -261,7 +268,7 @@ pack() {
 }
 
 unback() {
-    : "$FILE: unback"
+    : ".BACKUPS: unback"
     [[ "$*" == "" ]] && warn No files provided && return 1
     if [[ $1 =~ ^[0-9]+$ ]]; then
         echo Accepted &>/dev/null
@@ -295,7 +302,7 @@ unback() {
 }
 
 cont() {
-    : "$FILE: cont"
+    : ".BACKUPS: cont"
     # Check if input data is acceptable
     [[ "$*" == "" ]] && backups - && return 1
     if [[ $1 =~ ^[0-9]+$ ]]; then
@@ -389,7 +396,7 @@ cont() {
 }
 
 goto() {
-    : "$FILE: goto"
+    : ".BACKUPS: goto"
     [[ "$*" == "" ]] && warn No files provided && return 1
     local DRIVE=$(GetDrive -o)
     local NUM=0
@@ -413,7 +420,7 @@ goto() {
 }
 
 overwrite() {
-    : "$FILE: overwrite"
+    : ".BACKUPS: overwrite"
     [[ "$*" == "" ]] && warn No files provided && return 1
     [[ "$2" == "" ]] && warn No replacement files provided && return 1
     if [[ $1 =~ ^[0-9]+$ ]]; then
@@ -463,7 +470,7 @@ overwrite() {
 # Need to fix trap "trap"
 # It sets trap every time, meaning theres multiple layers of a trapped function
 form() {
-    : "$FILE: form"
+    : ".BACKUPS: form"
     local A=$*
     [[ $1 == "-a" ]] && {
         asyncform "${A//-a/}"
@@ -538,8 +545,10 @@ form() {
 
 # Not fully working
 asyncform() {
-    : "$FILE: asyncform"
+    echo "$*"
+    : ".BACKUPS: asyncform"
     local DIR=${1:-.}               # use the first argument as the directory, or '.' if not provided
+    [[ "$DIR" == "/" ]] && DIR=
     local HEADER=$(realpath "$DIR") # get the absolute path of the directory
     local LAP=0                     # line number
     local arr=()                    # array to store the number of levels deep each file is
@@ -601,7 +610,7 @@ asyncform() {
 }
 
 count_lines() {
-    : "$FILE: count_lines"
+    : ".BACKUPS: count_lines"
     # Check if the directory path is provided
     if [[ -z "$1" ]]; then
         warn "Directory path is missing."

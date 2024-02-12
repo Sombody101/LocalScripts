@@ -126,3 +126,31 @@ lday() {
     local seconds=$((seconds_remaining % 60))
     echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
 }
+
+watch() {
+    local type="$1"
+
+    [[ "$type" == "-v" ]] && { # Variable
+        [[ "$2" == "" ]] && { warn "No variable provided"; return 1; }
+        c
+        while :
+        do
+            echo -ne "\r${!2}    "
+            sleep .1
+        done
+        return 0
+    }
+
+    [[ "$type" == "-c" ]] && {
+        [[ "$2" == "" ]] && { warn "No command provided"; return 1; }
+        c
+        while :
+        do
+            echo -ne "\r$($2)    "
+            sleep .1
+        done
+        return 0
+    }
+
+    warn "Unknown option '$1'"
+}

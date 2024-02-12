@@ -1,6 +1,8 @@
 #!/bin/bash
 TASK_FILE="$BACKS/TASKLIST/TASKLIST.tsk" # .tsk => .task
 
+loaded "$BACKS/TASKLIST/TASKLIST.sh"
+
 tl() {
     [[ $* == "" ]] && {
         [ ! -f "$TASK_FILE" ] && {

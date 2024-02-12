@@ -2,6 +2,8 @@
 
 # alias igm='git status >/dev/null' # IsGitManaged
 
+loaded "$GC"
+
 igm() {
     git status "$*" >$NULL
 }

@@ -1,32 +1,20 @@
 #!/bin/bash
 
-#command_not_found_handle() {
-#    local args=($*)
-#    local cmd=${args[0]}
-#
-#    if [[ $cmd == *"++" ]]; then
-#        local TMP=${cmd//++/}
-#        local num=$(( TMP + 1 ))
-#        declare "$TMP=$num"
-#        export $TMP
-#        return
-#    fi
-#    echo $(blue)bash: $(yellow)$cmd: $(red)Command not found
-#}
+loaded "$BACKS/.COMMAND_PARSER.sh"
 
 command_not_found_handle() {
     local cmd="$1"
 
     if [[ "$cmd" == *"++" ]]; then
-	_cmd=${cmd%??}
-	if [[ ${!_cmd} =~ ^[0-9]+$ ]]; then
-	    eval "$(( ${!_cmd} + 1  ))"
-	    return 0
-	fi
+        _cmd=${cmd%??}
+        if [[ ${!_cmd} =~ ^[0-9]+$ ]]; then
+            eval "$((${!_cmd} + 1))"
+            return 0
+        fi
     elif [[ "$cmd" == *"--" ]]; then
         _cmd=${cmd%??}
         if [[ ${!_cmd} =~ ^[0-9]+$ ]]; then
-            eval "$(( ${!_cmd} - 1  ))"
+            eval "$((${!_cmd} - 1))"
             return 0
         fi
     # Check if the command is a variable
@@ -45,11 +33,26 @@ command_not_found_handle() {
         #fi
     # Check if the command is an arithmetic expression
     elif [[ "$cmd" =~ ^[0-9]+([-+*/%][0-9]+)*$ ]]; then
-        echo "$(($cmd))"
+        echo "(($cmd))"
         return 0
     fi
 
     # Otherwise, print the command not found error
     echo "$(blue)bash: $(yellow)$cmd: $(red)Command not found$(norm)"
     return 1
+}
+
+__report_command() {
+    if [ -x /usr/lib/command-not-found ]; then
+        /usr/lib/command-not-found -- "$1"
+        return $?
+    else
+        if [ -x /usr/share/command-not-found/command-not-found ]; then
+            /usr/share/command-not-found/command-not-found -- "$1"
+            return $?
+        else
+            echo "$(blue)bash: $(yellow)$cmd: $(red)Command not found$(norm)"
+            return 127
+        fi
+    fi
 }

@@ -1,35 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "F:\\.BACKUPS\\.LOADER\\.UPDATED_BACKUP_MANAGER\\backup_src\\backups\\BackupManager\\backups.csproj": {}
+    "/mnt/d/.BACKUPS/.LOADER/.UPDATED_BACKUP_MANAGER/backup_src/backups/BackupManager/backups.csproj": {}
   },
   "projects": {
-    "F:\\.BACKUPS\\.LOADER\\.UPDATED_BACKUP_MANAGER\\backup_src\\backups\\BackupManager\\backups.csproj": {
+    "/mnt/d/.BACKUPS/.LOADER/.UPDATED_BACKUP_MANAGER/backup_src/backups/BackupManager/backups.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\.BACKUPS\\.LOADER\\.UPDATED_BACKUP_MANAGER\\backup_src\\backups\\BackupManager\\backups.csproj",
+        "projectUniqueName": "/mnt/d/.BACKUPS/.LOADER/.UPDATED_BACKUP_MANAGER/backup_src/backups/BackupManager/backups.csproj",
         "projectName": "backups",
-        "projectPath": "F:\\.BACKUPS\\.LOADER\\.UPDATED_BACKUP_MANAGER\\backup_src\\backups\\BackupManager\\backups.csproj",
-        "packagesPath": "C:\\Users\\evans\\.nuget\\packages\\",
-        "outputPath": "F:\\.BACKUPS\\.LOADER\\.UPDATED_BACKUP_MANAGER\\backup_src\\backups\\BackupManager\\obj\\",
+        "projectPath": "/mnt/d/.BACKUPS/.LOADER/.UPDATED_BACKUP_MANAGER/backup_src/backups/BackupManager/backups.csproj",
+        "packagesPath": "/home/evan/.nuget/packages/",
+        "outputPath": "/mnt/d/.BACKUPS/.LOADER/.UPDATED_BACKUP_MANAGER/backup_src/backups/BackupManager/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\evans\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/evan/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://nuget.bepinex.dev/v3/index.json": {},
-          "https://www.myget.org/F/discord-net/api/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
@@ -65,28 +56,12 @@
           "warn": true,
           "downloadDependencies": [
             {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.25, 6.0.25]"
-            },
-            {
               "name": "Microsoft.AspNetCore.App.Runtime.linux-x64",
-              "version": "[6.0.25, 6.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[6.0.25, 6.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.25, 6.0.25]"
+              "version": "[6.0.26, 6.0.26]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.linux-x64",
-              "version": "[6.0.25, 6.0.25]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[6.0.25, 6.0.25]"
+              "version": "[6.0.26, 6.0.26]"
             }
           ],
           "frameworkReferences": {
@@ -94,7 +69,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/7.0.405/RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {

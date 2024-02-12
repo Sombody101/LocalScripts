@@ -1,6 +1,8 @@
 #!/bin/bash
 # Site tools
 
+loaded "$ST"
+
 newsite() {
 
 #

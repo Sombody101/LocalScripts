@@ -10,6 +10,9 @@
 # dnrun   : The same as running "sudo dotnet run", but faster (Using "sudo" helps with file permissions)
 # dnbuild : The same as running "sudo dotnet build" (Same addons as 'dnrun')
 
+# Register file
+loaded "$CST_M"
+
 # Error codes
 dne=(
     "No DotNet SDK"

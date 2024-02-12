@@ -8,6 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = backups
-build_property.ProjectDir = F:\.BACKUPS\.LOADER\.UPDATED_BACKUP_MANAGER\backup_src\backups\BackupManager\
-build_property.EnableComHosting = 
-build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.ProjectDir = /mnt/d/.BACKUPS/.LOADER/.UPDATED_BACKUP_MANAGER/backup_src/backups/BackupManager/
