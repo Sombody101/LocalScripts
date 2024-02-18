@@ -1,6 +1,6 @@
 #!/bin/bash
 
-loaded "$BACKS/.COMMAND_PARSER.sh"
+regload "$BACKS/.COMMAND_PARSER.sh"
 
 command_not_found_handle() {
     local cmd="$1"
@@ -33,7 +33,7 @@ command_not_found_handle() {
         #fi
     # Check if the command is an arithmetic expression
     elif [[ "$cmd" =~ ^[0-9]+([-+*/%][0-9]+)*$ ]]; then
-        echo "(($cmd))"
+        echo "$(($cmd))"
         return 0
     fi
 

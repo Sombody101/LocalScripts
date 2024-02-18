@@ -1,7 +1,7 @@
 #!/bin/bash
 # Site tools
 
-loaded "$ST"
+regload "$ST"
 
 newsite() {
 

@@ -2,7 +2,6 @@
 
 NULL=/dev/null
 alias grep='grep --color=auto'
-FILE=".BACKUP.sh"
 export COLORTERM=truecolor
 
 newnav() {
@@ -31,7 +30,7 @@ newnav() {
 occ() {
     : ".BACKUPS: occ"
     while :; do
-        form -a $*
+        form -a "$@"
     done
 }
 
@@ -87,7 +86,7 @@ newnav ... "$DRIVE/..."
 using "$BACKS/.COMMAND_PARSER.sh"
 using "$BACKS/.UTILS.sh"
 #using "$BACKS/.EXTRAS.sh"
-nloaded "$BACKS/.EXTRAS.sh (Unused)"
+regnload "$BACKS/.EXTRAS.sh (Unused)"
 using "$BACKS/TASKLIST/TASKLIST.sh"
 using "$CST_M"
 using "$GC" # -f # The file gets sourced, but using logs a "File Not Found" error, so -f
@@ -98,13 +97,13 @@ using "$BACKS/SHOWCASE.sh"
 
 addPath "$DRIVE/.BACKUPS/.LOADER/bin"
 [ -d "$APPS" ] && addPath "$APPS"
-loaded "bin.apps ($DRIVE)"
+regload "bin.apps ($DRIVE)"
 
 # Cleanup
 unset newNav qunalias
 
 # Register file
-loaded "$BACKS/.BACKUP.sh"
+regload "$BACKS/.BACKUP.sh"
 
 vs() {
     : ".BACKUPS: vs"

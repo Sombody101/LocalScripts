@@ -11,7 +11,7 @@
 # dnbuild : The same as running "sudo dotnet build" (Same addons as 'dnrun')
 
 # Register file
-loaded "$CST_M"
+regload "$CST_M"
 
 # Error codes
 dne=(
