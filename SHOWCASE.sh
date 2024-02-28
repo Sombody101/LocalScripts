@@ -1,6 +1,6 @@
 #!/bin/bash
 
-regload "SHOWCASE.sh (For Linux+)"
+regload "showcase.sh (For Linux+)"
 
 alias NOPS='while :; do sleep 10; done'
 

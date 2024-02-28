@@ -1,6 +1,6 @@
 #!/bin/bash
 
-regload "$BACKS/.COMMAND_PARSER.sh"
+regload "$BACKS/command_parser.sh"
 
 command_not_found_handle() {
     local cmd="$1"

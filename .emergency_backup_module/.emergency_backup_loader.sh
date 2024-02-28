@@ -1,10 +1,10 @@
 #!/bin/bash
 
-___full_backup_path="$HOME/LocalScripts/.EMERGENCY_BACKUPS"
+___full_backup_path="$HOME/LocalScripts/.emergency_bashext_backup"
 
 white 2>"$NULL" # Set text color
 
-PRINT="[ ! -v server ] && [ ! -v unknown ] &&"
+PRINT="[ ! -v server ] && [ ! -v unknown ] && echo"
 
 initialize_sd_backup() {
     DRIVE="$HOME/LocalScripts" # .BACKUP.sh uses $DRIVE to locate itself, so we need to redefine it from the SD to LocalScripts
@@ -32,4 +32,4 @@ else
     $PRINT "No backup directory [$___full_backup_path]" # Just skip the loading function (there's nothing to load anyway)
 fi
 
-unset ___full_backup_path initialize_sd_backup write
+unset ___full_backup_path initialize_sd_backup PRINT

@@ -62,11 +62,11 @@ showPath() {
 }
 
 BACKS="$DRIVE/.BACKUPS/.LOADER"
-[ -v EMERGENCY_SD_VERSION ] && BACKS="$HOME/LocalScripts/.EMERGENCY_BACKUPS"
+[ -v EMERGENCY_SD_VERSION ] && BACKS="$HOME/LocalScripts/.emergency_bashext_backup"
 CST="$BACKS/cstools"
 CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"
-GC="$BACKS/git_cmds/git_cmds.sh"
+GC="$BACKS/git-cmds/git_cmds.sh"
 APPS="$BACKS/.apps"
 
 qunalias() { unalias "$1" 2>$NULL; }
@@ -79,21 +79,28 @@ newnav backs "$BACKS"
 newnav drive "$DRIVE"
 newnav home "$HOME"
 newnav main "/"
+alias clrhist='> $HOME/.bash_history'
 
 newnav cst "$CST"
 newnav ... "$DRIVE/..."
 
-using "$BACKS/.COMMAND_PARSER.sh"
-using "$BACKS/.UTILS.sh"
+# Set the namespace
+setspace "$BACKS"
+
+using "command_parser.sh"
+using "utils.sh"
 #using "$BACKS/.EXTRAS.sh"
 regnload "$BACKS/.EXTRAS.sh (Unused)"
-using "$BACKS/TASKLIST/TASKLIST.sh"
+using "tsklist/TASKLIST.sh"
 using "$CST_M"
 using "$GC" # -f # The file gets sourced, but using logs a "File Not Found" error, so -f
 using "$ST"
-using "$BACKS/SHOWCASE.sh"
+using "showcase.sh"
 
-[ ! -v EMERGENCY_SD_VERSION ] && using "$BACKS"/.EMERGENCY_FUNCTIONS_MODULE/.EMERGENCY_SD_FAILURE.sh
+[ ! -v emergency_backup_version ] && using ".emergency_backup_module/.emergency_backup_generator.sh"
+
+# Reset namespace
+setspace
 
 addPath "$DRIVE/.BACKUPS/.LOADER/bin"
 [ -d "$APPS" ] && addPath "$APPS"
@@ -103,7 +110,7 @@ regload "bin.apps ($DRIVE)"
 unset newNav qunalias
 
 # Register file
-regload "$BACKS/.BACKUP.sh"
+regload "$BACKS/backups.sh"
 
 vs() {
     : ".BACKUPS: vs"

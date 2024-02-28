@@ -1,7 +1,7 @@
 #!/bin/bash
-TASK_FILE="$BACKS/TASKLIST/TASKLIST.tsk" # .tsk => .task
+TASK_FILE="$BACKS/tsklist/TASKLIST.tsk" # .tsk => .task
 
-regload "$BACKS/TASKLIST/TASKLIST.sh"
+regload "$BACKS/tsklist/TASKLIST.sh"
 
 tl() {
     [[ $* == "" ]] && {
