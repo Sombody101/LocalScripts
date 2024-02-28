@@ -1,0 +1,21 @@
+{
+  "UserData": {
+    "manufacturer": "Unknown",
+    "product_name": "Unknown",
+    "version": "Unknown",
+    "serial_number": "Unknown",
+    "hostname": "DESKTOP-SchoolLT",
+    "username": "evan",
+    "operating_system": "Unknown",
+    "architecture": "x86_64",
+    "processor_name": "12th Gen Intel(R) Core(TM) i3-1215U",
+    "memory": "Unknown",
+    "hdd_model": "Virtual Disk ",
+    "system_main_ip": "172.26.225.252 ",
+    "system_public_ip": "205.127.92.132",
+    "managed_device": "FALSE",
+    "screen_columbs": "188",
+    "screen_lines": "50",
+    "screen_size": "ERROR_DOING_MATH"
+  }
+}
