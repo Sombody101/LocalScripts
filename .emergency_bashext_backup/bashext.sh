@@ -99,7 +99,8 @@ using "$ST"
 using "showcase.sh"
 
 [ ! -v emergency_backup_version ] && {
-    using ".emergency_backup_module/.emergency_backup_generator.sh"
+    EBG="$BACKS/.emergency_backup_module/"
+    using "$EBG/.emergency_backup_generator.sh"
 }
 
 # Reset namespace
