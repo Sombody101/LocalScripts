@@ -10,7 +10,7 @@ padl () {
 }
 
 reorderPath() {
-    export PATH=$(echo "$PATH" | \
+    echo $(echo "$PATH" | \
         tr ':' '\n' | \
         grep -v '^/mnt/c' | \
         tr '\n' ':' | \

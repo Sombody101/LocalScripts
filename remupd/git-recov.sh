@@ -13,6 +13,16 @@ gitupdate() {
         fi
     }
 
+    [[ "$*" =~ clean ]] && {
+        [[ "$sdev" ]] && {
+            warn "Cannot remove LocalScripts while on the developer machine"
+            return 255
+        }
+
+        echo "Clearing current LocalScripts install"
+        sudo rm -r "$HOME/LocalScripts"
+    }
+
     get_remote_update() {
 
         # Safe-CD
