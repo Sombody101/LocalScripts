@@ -15,7 +15,7 @@ gitupdate() {
 
     [[ "$*" =~ clean ]] && {
         [[ "$sdev" ]] && {
-            warn "Cannot remove LocalScripts while on the developer machine"
+            warn "Cannot remove LocalScripts while on the developer machine (not forceable)"
             return 255
         }
 
@@ -43,13 +43,17 @@ gitupdate() {
         scd "$folder"
 
         local repo=
+        local using_group=TRUE
 
         case "$1" in
         "local"*) {
             repo="LocalScripts"
             using_group=FALSE
         } ;;
-        *) repo="bash-ext" ;;
+        "ext" | *) {
+            repo="bash-ext"
+        } ;;
+
         esac
         echo "Downloading from $repo"
         echo
@@ -71,5 +75,5 @@ gitupdate() {
     }
 
     # Use sub-shell
-    ( get_remote_update "$*" )
+    (get_remote_update "$*")
 }

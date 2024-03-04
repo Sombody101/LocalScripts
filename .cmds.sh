@@ -42,6 +42,7 @@ KALI() {
         echo "Already in KALI"
         return
     }
+    
     echo "KALI" >"$ACTIVE_UIP"
     ref
 }
@@ -52,6 +53,7 @@ UBUNTU() {
         echo "Already in UBUNTU"
         return
     }
+
     echo "UBUNTU" >"$ACTIVE_UIP"
     ref
 }

@@ -9,23 +9,6 @@ padl () {
  :  
 }
 
-reorderPath() {
-    echo $(echo "$PATH" | \
-        tr ':' '\n' | \
-        grep -v '^/mnt/c' | \
-        tr '\n' ':' | \
-        sed 's/:$//')$(echo "$PATH" | \
-        tr ':' '\n' | \
-        grep '^/mnt/c' | \
-        grep -v '^/mnt/c/Users' | \
-        tr '\n' ':' | \
-        sed 's/:$//')$(echo "$PATH" | \
-        tr ':' '\n' | \
-        grep '^/mnt/c/Users' | \
-        tr '\n' ':' | \
-        sed 's/:$//')
-}
-
 binToDec() {
     : "utils: binToDec"
     for arg in "$@"; do

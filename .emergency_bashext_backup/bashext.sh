@@ -118,7 +118,7 @@ unset newNav qunalias
 vs() {
     : ".BACKUPS: vs"
     local inp="$*"
-    [[ "$inp" == "" ]] && inp="."
+    [[ ! "$inp" ]] && inp="."
     (code "$inp" &)
 }
 

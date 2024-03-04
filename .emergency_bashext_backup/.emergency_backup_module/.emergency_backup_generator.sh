@@ -29,7 +29,7 @@ dump_all_sh_from_sd() {
     shopt -u dotglob
 
     echo "Updating emergency loader file..."
-    sudo cp "$EBG/.emergency_backup_generator.sh" "$HOME/LocalScripts"
+    sudo cp "$EBG/.emergency_backup_loader.sh" "$HOME/LocalScripts"
 
     #if [ ! -f "$___full_backup_path/backup_version.sh" ]; then
     #    echo -ne "#!/bin/bash\n" | sudo tee -a "$___full_backup_path/backup_version.sh" 2>&1 >/dev/null

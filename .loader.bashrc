@@ -251,12 +251,12 @@ export DOTNET_ROOT="$HOME/dotnet"
 # Import bashext.sh
 if [ -v server ] || [ -v unknown ]; then
     # Skip right to loading "emergency" functions (No external media to load from)
-    using ".EMERGENCY_SD_SPAWNER.sh"
+    using ".emergency_backup_loader.sh"
 else
     if MountDrives; then # Assumes this is WSL
         using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
     elif [[ "$DRIVE" ]] || [[ "$DRIVE" =~ "EMERGENCY" ]]; then
-        using ".EMERGENCY_SD_SPAWNER.sh"
+        using ".emergency_backup_loader.sh"
     fi
 fi
 
