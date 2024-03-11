@@ -27,48 +27,15 @@ newnav() {
     "
 }
 
-occ() {
-    : ".BACKUPS: occ"
-    while :; do
-        form -a "$@"
-    done
-}
-
-pathify() {
-    : ".BACKUPS: pathify"
-    IFS="/"
-    echo "$*"
-    unset IFS
-}
-
-warn() {
-    : ".BACKUPS: warn"
-    echo -ne "$(trace): $(red)$*$(norm)\n"
-}
-
-addPath() {
-    : ".BACKUPS: addPath"
-    [[ ! "$1" ]] && {
-        warn "No path given to add to \$PATH"
-        return 1
-    }
-
-    [[ ! "$PATH" =~ $1 ]] && export PATH="$1:$PATH"
-}
-
-showpath() {
-    : ".BACKUPS: showPath"
-    tr ':' '\n' <<<"$PATH"
-}
-
 BACKS="$DRIVE/.BACKUPS/.LOADER"
-[ -v EMERGENCY_SD_VERSION ] && BACKS="$HOME/LocalScripts/.emergency_bashext_backup"
+[ "$emergency_backup_version" ] && BACKS="$HOME/LocalScripts/.emergency_bashext_backup"
 CST="$BACKS/cstools"
 CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"
 GC="$BACKS/git-cmds/git_cmds.sh"
 APPS="$BACKS/.apps"
 
+# Quiet Un-Alias
 qunalias() { unalias "$1" 2>$NULL; }
 
 # Support issues with pre-summer devices (requires unalias)
@@ -98,6 +65,7 @@ using "$GC" # -f # The file gets sourced, but using logs a "File Not Found" erro
 using "$ST"
 using "showcase.sh"
 
+# Import EmergencyBackupGenerator if not currently using a backup
 [ ! -v emergency_backup_version ] && {
     EBG="$BACKS/.emergency_backup_module/"
     using "$EBG/.emergency_backup_generator.sh"
@@ -106,14 +74,14 @@ using "showcase.sh"
 # Reset namespace
 setspace
 
-addPath "$DRIVE/.BACKUPS/.LOADER/bin"
+addpath "$BACKS/bin"
 [ -d "$APPS" ] && {
-    addPath "$APPS"
+    addpath "$APPS"
     regload "bin.apps ($DRIVE)"
 }
 
 # Cleanup
-unset newNav qunalias
+unset qunalias
 
 vs() {
     : ".BACKUPS: vs"

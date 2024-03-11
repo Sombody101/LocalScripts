@@ -115,7 +115,7 @@ using() {
                 printf '\t%s\n' "$item"
             done
 
-            MANAGED_LOADED+=("$(red)[NOT*F]$(norm) $(bold)$(_indigo)atmp_path:$(norm) $file")
+            add_managed_import "$(red)[NOT*F] $(_indigo)atmp_path:$(norm) $file"
             return 1
         fi
 
@@ -125,15 +125,15 @@ using() {
     if [[ ! -f "$file" ]]; then
         [[ "$2" != "-f" ]] && {
             warn "Unable to find '$file'"
-            MANAGED_LOADED+=("$(red)[NOT F]$(norm) $(bold)$(_indigo)atmp_path:$(norm) $file")
+            add_managed_import "$(red)[NOT F] $(_indigo)atmp_path:$(norm) $file"
         }
 
-        MANAGED_LOADED+=("$(red)[NOT F]$(norm) $(bold)$(magenta)soft_path:$(norm) $file")
+        add_managed_import "$(red)[NOT F] $(magenta)soft_path:$(norm) $file"
         return 1
     fi
 
     source "$file" 2>"/dev/null"
-    MANAGED_LOADED+=("$(blue)[FOUND]$(norm) $(bold)$(cyan)full_path:$(norm) $(realpath "$file")")
+    add_managed_import "$(blue)[FOUND] $(cyan)full_path:$(norm) $(realpath "$file")"
 
     if [[ "$2" == "-o" ]]; then
         echo "$(blue)'$file' found [$1]$(norm)"
@@ -172,18 +172,20 @@ MountDrives() {
         return 1
     }
 
-    local cached_drive_path="$HOME/.active_drive"
-
-    # Assumes drive has already been exported
+    # Checks if the drive has already been exported, reloads drive if not
     [[ -d "$DRIVE/.BACKUPS/" ]] && {
+        return 0
+
         local pth=
         pth=$(cat "$cached_drive_path")
 
-        sudo mount -t drvfs "${pth:-1}": "$pth" &>/dev/null && {
-            export DRIVE="$pth"
-            return 0;
-        }
+        #sudo mount -t drvfs "${pth:-1}": "$pth" &>/dev/null && {
+        #    export DRIVE="$pth"
+        #    return 0;
+        #}
     }
+
+    local cached_drive_path="$HOME/.active_drive"
 
     # Check if cached drive path works
     [[ -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
@@ -224,7 +226,7 @@ showPath() {
     : ".loader: listPath [TEMPORARY]"
     local tmp=$PATH
     IFS=':'
-    
+
     read -ra arr <<<"$tmp"
     for item in "${arr[@]}"; do
         echo "$item"
@@ -249,14 +251,18 @@ export DOTNET_ROOT="$HOME/dotnet"
 }
 
 # Import bashext.sh
-if [ -v server ] || [ -v unknown ]; then
+if [ "$FORCE_BACKUP" ]; then # Force load the backup
+    using ".emergency_backup_loader.sh"
+elif [ -v server ] || [ -v unknown ]; then
     # Skip right to loading "emergency" functions (No external media to load from)
     using ".emergency_backup_loader.sh"
 else
     if MountDrives; then # Assumes this is WSL
-        using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
-    elif [[ "$DRIVE" ]] || [[ "$DRIVE" =~ "EMERGENCY" ]]; then
+        track using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
+    elif [[ ! "$DRIVE" ]]; then
         using ".emergency_backup_loader.sh"
+    else
+        warn "Failed to import bash-ext (Emergency or from USB)"
     fi
 fi
 

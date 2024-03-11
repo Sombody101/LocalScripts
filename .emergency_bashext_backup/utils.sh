@@ -1,5 +1,39 @@
 #!/bin/bash
 
+occ() {
+    : ".BACKUPS: occ"
+    while :; do
+        form -a "$@"
+    done
+}
+
+pathify() {
+    : ".BACKUPS: pathify"
+    IFS="/"
+    echo "$*"
+    unset IFS
+}
+
+warn() {
+    : ".BACKUPS: warn"
+    echo -ne "$(trace): $(red)$*$(norm)\n"
+}
+
+addpath() {
+    : ".BACKUPS: addpath"
+    [[ ! "$1" ]] && {
+        warn "No path given to add to \$PATH"
+        return 1
+    }
+
+    [[ ! "$PATH" =~ $1 ]] && export PATH="$1:$PATH"
+}
+
+showpath() {
+    : ".BACKUPS: showPath"
+    tr ':' '\n' <<<"$PATH"
+}
+
 A_Has() {
     search_string=$1
     shift
@@ -84,10 +118,9 @@ trace() {
 }
 
 # Print variables and their values (debugging)
-lvar() 
-{
+lvar() {
     local count=0
-    
+
     for var in "$@"; do
         echo "$count: $var: \`${!var}\`"
         ((count++))
@@ -130,27 +163,30 @@ lday() {
 watch() {
     local type="$1"
 
-    [[ "$type" == "-v" ]] && { # Variable
-        [[ "$2" == "" ]] && { warn "No variable provided"; return 1; }
-        c
-        while :
-        do
-            echo -ne "\r${!2}    "
-            sleep .1
-        done
-        return 0
+    shift
+    local inputs=("$@")
+
+    [[ "${#inputs[@]}" -eq 0 ]] && {
+        warn "No inputs provided"
     }
 
-    [[ "$type" == "-c" ]] && {
-        [[ "$2" == "" ]] && { warn "No command provided"; return 1; }
-        c
-        while :
-        do
-            echo -ne "\r$($2)    "
-            sleep .1
+    local op=
+    case $type in
+    "-v") op='echo "${!item}"' ;;
+    "-c") op='echo $(item)' ;;
+    esac
+
+    prnt() {
+        tput cup 0 0
+
+        for item in "${inputs[@]}"; do
+            $op
         done
-        return 0
     }
 
-    warn "Unknown option '$1'"
+    while :; do
+        prnt $type "${inputs[@]}"
+        sleep .1
+    done
 }
+

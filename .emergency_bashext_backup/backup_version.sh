@@ -1,2 +1,2 @@
 #!/bin/bash
-emergency_backup_version="03.04.2024"
+emergency_backup_version="03.11.2024"
