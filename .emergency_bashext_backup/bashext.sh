@@ -29,6 +29,9 @@ newnav() {
 
 BACKS="$DRIVE/.BACKUPS/.LOADER"
 [ "$emergency_backup_version" ] && BACKS="$HOME/LocalScripts/.emergency_bashext_backup"
+
+export BACKS
+
 CST="$BACKS/cstools"
 CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"

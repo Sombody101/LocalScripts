@@ -16,16 +16,29 @@ dump_all_sh_from_sd() {
         sudo rm -r "$___full_backup_path"
     }
 
-    echo "Making copy of $BACKS in $___full_backup_path"
+    echo -ne "$(cyan)$BACKS$(norm) -> $(cyan)$___full_backup_path$(norm)\r\n"
     shopt -s dotglob
-    for item in "$BACKS/"*; do
-        case $item in
-            *"/.git") continue ;;
-        esac
 
-        echo "Moving: ${item//$BACKS\//}"
+    local type=
+    local suffix=
+    for item in "$BACKS/"*; do
+        [[ "$item" == *"/.git" ]] && continue
+
+        #case $item in
+        #    *"/.git") continue ;;
+        #esac
+
+        type="./file"
+        suffix=
+        [ -d "$item" ] && {
+            type="-r dir"
+            suffix='/'
+        }
+
+        echo "[cp $type -> \$LS]: ${item//$BACKS\//}$suffix"
         sudo cp -r "$item" "$___full_backup_path"
     done
+
     shopt -u dotglob
 
     echo "Updating emergency loader file..."
@@ -36,8 +49,19 @@ dump_all_sh_from_sd() {
     #fi
 
     echo "Adding version number..."
-    echo -ne "#!/bin/bash\nemergency_backup_version=\"$(date +'%m.%d.%Y')\"\n" \
-        | sudo tee -a "$___full_backup_path/backup_version.sh" 2>&1 >/dev/null
+    #echo -ne "#!/bin/bash\nemergency_backup_version=\"$(date +'%m.%d.%Y')\"\n" \
+    #    | sudo tee -a "$___full_backup_path/backup_version.sh" 2>&1 >/dev/null
+
+    local dt=
+    dt="$(date +'%m.%d.%Y')"
+
+    local backv="$___full_backup_path/backup_version.sh"
+    local tmpbackv="$HOME/backup_version.sh"
+
+    echo "Signing with: $dt"
+
+    echo -ne "#!/bin/bash\nemergency_backup_version=\"$dt\"\n" >"$tmpbackv"
+    sudo mv "$tmpbackv" "$backv"
 
     echo "New backup created"
 }

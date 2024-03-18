@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #tput setab [1-7] – Set a background color using ANSI escape
 #tput setb [1-7] – Set a background color
 #tput setaf [1-7] – Set a foreground color using ANSI escape
@@ -72,7 +73,7 @@ alias rev='tput rev'
 # Reset
 alias norm='tput sgr0'
 
-using "utils/ColorSheet.sh"
+# using "utils/ColorSheet.sh"
 fromRGB() {
     local colorName=$1
     local R=$2

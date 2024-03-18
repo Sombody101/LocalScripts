@@ -1,0 +1,29 @@
+#!/bin/bash
+
+file="$HOME/LocalScripts/utils/Colors.sh"
+
+write() {
+    echo "$*" >>colors.sh
+}
+
+while read p; do
+
+    [[ "$p" == "alias "* ]] && {
+
+        alias_name="${p%%=*}"
+        alias_content="${p#*=}"
+        alias_content="${alias_content:1:${#alias_content}-2}"
+
+        write "${alias_name:6}() {"
+        write "    $alias_content"
+        write "}"
+        write
+    }
+
+    [[ "$p" == "#"* ]] && {
+        write "$p"
+    }
+
+    [[ ! "$p" ]] && write
+
+done <"$file"

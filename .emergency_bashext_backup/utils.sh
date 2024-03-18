@@ -127,9 +127,8 @@ lvar() {
     done
 }
 
-# Shits-n-giggles
-bday() {
-    local target_date="2024-07-07 12:00:00"
+time_until_date() {
+    local target_date="$*"
     local current_epoch=$(date +%s)
     local target_epoch=$(date -d "$target_date" +%s)
     local seconds_remaining=$((target_epoch - current_epoch))
@@ -144,20 +143,13 @@ bday() {
     echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
 }
 
+# Shits-n-giggles
+bday() {
+    time_until_date "2024-07-07 12:00:00"
+}
+
 lday() {
-    local target_date="2024-05-28 12:00:00"
-    local current_epoch=$(date +%s)
-    local target_epoch=$(date -d "$target_date" +%s)
-    local seconds_remaining=$((target_epoch - current_epoch))
-    local months=$((seconds_remaining / 2592000))
-    local seconds_remaining=$((seconds_remaining % 2592000))
-    local days=$((seconds_remaining / 86400))
-    local seconds_remaining=$((seconds_remaining % 86400))
-    local hours=$((seconds_remaining / 3600))
-    local seconds_remaining=$((seconds_remaining % 3600))
-    local minutes=$((seconds_remaining / 60))
-    local seconds=$((seconds_remaining % 60))
-    echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
+    time_until_date "2024-05-28 12:00:00"
 }
 
 watch() {
@@ -180,12 +172,13 @@ watch() {
         tput cup 0 0
 
         for item in "${inputs[@]}"; do
+            : "$item"
             $op
         done
     }
 
     while :; do
-        prnt $type "${inputs[@]}"
+        prnt "$type" "${inputs[@]}"
         sleep .1
     done
 }

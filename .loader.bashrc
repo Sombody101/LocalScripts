@@ -143,46 +143,26 @@ using() {
 # Won't be listed in 'mimports' as it's seen as a part of 'using'
 source "$HOME/LocalScripts/utils/managed_importer.sh"
 
-using "utils/Colors.sh"
-using "utils/HappyTime.sh"
-using "utils/Text.sh"
-using "utils/Utils.sh"
+# using "utils/Colors.sh" # Legacy
+using "utils/colors.sh"
+using "utils/happytime.sh"
+using "utils/text.sh"
+using "utils/utils.sh"
 using "utils/prompt_setter.sh"
-using "$HOME/GitSetup/gitScripts.sh" -f
 using ".cmds.sh"
-
-ConnectDrives() {
-    : ".loader: ConnectDrives [OBSOLETE]"
-
-    warn ".loader: ConnectDrives is obsolete, use MountDrives instead"
-
-    for letter in {a..z}; do
-        if [[ -d "/mnt/$letter" ]]; then
-            sudo mount -t drvfs "$letter": "/mnt/$letter" &>/dev/null || warn "Unable to mount drive :: NOT_CONNECTED"
-        fi
-    done
-}
 
 MountDrives() {
     : ".loader: MountDrives"
 
     # OS check
     [ ! -v WSL ] && {
-        warn "!WSL:$WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
+        warn "!WSL: $WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
         return 1
     }
 
-    # Checks if the drive has already been exported, reloads drive if not
+    # Checks if the drive has already been exported, returns if it is
     [[ -d "$DRIVE/.BACKUPS/" ]] && {
-        return 0
-
-        local pth=
-        pth=$(cat "$cached_drive_path")
-
-        #sudo mount -t drvfs "${pth:-1}": "$pth" &>/dev/null && {
-        #    export DRIVE="$pth"
-        #    return 0;
-        #}
+        return
     }
 
     local cached_drive_path="$HOME/.active_drive"
@@ -190,7 +170,7 @@ MountDrives() {
     # Check if cached drive path works
     [[ -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
         export DRIVE="$(cat "$HOME"/.active_drive)"
-        return 0
+        return
     }
 
     # ExtStorage has never been given a letter lower than G:\, and won't be given one higher than D:\
@@ -202,7 +182,7 @@ MountDrives() {
             }
 
             [[ -d "/mnt/$letter/.BACKUPS/" ]] && {
-                DRIVE="/mnt/$letter"
+                export DRIVE="/mnt/$letter"
                 break
             }
         fi
@@ -213,7 +193,7 @@ MountDrives() {
         return 1
     else
         echo "$DRIVE" >"$cached_drive_path"
-        return 0
+        return
     fi
 }
 
@@ -239,7 +219,7 @@ impacks() {
     updstr="$(red)<=== Content Refreshed  ===>$(norm)"
     regload "$updstr"
 
-    using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
+    using "$BACKS/bashext.sh"
 }
 
 export DOTNET_ROOT="$HOME/dotnet"
@@ -251,16 +231,19 @@ export DOTNET_ROOT="$HOME/dotnet"
 }
 
 # Import bashext.sh
-if [ "$FORCE_BACKUP" ]; then # Force load the backup
-    using ".emergency_backup_loader.sh"
-elif [ -v server ] || [ -v unknown ]; then
+
+{ # Variables
+    EMERGENCY_LOADER=".emergency_backup_loader.sh"
+}
+
+if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
     # Skip right to loading "emergency" functions (No external media to load from)
-    using ".emergency_backup_loader.sh"
+    using "$EMERGENCY_LOADER"
 else
     if MountDrives; then # Assumes this is WSL
-        track using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
+        using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
     elif [[ ! "$DRIVE" ]]; then
-        using ".emergency_backup_loader.sh"
+        using "$EMERGENCY_LOADER"
     else
         warn "Failed to import bash-ext (Emergency or from USB)"
     fi
