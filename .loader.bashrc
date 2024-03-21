@@ -36,11 +36,6 @@ LockDevice() {
 
 [ -f "$HOME/.wget-hsts" ] && rm "$HOME/.wget-hsts"
 
-_help() {
-    [[ "$1" == "me" ]] && echo "No" && return 0
-    command help
-}
-
 help() {
     if [[ "$1" == "me" ]]; then
         echo "No"
@@ -49,18 +44,6 @@ help() {
 
     command help
 }
-
-LOADED=()
-
-regload() {
-    LOADED+=("[$(magenta)+$(norm)]:  $*")
-}
-
-regnload() {
-    LOADED+=("[$(red)-$(norm)]:  $*")
-}
-
-alias loaded='array LOADED'
 
 warn() {
     : ".loader: warn [TEMPORARY]"
@@ -126,6 +109,7 @@ using() {
         [[ "$2" != "-f" ]] && {
             warn "Unable to find '$file'"
             add_managed_import "$(red)[NOT F] $(_indigo)atmp_path:$(norm) $file"
+            return 1
         }
 
         add_managed_import "$(red)[NOT F] $(magenta)soft_path:$(norm) $file"
@@ -160,16 +144,21 @@ MountDrives() {
         return 1
     }
 
-    # Checks if the drive has already been exported, returns if it is
+    : Check if the drive has already been exported, returns if it is
     [[ -d "$DRIVE/.BACKUPS/" ]] && {
         return
     }
 
+    : Check if drive is for emergency backup
+    [[ -f "$DRIVE/backup_version.sh" ]] && {
+        return 1 # non zero for second if statement
+    }
+
     local cached_drive_path="$HOME/.active_drive"
 
-    # Check if cached drive path works
+    : Check if cached drive path works
     [[ -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
-        export DRIVE="$(cat "$HOME"/.active_drive)"
+        export DRIVE="$(cat "$cached_drive_path")"
         return
     }
 
@@ -191,15 +180,9 @@ MountDrives() {
     export DRIVE
     if [[ ! "$DRIVE" ]]; then
         return 1
-    else
-        echo "$DRIVE" >"$cached_drive_path"
-        return
     fi
-}
-
-hax() {
-    : ".loader: hax"
-    cp -r "$DRIVE/.HackerMan_Assets" "$HOME/LocalScripts" && bash "$HOME/LocalScripts/.HackerMan_Assets/HackermanConsole.sh"
+    
+    echo "$DRIVE" >"$cached_drive_path"
 }
 
 showPath() {
@@ -239,14 +222,13 @@ export DOTNET_ROOT="$HOME/dotnet"
 if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
     # Skip right to loading "emergency" functions (No external media to load from)
     using "$EMERGENCY_LOADER"
+elif track MountDrives; then
+    # Assumes this is WSL
+    using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
+elif [[ ! "$DRIVE" ]]; then
+    using "$EMERGENCY_LOADER"
 else
-    if MountDrives; then # Assumes this is WSL
-        using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
-    elif [[ ! "$DRIVE" ]]; then
-        using "$EMERGENCY_LOADER"
-    else
-        warn "Failed to import bash-ext (Emergency or from USB)"
-    fi
+    warn "Failed to import bash-ext (Emergency or from USB)"
 fi
 
 export DRIVE_BIN="$BACKS/bin"

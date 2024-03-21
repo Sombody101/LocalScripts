@@ -5,7 +5,7 @@ using "$HOME/.ind.sh" -f
 
 blue
 echo -ne 'Imported     '
-[[ $(cat "$HOME/..ACTIVE_UI" 2>/dev/null) == "KALI" ]] && echo
+[[ "$ACTIVE_UI" != "ubuntu" ]] && echo
 LINE=TRUE
 norm
 
@@ -33,36 +33,4 @@ back() {
         ((arg--))
     done
     cd "$dir"
-}
-
-
-KALI() {
-    : ".cmds.sh: KALI"
-    [[ "$ACTIVE_UI" == "KALI" ]] && {
-        echo "Already in KALI"
-        return
-    }
-    
-    echo "KALI" >"$ACTIVE_UIP"
-    ref
-}
-
-UBUNTU() {
-    : ".cmds.sh: UBUNTU"
-    [[ "$ACTIVE_UI" == "UBUNTU" ]] && {
-        echo "Already in UBUNTU"
-        return
-    }
-
-    echo "UBUNTU" >"$ACTIVE_UIP"
-    ref
-}
-
-ui() {
-    : ".cmds.sh: ui"
-    if [[ "$ACTIVE_UI" == "KALI" ]]; then
-        echo "$(blue)$ACTIVE_UI$(norm)"
-    else
-        printf "\033[38;5;208m%s\033[m\n" "$ACTIVE_UI"
-    fi
 }

@@ -28,7 +28,7 @@ newnav() {
 }
 
 BACKS="$DRIVE/.BACKUPS/.LOADER"
-[ "$emergency_backup_version" ] && BACKS="$HOME/LocalScripts/.emergency_bashext_backup"
+[ "$backup_env" ] && BACKS="$HOME/LocalScripts/.emergency_bashext_backup"
 
 export BACKS
 
@@ -69,7 +69,7 @@ using "$ST"
 using "showcase.sh"
 
 # Import EmergencyBackupGenerator if not currently using a backup
-[ ! -v emergency_backup_version ] && {
+[ ! -v backup_env ] && {
     EBG="$BACKS/.emergency_backup_module/"
     using "$EBG/.emergency_backup_generator.sh"
 }
@@ -77,9 +77,9 @@ using "showcase.sh"
 # Reset namespace
 setspace
 
-addpath "$BACKS/bin"
+toppath "$BACKS/bin"
 [ -d "$APPS" ] && {
-    addpath "$APPS"
+    toppath "$APPS"
     regload "bin.apps ($DRIVE)"
 }
 

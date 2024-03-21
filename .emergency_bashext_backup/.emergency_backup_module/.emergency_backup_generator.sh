@@ -35,7 +35,7 @@ dump_all_sh_from_sd() {
             suffix='/'
         }
 
-        echo "[cp $type -> \$LS]: ${item//$BACKS\//}$suffix"
+        echo "[cp $type -> $(yellow)\$LS$(norm)]: ${item//$BACKS\//}$suffix"
         sudo cp -r "$item" "$___full_backup_path"
     done
 

@@ -19,7 +19,7 @@ warn() {
     echo -ne "$(trace): $(red)$*$(norm)\n"
 }
 
-addpath() {
+toppath() {
     : ".BACKUPS: addpath"
     [[ ! "$1" ]] && {
         warn "No path given to add to \$PATH"
@@ -27,6 +27,16 @@ addpath() {
     }
 
     [[ ! "$PATH" =~ $1 ]] && export PATH="$1:$PATH"
+}
+
+botpath() {
+    : ".BACKUPS: addpath"
+    [[ ! "$1" ]] && {
+        warn "No path given to add to \$PATH"
+        return 1
+    }
+
+    [[ ! "$PATH" =~ $1 ]] && export PATH="$PATH:$1"
 }
 
 showpath() {
@@ -111,7 +121,7 @@ trace() {
     local stack
 
     for f in "${FUNCNAME[@]:2}"; do
-        [[ "$stack" == "" ]] && stack="$(cyan)$f" || stack="$(cyan)$f$(yellow)>$(cyan)$stack"
+        [[ "$stack" ]] && stack="$(cyan)$f" || stack="$(cyan)$f$(yellow)>$(cyan)$stack"
     done
 
     printf '%s' "$stack$(norm)"
@@ -182,4 +192,3 @@ watch() {
         sleep .1
     done
 }
-

@@ -10,6 +10,18 @@ add_managed_import() {
 # Same as 'loaded', but less involvment
 alias mimports='array MANAGED_LOADED'
 
+LOADED=()
+
+regload() {
+    LOADED+=("[$(magenta)+$(norm)]:  $*")
+}
+
+regnload() {
+    LOADED+=("[$(red)-$(norm)]:  $*")
+}
+
+alias loaded='array LOADED'
+
 track() {
     local cmd="$1"
     shift

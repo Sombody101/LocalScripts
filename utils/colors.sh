@@ -55,36 +55,15 @@ white() {
     tput setaf 7
 }
 
-
 # red, orange, yellow, green, blue, indigo, and violet
 
-_red() {
-    echo -ne "e[38;2;255;0;0m"
-}
-
-_orange() {
-    echo -ne "e[38;2;255;165;0m"
-}
-
-_yellow() {
-    echo -ne "e[38;2;255;255;0m"
-}
-
-_green() {
-    echo -ne "e[38;2;0;128;0m"
-}
-
-_blue() {
-    echo -ne "e[38;2;0;0;255m"
-}
-
-_indigo() {
-    echo -ne "e[38;2;75;0;130m"
-}
-
-_violet() {
-    echo -ne "e[38;2;148;0;211m"
-}
+alias _red='echo -ne "\e[38;2;255;0;0m"'
+alias _orange='echo -ne "\e[38;2;255;165;0m"'
+alias _yellow='echo -ne "\e[38;2;255;255;0m"'
+alias _green='echo -ne "\e[38;2;0;128;0m"'
+alias _blue='echo -ne "\e[38;2;0;0;255m"'
+alias _indigo='echo -ne "\e[38;2;75;0;130m"'
+alias _violet='echo -ne "\e[38;2;148;0;211m"'
 
 
 # Highlighted
