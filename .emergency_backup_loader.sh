@@ -19,7 +19,8 @@ initialize_sd_backup() {
         sprint "Using $(yellow)v$emergency_backup_version$(white)"
 
         # Set new PS1
-        PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [\[\e[93m\]v${emergency_backup_version:-}\[\e[32m\]]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
+        #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [\[\e[93m\]v${emergency_backup_version:-}\[\e[32m\]]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
+        ui custom_1 -!r -s -f -nosave
     else
         if [[ "$server" ]]; then
             warn "No extension functions found"
@@ -36,7 +37,8 @@ initialize_sd_backup() {
             echo "$(red)nf$(norm)"
         }'
 
-        PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [$(__get_emergency_var)]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
+        #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [$(__get_emergency_var)]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
+        ui custom_1_noversion -!r -s -f -nosave
     fi
 
     # Set variable to signify backup environment
@@ -46,7 +48,7 @@ initialize_sd_backup() {
     using "$___full_backup_path/bashext.sh" # This is the entry point; Everything will be handled from there
 
     # Clear cached drive to prevent errors when going back to "full" bash-ext
-    : >"$HOME/.active_drive"
+    # : >"$HOME/.active_drive"
 }
 
 sprint "Checking emergency backup status..."

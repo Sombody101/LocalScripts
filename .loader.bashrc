@@ -144,14 +144,14 @@ MountDrives() {
         return 1
     }
 
+    : Check if DRIVE is for emergency backup
+    [[ -f "$DRIVE/backup_version.sh" ]] && {
+        return 1 # non zero for second if statement
+    }
+
     : Check if the drive has already been exported, returns if it is
     [[ -d "$DRIVE/.BACKUPS/" ]] && {
         return
-    }
-
-    : Check if drive is for emergency backup
-    [[ -f "$DRIVE/backup_version.sh" ]] && {
-        return 1 # non zero for second if statement
     }
 
     local cached_drive_path="$HOME/.active_drive"
@@ -177,11 +177,11 @@ MountDrives() {
         fi
     done
 
-    export DRIVE
     if [[ ! "$DRIVE" ]]; then
         return 1
     fi
-    
+
+    export DRIVE
     echo "$DRIVE" >"$cached_drive_path"
 }
 
@@ -199,7 +199,7 @@ showPath() {
 # Import-Packages
 impacks() {
     local updstr=
-    updstr="$(red)<=== Content Refreshed  ===>$(norm)"
+    updstr="$(red)<=== Content Refreshed ===>$(norm)"
     regload "$updstr"
 
     using "$BACKS/bashext.sh"
@@ -219,6 +219,7 @@ export DOTNET_ROOT="$HOME/dotnet"
     EMERGENCY_LOADER=".emergency_backup_loader.sh"
 }
 
+: Check server, unknown, or FORCE_BACKUP
 if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
     # Skip right to loading "emergency" functions (No external media to load from)
     using "$EMERGENCY_LOADER"
@@ -233,10 +234,10 @@ fi
 
 export DRIVE_BIN="$BACKS/bin"
 
-# Alias all cs projects
-for folder in "$HOME/cs/"*; do
-    alias "p_${folder//$HOME\/cs\//}"="cd $folder"
-done
+force_usb() {
+    unset DRIVE BACKS
+    ref
+}
 
 using "remupd/git-recov.sh"
 regload "$HOME/LocalScripts/.loader.bashrc"

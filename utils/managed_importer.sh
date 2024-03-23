@@ -28,5 +28,9 @@ track() {
 
     : "$(cyan)ENTER: $cmd :ENTER$(norm)"
     $cmd "$@"
+    local ret="$?"
     : "$(cyan)ENTER: $cmd :EXIT$(norm)"
+
+    # return commands code
+    return "$ret"
 }
