@@ -13,11 +13,11 @@ alias mimports='array MANAGED_LOADED'
 LOADED=()
 
 regload() {
-    LOADED+=("[$(magenta)+$(norm)]:  $*")
+    LOADED+=("[$MAGENTA\+$NORM]:  $*")
 }
 
 regnload() {
-    LOADED+=("[$(red)-$(norm)]:  $*")
+    LOADED+=("[$RED-$NORM]:  $*")
 }
 
 alias loaded='array LOADED'
@@ -26,10 +26,10 @@ track() {
     local cmd="$1"
     shift
 
-    : "$(cyan)ENTER: $cmd :ENTER$(norm)"
+    : "$CYAN\ENTER: $cmd :ENTER$NORM"
     $cmd "$@"
     local ret="$?"
-    : "$(cyan)ENTER: $cmd :EXIT$(norm)"
+    : "$CYAN\ENTER: $cmd :EXIT$NORM"
 
     # return commands code
     return "$ret"

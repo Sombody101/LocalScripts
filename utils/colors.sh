@@ -55,6 +55,15 @@ white() {
     tput setaf 7
 }
 
+export BLACK=$(black)
+export RED=$(red)
+export GREEN=$(green)
+export YELLOW=$(yellow)
+export BLUE=$(blue)
+export MAGENTA=$(magenta)
+export CYAN=$(cyan)
+export WHITE=$(white)
+
 # red, orange, yellow, green, blue, indigo, and violet
 
 alias _red='echo -ne "\e[38;2;255;0;0m"'
@@ -161,6 +170,6 @@ norm() {
     tput sgr0
 }
 
+export NORM=$(norm)
 
 # using "utils/ColorSheet.sh"
-

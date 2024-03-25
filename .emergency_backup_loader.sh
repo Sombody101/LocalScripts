@@ -1,6 +1,9 @@
 #!/bin/bash
 
-___full_backup_path="$HOME/LocalScripts/.emergency_bashext_backup"
+[[ ! "$___full_backup_path" ]] && {
+    # Option for it to be set externally
+    ___full_backup_path="$HOME/LocalScripts/.emergency_bashext_backup"
+}
 
 white 2>"$NULL" # Set text color
 
@@ -30,15 +33,6 @@ initialize_sd_backup() {
             warn "No SD backup version | Unknown functions"
         fi
 
-        eval '__get_emergency_var() {
-            [[ "$emergency_backup_version" ]] && {
-                echo "$(yellow)$emergency_backup_version$(norm)"
-                return
-            }
-
-            echo "$(red)nf$(norm)"
-        }'
-
         #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [$(__get_emergency_var)]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
         [[ "$ACTIVE_UI" == "custom_1"* ]] && {
             ui custom_1_noversion -!r -s -f -nosave
@@ -49,7 +43,12 @@ initialize_sd_backup() {
     export backup_env="TRUE"
 
     export DRIVE="$___full_backup_path"
-    using "$___full_backup_path/bashext.sh" # This is the entry point; Everything will be handled from there
+
+    # This is the entry point; Everything will be handled from there
+    using "$___full_backup_path/bashext.sh" -f || {
+        warn "Failed to find bashext entry point"
+        return 1
+    }
 
     # Clear cached drive to prevent errors when going back to "full" bash-ext
     # : >"$HOME/.active_drive"

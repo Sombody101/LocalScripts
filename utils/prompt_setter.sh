@@ -92,13 +92,20 @@ ui() {
 
         new_ps1="${new_ps1:-Failed to set PS1>}"
         PS1="$new_ps1 "
+        ACTIVE_UI="$ps1_name"
 
         [[ "$reset" == "-r" ]] && ref
     }
 
     case "$*" in
     "")
-        printf "\033[38;5;208m%s\033[m\n" "$ACTIVE_UI"
+        local stored_ui="$(cat "$ACTIVE_UIP")"
+        local output="$ACTIVE_UI"
+        [[ "$stored_ui" != "$ACTIVE_UI" ]] && {
+            output="$stored_ui ($ACTIVE_UI)"
+        }
+
+        printf "\033[38;5;208m%s\033[m\n" "$output"
         ;;
 
     "ubuntu")

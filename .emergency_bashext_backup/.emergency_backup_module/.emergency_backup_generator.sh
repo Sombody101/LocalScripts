@@ -16,7 +16,7 @@ dump_all_sh_from_sd() {
         sudo rm -r "$___full_backup_path"
     }
 
-    echo -ne "$(cyan)$BACKS$(norm) -> $(cyan)$___full_backup_path$(norm)\r\n"
+    echo -ne "$CYAN$BACKS$NORM -> $CYAN$___full_backup_path$NORM\r\n"
     shopt -s dotglob
 
     local type=
@@ -35,7 +35,7 @@ dump_all_sh_from_sd() {
             suffix='/'
         }
 
-        echo "[cp $type -> $(yellow)\$LS$(norm)]: ${item//$BACKS\//}$suffix"
+        echo "[cp $type -> $YELLOW\$LS$NORM]: ${item//$BACKS\//}$suffix"
         sudo cp -r "$item" "$___full_backup_path"
     done
 

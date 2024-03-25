@@ -33,12 +33,12 @@ command_not_found_handle() {
         #fi
     # Check if the command is an arithmetic expression
     elif [[ "$cmd" =~ ^[0-9]+([-+*/%][0-9]+)*$ ]]; then
-        echo "$(($cmd))"
+        echo "(($cmd))"
         return 0
     fi
 
     # Otherwise, print the command not found error
-    echo "$(blue)bash: $(yellow)$cmd: $(red)Command not found$(norm)"
+    printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
     return 1
 }
 
@@ -51,7 +51,7 @@ __report_command() {
             /usr/share/command-not-found/command-not-found -- "$1"
             return $?
         else
-            echo "$(blue)bash: $(yellow)$cmd: $(red)Command not found$(norm)"
+            printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
             return 127
         fi
     fi

@@ -1,4 +1,14 @@
 #!/bin/bash
+
+# Options to be set externally
+#   FORCE_BACKUP (TRUE)[FALSE]: Force the script to load a backup, even if the USB BashExt is available
+#   FORCE_PATH   ():            Force the script to load from a specific path rather than the default
+
+___full_backup_path="$FORCE_PATH"
+
+: "$___full_backup_path"
+: "$FORCE_BACKUP"
+
 # This version of .bashrc was designed with WSL (Windows Sub-system for Linux) in mind.
 # It will boot on other versions of bash, but some commands will not work.
 
@@ -47,7 +57,7 @@ help() {
 
 warn() {
     : ".loader: warn [TEMPORARY]"
-    echo "$(red)$*$(norm)"
+    echo "$RED$*$NORM"
 }
 
 alias ll='ls -l'
@@ -70,7 +80,7 @@ alias dotnet='sudo dotnet'
 setspace() {
     local path="$*"
 
-    if [[ "$path" == "" ]] || [[ "$path" == "--" ]]; then
+    if [[ ! "$path" ]] || [[ "$path" == "--" ]]; then
         # Reset path
         export __using_path="$HOME/LocalScripts"
         return 0
@@ -98,7 +108,7 @@ using() {
                 printf '\t%s\n' "$item"
             done
 
-            add_managed_import "$(red)[NOT*F] $(_indigo)atmp_path:$(norm) $file"
+            add_managed_import "$RED\[NOT*F] $(_indigo)atmp_path:$NORM $file"
             return 1
         fi
 
@@ -108,19 +118,19 @@ using() {
     if [[ ! -f "$file" ]]; then
         [[ "$2" != "-f" ]] && {
             warn "Unable to find '$file'"
-            add_managed_import "$(red)[NOT F] $(_indigo)atmp_path:$(norm) $file"
+            add_managed_import "$RED\[NOT F] $(_indigo)atmp_path:$NORM $file"
             return 1
         }
 
-        add_managed_import "$(red)[NOT F] $(magenta)soft_path:$(norm) $file"
+        add_managed_import "$RED\[NOT F] $MAGENTA\soft_path:$NORM $file"
         return 1
     fi
 
     source "$file" 2>"/dev/null"
-    add_managed_import "$(blue)[FOUND] $(cyan)full_path:$(norm) $(realpath "$file")"
+    add_managed_import "$BLUE\[FOUND] $CYAN\full_path:$NORM $(realpath "$file")"
 
     if [[ "$2" == "-o" ]]; then
-        echo "$(blue)'$file' found [$1]$(norm)"
+        echo "$BLUE'$file' found [$1]$NORM"
         return 0
     fi
 }
