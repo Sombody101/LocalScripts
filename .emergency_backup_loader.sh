@@ -20,7 +20,9 @@ initialize_sd_backup() {
 
         # Set new PS1
         #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [\[\e[93m\]v${emergency_backup_version:-}\[\e[32m\]]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
-        ui custom_1 -!r -s -f -nosave
+        [[ "$ACTIVE_UI" == "custom_1"* ]] && {
+            ui custom_1_version -!r -s -f -nosave
+        }
     else
         if [[ "$server" ]]; then
             warn "No extension functions found"
@@ -38,12 +40,14 @@ initialize_sd_backup() {
         }'
 
         #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [$(__get_emergency_var)]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
-        ui custom_1_noversion -!r -s -f -nosave
+        [[ "$ACTIVE_UI" == "custom_1"* ]] && {
+            ui custom_1_noversion -!r -s -f -nosave
+        }
     fi
 
     # Set variable to signify backup environment
     export backup_env="TRUE"
-    
+
     export DRIVE="$___full_backup_path"
     using "$___full_backup_path/bashext.sh" # This is the entry point; Everything will be handled from there
 

@@ -220,24 +220,30 @@ export DOTNET_ROOT="$HOME/dotnet"
 }
 
 : Check server, unknown, or FORCE_BACKUP
-if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
-    # Skip right to loading "emergency" functions (No external media to load from)
-    using "$EMERGENCY_LOADER"
-elif track MountDrives; then
-    # Assumes this is WSL
-    using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
-elif [[ ! "$DRIVE" ]]; then
-    using "$EMERGENCY_LOADER"
-else
-    warn "Failed to import bash-ext (Emergency or from USB)"
-fi
+# shellcheck disable=SC2120
+__src() {
+    if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
+        # Skip right to loading "emergency" functions (No external media to load from)
+        using "$EMERGENCY_LOADER"
+    elif track MountDrives; then
+        # Assumes this is WSL
+        using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
+    elif [[ ! "$DRIVE" ]]; then
+        using "$EMERGENCY_LOADER"
+    else
+        [[ ! "$1" ]] && {
+            unset DRIVE BACKS backup_env emergency_backup_version
+            echo "Switching back to USB-BashExt"
+            __src : || warn "Failed to switch back to USB-BashExt"
+        }
+    fi
+}
+
+__src
 
 export DRIVE_BIN="$BACKS/bin"
 
-force_usb() {
-    unset DRIVE BACKS
-    ref
-}
-
 using "remupd/git-recov.sh"
 regload "$HOME/LocalScripts/.loader.bashrc"
+
+unset __src

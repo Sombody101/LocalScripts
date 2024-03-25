@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 ACTIVE_UIP="$HOME/..ACTIVE_UI"
 
 [ ! -f "$ACTIVE_UIP" ] && {
@@ -88,7 +87,8 @@ ui() {
             return
         }
 
-        [[ "$nosave" == "-nosave" ]] && echo "$ps1_name" >"$ACTIVE_UIP"
+        : $ps1_name -\> $ACTIVE_UIP
+        [[ "$nosave" != "-nosave" ]] && echo "$ps1_name" >"$ACTIVE_UIP"
 
         new_ps1="${new_ps1:-Failed to set PS1>}"
         PS1="$new_ps1 "

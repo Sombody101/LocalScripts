@@ -69,7 +69,7 @@ using "$ST"
 using "showcase.sh"
 
 # Import EmergencyBackupGenerator if not currently using a backup
-[ ! -v backup_env ] && {
+[ ! "$backup_env" ] && {
     EBG="$BACKS/.emergency_backup_module/"
     using "$EBG/.emergency_backup_generator.sh"
 }
