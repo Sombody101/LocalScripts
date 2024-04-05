@@ -13,7 +13,7 @@ alias mimports='array MANAGED_LOADED'
 LOADED=()
 
 regload() {
-    LOADED+=("[$MAGENTA\+$NORM]:  $*")
+    LOADED+=("[$MAGENTA+$NORM]:  $*")
 }
 
 regnload() {

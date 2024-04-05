@@ -68,7 +68,7 @@ backup() {
     }
 
     mkdir "$DRIVE"/.BACKUPS/"$DATE" || warn Failed to create backup directory "$DRIVE"/"$DATE"
-    cp -r "$HOME"/LocalScripts "$DRIVE"/.BACKUPS/"$DATE" || warn Failed to copy LocalScripts "$DRIVE"/"$DATE"
+    cp -r "$LS" "$DRIVE"/.BACKUPS/"$DATE" || warn Failed to copy LocalScripts "$DRIVE"/"$DATE"
     cp "$HOME"/.bashrc "$DRIVE"/.BACKUPS/"$DATE" || warn Failed to copy .bashrc to "$DRIVE"/"$DATE"
     __padRight backup
     [[ $text != "" ]] && text="\n\e[96m  $text"

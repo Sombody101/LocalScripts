@@ -2,20 +2,20 @@
 
 [[ ! "$___full_backup_path" ]] && {
     # Option for it to be set externally
-    ___full_backup_path="$HOME/LocalScripts/.emergency_bashext_backup"
+    ___full_backup_path="$LS/.emergency_bashext_backup"
 }
 
 white 2>"$NULL" # Set text color
 
 sprint() {
     # Not a server and not unknown (Give backup info for devices that use this as a backup and not the lib itself)
-    if [ ! -v server ] && [ ! -v unknown ]; then
+    [ ! -v server ] && [ ! -v unknown ] && {
         echo "$*"
-    fi
+    }
 }
 
 initialize_sd_backup() {
-    DRIVE="$HOME/LocalScripts" # .BACKUP.sh uses $DRIVE to locate itself, so we need to redefine it from the SD to LocalScripts
+    DRIVE="$LS" # .BACKUP.sh uses $DRIVE to locate itself, so we need to redefine it from the SD to LocalScripts
 
     using "$___full_backup_path/backup_version.sh" -f
     if [[ "$emergency_backup_version" ]]; then

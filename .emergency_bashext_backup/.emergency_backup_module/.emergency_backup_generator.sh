@@ -1,6 +1,6 @@
 #!/bin/bash
 
-___full_backup_path="$HOME/LocalScripts/.emergency_bashext_backup"
+___full_backup_path="$LS/.emergency_bashext_backup"
 
 # Copies $BACKS to $HOME/LocalScripts
 dump_all_sh_from_sd() {

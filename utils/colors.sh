@@ -55,15 +55,16 @@ white() {
     tput setaf 7
 }
 
-export BLACK=$(black)
-export RED=$(red)
-export GREEN=$(green)
-export YELLOW=$(yellow)
-export BLUE=$(blue)
-export MAGENTA=$(magenta)
-export CYAN=$(cyan)
-export WHITE=$(white)
-
+if test -t 1 || [[ "$FORCE_COLOR" ]]; then
+    export BLACK=$(black)
+    export RED=$(red)
+    export GREEN=$(green)
+    export YELLOW=$(yellow)
+    export BLUE=$(blue)
+    export MAGENTA=$(magenta)
+    export CYAN=$(cyan)
+    export WHITE=$(white)
+fi
 # red, orange, yellow, green, blue, indigo, and violet
 
 alias _red='echo -ne "\e[38;2;255;0;0m"'
@@ -74,74 +75,87 @@ alias _blue='echo -ne "\e[38;2;0;0;255m"'
 alias _indigo='echo -ne "\e[38;2;75;0;130m"'
 alias _violet='echo -ne "\e[38;2;148;0;211m"'
 
-
 # Highlighted
 ,black() {
-    tput smso; black
+    tput smso
+    black
 }
 
 ,red() {
-    tput smso; red
+    tput smso
+    red
 }
 
 ,green() {
-    tput smso; green
+    tput smso
+    green
 }
 
 ,yellow() {
-    tput smso; yellow
+    tput smso
+    yellow
 }
 
 ,blue() {
-    tput smso; blue
+    tput smso
+    blue
 }
 
 ,magenta() {
-    tput smso; magenta
+    tput smso
+    magenta
 }
 
 ,cyan() {
-    tput smso; cyan
+    tput smso
+    cyan
 }
 
 ,white() {
-    tput smso; white
+    tput smso
+    white
 }
-
 
 # Undo highlight
 .black() {
-    tput rmso; black
+    tput rmso
+    black
 }
 
 .red() {
-    tput rmso; red
+    tput rmso
+    red
 }
 
 .green() {
-    tput rmso; green
+    tput rmso
+    green
 }
 
 .yellow() {
-    tput rmso; yellow
+    tput rmso
+    yellow
 }
 
 .blue() {
-    tput rmso; blue
+    tput rmso
+    blue
 }
 
 .magenta() {
-    tput rmso; magenta
+    tput rmso
+    magenta
 }
 
 .cyan() {
-    tput rmso; cyan
+    tput rmso
+    cyan
 }
 
 .white() {
-    tput rmso; white
+    tput rmso
+    white
 }
-
 
 # Accents
 bold() {
@@ -163,7 +177,6 @@ dim() {
 rev() {
     tput rev
 }
-
 
 # Reset
 norm() {

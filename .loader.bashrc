@@ -1,16 +1,12 @@
 #!/bin/bash
 
-# Options to be set externally
-#   FORCE_BACKUP (TRUE)[FALSE]: Force the script to load a backup, even if the USB BashExt is available
-#   FORCE_PATH   ():            Force the script to load from a specific path rather than the default
-
-___full_backup_path="$FORCE_PATH"
-
-: "$___full_backup_path"
-: "$FORCE_BACKUP"
-
 # This version of .bashrc was designed with WSL (Windows Sub-system for Linux) in mind.
 # It will boot on other versions of bash, but some commands will not work.
+
+LS="$HOME/LocalScripts"
+
+: Imports configs
+source "$LS/cfg/config.sh"
 
 # Determine machine
 [ -v WSL_DISTRO_NAME ] && WSL=TRUE
@@ -82,7 +78,7 @@ setspace() {
 
     if [[ ! "$path" ]] || [[ "$path" == "--" ]]; then
         # Reset path
-        export __using_path="$HOME/LocalScripts"
+        export __using_path="$LS"
         return 0
     fi
 
@@ -135,7 +131,7 @@ using() {
     fi
 }
 # Won't be listed in 'mimports' as it's seen as a part of 'using'
-source "$HOME/LocalScripts/utils/managed_importer.sh"
+source "$LS/utils/managed_importer.sh"
 
 # using "utils/Colors.sh" # Legacy
 using "utils/colors.sh"
@@ -224,20 +220,18 @@ export DOTNET_ROOT="$HOME/dotnet"
 }
 
 # Import bashext.sh
+EMERGENCY_LOADER=".emergency_backup_loader.sh"
 
-{ # Variables
-    EMERGENCY_LOADER=".emergency_backup_loader.sh"
-}
-
-: Check server, unknown, or FORCE_BACKUP
 # shellcheck disable=SC2120
 __src() {
+    : Check server, unknown, or FORCE_BACKUP
     if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
         # Skip right to loading "emergency" functions (No external media to load from)
         using "$EMERGENCY_LOADER"
     elif track MountDrives; then
         # Assumes this is WSL
         using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
+        unset EMERGENCY_LOADER
     elif [[ ! "$DRIVE" ]]; then
         using "$EMERGENCY_LOADER"
     else
@@ -254,6 +248,6 @@ __src
 export DRIVE_BIN="$BACKS/bin"
 
 using "remupd/git-recov.sh"
-regload "$HOME/LocalScripts/.loader.bashrc"
+regload "$LS/.loader.bashrc"
 
 unset __src

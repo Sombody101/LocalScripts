@@ -28,7 +28,7 @@ newnav() {
 }
 
 BACKS="$DRIVE/.BACKUPS/.LOADER"
-[ "$backup_env" ] && BACKS="$HOME/LocalScripts/.emergency_bashext_backup"
+[ "$backup_env" ] && BACKS="$LS/.emergency_bashext_backup"
 
 export BACKS
 
@@ -50,7 +50,6 @@ newnav drive "$DRIVE"
 newnav home "$HOME"
 newnav main "/"
 newnav cst "$CST"
-newnav ... "$DRIVE/..."
 
 alias clrhist='> $HOME/.bash_history'
 
@@ -91,7 +90,7 @@ vs() {
     : ".BACKUPS: vs"
     local inp="$*"
     [[ ! "$inp" ]] && inp="."
-    (code "$inp" &)
+    (code "$inp")
 }
 
 # Register file
