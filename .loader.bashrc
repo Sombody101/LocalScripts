@@ -168,10 +168,13 @@ MountDrives() {
         return
     }
 
+    local uid=$(id -u "$USER")
+    local gid=$(id -g "$USER")
+
     # ExtStorage has never been given a letter lower than G:\, and won't be given one higher than D:\
     for letter in {d..g}; do
         if [[ -d /mnt/$letter ]]; then
-            sudo mount -t drvfs "$letter": "/mnt/$letter" &>/dev/null || {
+            sudo mount -t drvfs "$letter": "/mnt/$letter" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
                 warn "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
                 continue
             }

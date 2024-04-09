@@ -1,26 +1,26 @@
 #!/bin/bash
 
 occ() {
-    : ".BACKUPS: occ"
+    : "bashext: occ"
     while :; do
         form -a "$@"
     done
 }
 
-pathify() {
-    : ".BACKUPS: pathify"
+path.pathify() {
+    : "bashext: pathify"
     IFS="/"
     echo "$*"
     unset IFS
 }
 
 warn() {
-    : ".BACKUPS: warn"
+    : "bashext: warn"
     echo -ne "$(trace): $(red)$*$(norm)\n"
 }
 
-toppath() {
-    : ".BACKUPS: addpath"
+path.toppath() {
+    : "bashext: addpath"
     [[ ! "$1" ]] && {
         warn "No path given to add to \$PATH"
         return 1
@@ -29,8 +29,8 @@ toppath() {
     [[ ! "$PATH" =~ $1 ]] && export PATH="$1:$PATH"
 }
 
-botpath() {
-    : ".BACKUPS: addpath"
+path.botpath() {
+    : "bashext: addpath"
     [[ ! "$1" ]] && {
         warn "No path given to add to \$PATH"
         return 1
@@ -39,12 +39,12 @@ botpath() {
     [[ ! "$PATH" =~ $1 ]] && export PATH="$PATH:$1"
 }
 
-showpath() {
-    : ".BACKUPS: showPath"
+path.showpath() {
+    : "bashext: showPath"
     tr ':' '\n' <<<"$PATH"
 }
 
-A_Has() {
+array.contains() {
     search_string=$1
     shift
     if grep -q "$search_string" "$@"; then
@@ -60,27 +60,23 @@ isnum() {
     return 1
 }
 
-isstr() {
+string.isstr() {
     if [[ $1 =~ ^[a-zA-z]+$ ]]; then
         return 0
     fi
     return 1
 }
 
-shrinkArr() {
-    echo "$*"
-}
-
 applyBackspaces() {
-    local input=$*
+    local input="$*"
 
     for ((i = 0; i < ${#input}; i++)); do
         char="${input:i:1}"
-        isstr $char && continue
+        isstr "$char" && continue
     done
 }
 
-toWin() {
+path.towin() {
     if [[ $* == "" ]]; then
         wslpath -w "$(pwd)"
     else
@@ -88,7 +84,7 @@ toWin() {
     fi
 }
 
-toWsl() {
+path.towsl() {
     local path
 
     if [[ $* == "" ]]; then
