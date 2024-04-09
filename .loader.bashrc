@@ -69,8 +69,8 @@ alias downloads='cd /mnt/c/Users/evans/Downloads'
 alias ref='exec $SHELL'
 alias cs='cd $HOME/cs'
 alias aform='form -a'
-alias git='sudo git'
-alias dotnet='sudo dotnet'
+#alias git='sudo git'
+#alias dotnet='sudo dotnet'
 
 # Set search dir:
 setspace() {
