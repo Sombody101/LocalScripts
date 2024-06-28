@@ -56,5 +56,9 @@ dump_all_sh_from_sd() {
     echo "Signing with: $dt"
     echo -e "#!/bin/bash\nemergency_backup_version=\"$dt\"\n" >"$backv"
 
+    echo "Making readonly"
+    chmod 500 -R "$___full_backup_path"
+    chmod 500 "$LS/.emergency_backup_loader.sh"
+
     echo "New backup created"
 }

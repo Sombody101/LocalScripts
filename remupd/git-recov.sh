@@ -59,7 +59,10 @@ gitupdate() {
         echo
 
         # Get extension repo
-        command git clone "https://github.com/Sombody101/$repo.git"
+        command git clone "https://github.com/Sombody101/$repo.git" || {
+            warn "Failed to update LocalScripts"
+            return 1
+        }
 
         # Copy files if the clone was a success
         if [[ "$using_group" == "TRUE" ]] && [[ -d "bash-ext" ]]; then

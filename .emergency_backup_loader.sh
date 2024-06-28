@@ -8,8 +8,8 @@
 white 2>"$NULL" # Set text color
 
 sprint() {
-    # Not a server and not unknown (Give backup info for devices that use this as a backup and not the lib itself)
-    [ ! -v server ] && [ ! -v unknown ] && {
+    # Not a server and not unknown (Only give information when used as a backup, not a library)
+    ! flag SERVER UNKNOWN && {
         echo "$*"
     }
 }

@@ -21,7 +21,9 @@
 
 ___full_backup_path="$FORCE_PATH"
 
-: "$___full_backup_path"
-: "$FORCE_BACKUP"
+# Give configuration (when using set -x)
+: "Current configuration:"
+: "  $___full_backup_path"
+: "  $FORCE_BACKUP"
 
 alias lscnfg='ed $HOME/LocalScripts/cfg/config.sh'

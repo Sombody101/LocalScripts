@@ -16,7 +16,7 @@ path.pathify() {
 
 warn() {
     : "bashext: warn"
-    echo -e "$(trace): $RED$*$NORM"
+    printf '%s: %s%s%s\n' "$(trace)" "$RED" "$*" "$NORM" >&2
 }
 
 path.toppath() {
@@ -68,7 +68,7 @@ path.towsl() {
 
 file.exists() {
     [[ -f "$1" ]]
-    return "$?" 
+    return "$?"
 }
 
 array.contains() {
@@ -159,34 +159,88 @@ time_until_date() {
     echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
 }
 
+seconds_until_date() {
+    local target_date="$*"
+    local current_epoch=$(date +%s)
+    local target_epoch=$(date -d "$target_date" +%s)
+    local seconds=$((target_epoch - current_epoch))
+
+    printf "%'.f seconds\n" "$seconds"
+}
+
+flag HOME_DEV && {
+    D4D="/mnt/e/Downloads/hehehe/de4dot"
+    d4d() {
+        "$D4D/de4dot.exe" "$@"
+    }
+}
+
 # Shits-n-giggles
 bday() {
     time_until_date "2024-07-07 12:00:00"
 }
 
 lday() {
-    time_until_date "2024-05-28 12:00:00"
+    time_until_date "2024-05-23 12:00:00"
 }
 
 watch() {
-    local type="$1"
-
-    shift
-    local inputs=("$@")
-
-    [[ "${#inputs[@]}" -eq 0 ]] && {
-        warn "No inputs provided"
+    [[ ! "$*" ]] && {
+        warn "No input provided"
     }
 
-    local op=
-    case $type in
-    "-v") op='echo "${!item}"' ;;
-    "-c") op='echo "$(item)"' ;;
-    esac
+    local type="$1"
+    local input="$2"
 
-    local item="${inputs[1]}"
-    while :; do
-        eval "$op"
-        sleep .1
-    done
+    clear
+
+    case $type in
+    "-v") {
+        while :; do
+            tput cup 0 0
+            echo -e "${!input}\r"
+            sleep .5
+        done
+    } ;;
+    "-c") {
+        while :; do
+            tput cup 0 0
+            eval "$input"
+            echo -e "\r"
+            sleep .5
+        done
+    } ;;
+    esac
+}
+
+resetwsl() {
+    if which "cmd.exe" >$NULL; then
+        echo "Resetting..."
+        cmd.exe /C "wsl.exe" "--shutdown" # Kill
+    else
+        warn "Failed to get powershell. Is this WSL and C:\\ mounted?"
+    fi
+}
+
+git.set-url() {
+    : "Assign a new remote for a github repo"
+    : "<remote name> <github token> <username> <project name>"
+    : "origin some_token username project_name"
+
+    git rev-parse 2>"$NULL" || {
+        warn "Not in github repo"
+        return 1
+    }
+
+    local name="$1"
+    local token="$2"
+    local username="$3"
+    local projName="$4"
+
+    git remote set-url "$name" "https://$username:$token@github.com/$username/$projName.git" || {
+        warn "Failed to set remote url"
+        return 1
+    }
+
+    git remote -v
 }

@@ -18,6 +18,44 @@ case $(hostname) in
 *) unknown=TRUE ;;               # Anything else
 esac
 
+flag() {
+    : "Options: HOME_DEV, MOBILE_DEV, WSL, SERVER, UNKNOWN"
+    : "Returns: 0 if all flags are set, 1 otherwise (including unknown flags)"
+    local exit_code=0 # Initialize exit code to success (0)
+
+    # Loop through arguments starting from the second (skip script name)
+    for arg in "${@:2}"; do
+        case "$arg" in
+        "HOME_DEV")
+            : "Checking hdev"
+            [[ ! "$hdev" ]] && exit_code=1
+            ;;
+        "SCHOOL_DEV")
+            : "Checking sdev"
+            [[ ! "$sdev" ]] && exit_code=1
+            ;;
+        "WSL")
+            : "Checking WSL"
+            [[ ! "$WSL" ]] && exit_code=1
+            ;;
+        "SERVER")
+            : "Checking server"
+            [[ ! "$server" ]] && exit_code=1
+            ;;
+        "UNKNOWN")
+            : "Checking unknown"
+            [[ ! "$unknown" ]] && exit_code=1
+            ;;
+        *)
+            warn "Unknown flag: $arg"
+            exit_code=2
+            ;;
+        esac
+    done
+
+    return $exit_code
+}
+
 # Security
 LockDevice() {
     : ".loader: LockDevice"
@@ -227,7 +265,7 @@ export DOTNET_ROOT="$HOME/dotnet"
 EMERGENCY_LOADER=".emergency_backup_loader.sh"
 
 # shellcheck disable=SC2120
-__src() {
+__load_src() {
     : Check server, unknown, or FORCE_BACKUP
     if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
         # Skip right to loading "emergency" functions (No external media to load from)
@@ -240,14 +278,15 @@ __src() {
         using "$EMERGENCY_LOADER"
     else
         [[ ! "$1" ]] && {
+            # Remove variables that could block bashext
             unset DRIVE BACKS backup_env emergency_backup_version
             echo "Switching back to USB-BashExt"
-            __src : || warn "Failed to switch back to USB-BashExt"
+            __load_src : || warn "Failed to switch back to USB-BashExt"
         }
     fi
 }
 
-track __src
+track __load_src
 
 export DRIVE_BIN="$BACKS/bin"
 

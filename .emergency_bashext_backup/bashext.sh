@@ -121,9 +121,5 @@ vs() {
     (code "$inp")
 }
 
-[[ "$hdev" ]] && {
-    alias d4='/mnt/e/Downloads/hehehe/de4dot/de4dot.exe'
-}
-
 # Register file
 regload "$BACKS/bashext.sh"
