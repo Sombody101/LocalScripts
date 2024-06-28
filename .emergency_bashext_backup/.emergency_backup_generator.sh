@@ -22,7 +22,9 @@ dump_all_sh_from_sd() {
     local type=
     local suffix=
     for item in "$BACKS/"*; do
-        [[ "$item" == *"/.git" ]] && continue
+        if [[ "$item" == *"/.git" ]] || [[ "$item" == *"/.apps" ]]; then
+            continue
+        fi
 
         #case $item in
         #    *"/.git") continue ;;
@@ -44,24 +46,15 @@ dump_all_sh_from_sd() {
     echo "Updating emergency loader file..."
     cp "$EBG/.emergency_backup_loader.sh" "$HOME/LocalScripts"
 
-    #if [ ! -f "$___full_backup_path/backup_version.sh" ]; then
-    #    echo -ne "#!/bin/bash\n" | sudo tee -a "$___full_backup_path/backup_version.sh" 2>&1 >/dev/null
-    #fi
-
     echo "Adding version number..."
-    #echo -ne "#!/bin/bash\nemergency_backup_version=\"$(date +'%m.%d.%Y')\"\n" \
-    #    | sudo tee -a "$___full_backup_path/backup_version.sh" 2>&1 >/dev/null
 
     local dt=
     dt="$(date +'%m.%d.%Y')"
 
     local backv="$___full_backup_path/backup_version.sh"
-    local tmpbackv="$HOME/backup_version.sh"
 
     echo "Signing with: $dt"
-
-    echo -ne "#!/bin/bash\nemergency_backup_version=\"$dt\"\n" >"$tmpbackv"
-    mv "$tmpbackv" "$backv"
+    echo -e "#!/bin/bash\nemergency_backup_version=\"$dt\"\n" >"$backv"
 
     echo "New backup created"
 }

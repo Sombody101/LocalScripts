@@ -62,6 +62,7 @@ setspace "$BACKS"
 
 using "command_parser.sh"
 using "utils.sh"
+using "debugging/verbose.sh"
 # I don't really use this ever since I started to use GitHub, so there's no reason importing such a large file
 #using "backup_manager/backup.sh"
 #using "$BACKS/.EXTRAS.sh"

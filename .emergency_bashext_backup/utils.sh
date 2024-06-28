@@ -16,7 +16,7 @@ path.pathify() {
 
 warn() {
     : "bashext: warn"
-    echo -ne "$(trace): $(red)$*$(norm)\n"
+    echo -e "$(trace): $RED$*$NORM"
 }
 
 path.toppath() {
@@ -44,16 +44,46 @@ path.showpath() {
     tr ':' '\n' <<<"$PATH"
 }
 
+path.towin() {
+    if [[ ! "$*" ]]; then
+        wslpath -w "$(pwd)"
+    else
+        wslpath -w "$*"
+    fi
+}
+
+path.towsl() {
+    : "path.towsl: Transform a Windows path to a WSL compatible path"
+
+    local path
+
+    if [[ ! "$*" ]]; then
+        path="$(wslpath -u "$(pwd)")"
+    else
+        path="$(wslpath -u "$*")"
+    fi
+
+    printf "%q\n" "$path" | tr -d "'"
+}
+
+file.exists() {
+    [[ -f "$1" ]]
+    return "$?" 
+}
+
 array.contains() {
-    search_string=$1
+    : "array.contains: Check if an array contains a substring | <arr_name> <substring ...>"
+
+    local -n array="$1"
     shift
-    if grep -q "$search_string" "$@"; then
+    search_string="$*"
+    if [[ " ${array[*]} " =~ [[:space:]]${search_string}[[:space:]] ]]; then
         return 0
     fi
     return 1
 }
 
-isnum() {
+string.isnum() {
     if [[ $1 =~ ^[0-9]+$ ]]; then
         return 0
     fi
@@ -74,26 +104,6 @@ applyBackspaces() {
         char="${input:i:1}"
         isstr "$char" && continue
     done
-}
-
-path.towin() {
-    if [[ $* == "" ]]; then
-        wslpath -w "$(pwd)"
-    else
-        wslpath -w "$1"
-    fi
-}
-
-path.towsl() {
-    local path
-
-    if [[ $* == "" ]]; then
-        path="$(wslpath -u "$(pwd)")"
-    else
-        path="$(wslpath -u "$1")"
-    fi
-
-    printf "%q\n" "$path" | tr -d "'"
 }
 
 findf() {
@@ -120,7 +130,7 @@ trace() {
         [[ "$stack" ]] && stack="$(cyan)$f" || stack="$(cyan)$f$(yellow)>$(cyan)$stack"
     done
 
-    printf '%s' "$stack$(norm)"
+    echo "$stack$(norm)"
 }
 
 # Print variables and their values (debugging)
@@ -137,15 +147,15 @@ time_until_date() {
     local target_date="$*"
     local current_epoch=$(date +%s)
     local target_epoch=$(date -d "$target_date" +%s)
-    local seconds_remaining=$((target_epoch - current_epoch))
-    local months=$((seconds_remaining / 2592000))
-    local seconds_remaining=$((seconds_remaining % 2592000))
-    local days=$((seconds_remaining / 86400))
-    local seconds_remaining=$((seconds_remaining % 86400))
-    local hours=$((seconds_remaining / 3600))
-    local seconds_remaining=$((seconds_remaining % 3600))
-    local minutes=$((seconds_remaining / 60))
-    local seconds=$((seconds_remaining % 60))
+    local seconds=$((target_epoch - current_epoch))
+    local months=$((seconds / 2592000))
+    seconds=$((seconds % 2592000))
+    local days=$((seconds / 86400))
+    seconds=$((seconds % 86400))
+    local hours=$((seconds / 3600))
+    seconds=$((seconds % 3600))
+    local minutes=$((seconds / 60))
+    seconds=$((seconds % 60))
     echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
 }
 
@@ -171,20 +181,12 @@ watch() {
     local op=
     case $type in
     "-v") op='echo "${!item}"' ;;
-    "-c") op='echo $(item)' ;;
+    "-c") op='echo "$(item)"' ;;
     esac
 
-    prnt() {
-        tput cup 0 0
-
-        for item in "${inputs[@]}"; do
-            : "$item"
-            $op
-        done
-    }
-
+    local item="${inputs[1]}"
     while :; do
-        prnt "$type" "${inputs[@]}"
+        eval "$op"
         sleep .1
     done
 }

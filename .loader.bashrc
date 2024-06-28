@@ -104,7 +104,7 @@ using() {
                 printf '\t%s\n' "$item"
             done
 
-            add_managed_import "$RED\[NOT*F] $(_indigo)atmp_path:$NORM $file"
+            add_managed_import 2 "$(_indigo)atmp_path:$NORM $file"
             return 1
         fi
 
@@ -114,16 +114,16 @@ using() {
     if [[ ! -f "$file" ]]; then
         [[ "$2" != "-f" ]] && {
             warn "Unable to find '$file'"
-            add_managed_import "$RED\[NOT F] $(_indigo)atmp_path:$NORM $file"
+            add_managed_import 1 "$(_indigo)atmp_path:$NORM $file"
             return 1
         }
 
-        add_managed_import "$RED\[NOT F] $MAGENTA\soft_path:$NORM $file"
+        add_managed_import 1 "${MAGENTA}soft_path:$NORM $file"
         return 1
     fi
 
     source "$file" 2>"/dev/null"
-    add_managed_import "$BLUE\[FOUND] $CYAN\full_path:$NORM $(realpath "$file")"
+    add_managed_import 0 "${CYAN}full_path:$NORM $(realpath "$file")"
 
     if [[ "$2" == "-o" ]]; then
         echo "$BLUE'$file' found [$1]$NORM"
@@ -135,6 +135,7 @@ source "$LS/utils/managed_importer.sh"
 
 # using "utils/Colors.sh" # Legacy
 using "utils/colors.sh"
+using "command_registry.sh"
 using "utils/happytime.sh"
 using "utils/text.sh"
 using "utils/utils.sh"
@@ -246,7 +247,7 @@ __src() {
     fi
 }
 
-__src
+track __src
 
 export DRIVE_BIN="$BACKS/bin"
 

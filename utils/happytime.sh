@@ -2,7 +2,7 @@
 
 # red, orange, yellow, green, blue, indigo, and violet
 
-HappyTime() {
+happytime() {
     if [[ "$*" == "" ]]; then
         warn "No arguments provided"
         return 1
