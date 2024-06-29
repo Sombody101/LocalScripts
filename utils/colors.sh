@@ -56,14 +56,14 @@ white() {
 }
 
 if test -t 1 || [[ "$FORCE_COLOR" ]]; then
-    export BLACK=$(black)
-    export RED=$(red)
-    export GREEN=$(green)
-    export YELLOW=$(yellow)
-    export BLUE=$(blue)
-    export MAGENTA=$(magenta)
-    export CYAN=$(cyan)
-    export WHITE=$(white)
+    export BLACK="$(black)"
+    export RED="$(red)"
+    export GREEN="$(green)"
+    export YELLOW="$(yellow)"
+    export BLUE="$(blue)"
+    export MAGENTA="$(magenta)"
+    export CYAN="$(cyan)"
+    export WHITE="$(white)"
 fi
 # red, orange, yellow, green, blue, indigo, and violet
 
