@@ -5,7 +5,7 @@
 #
 # FORCE_BACKUP: Force the script to load a backup, even if the USB BashExt is available
 #
-: FORCE_BACKUP=true
+: FORCE_BACKUP="TRUE"
 
 #
 # FORCE_PATH: Force the script to load from a specific path rather than the default
@@ -17,6 +17,11 @@
 #
 : FORCE_COLOR="TRUE"
 
+#
+# CLEAN_PATH: Remove all paths from $PATH that start with '/mnt/c'
+#
+CLEAN_PATH="TRUE"
+
 ### End Configs ###
 
 ___full_backup_path="$FORCE_PATH"
@@ -25,5 +30,6 @@ ___full_backup_path="$FORCE_PATH"
 : "Current configuration:"
 : "  $___full_backup_path"
 : "  $FORCE_BACKUP"
+: "  $CLEAN_PATH"
 
 alias lscnfg='ed $HOME/LocalScripts/cfg/config.sh'

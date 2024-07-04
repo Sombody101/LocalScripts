@@ -8,8 +8,7 @@ add_managed_import() {
     : "<arg2> : Message"
     : "[arg2 == {$NULL} => arg2<=>arg1]"
 
-    local status=1
-    local message
+    local status=1 message
 
     if [[ ! "$2" ]]; then
         # only one argument, assume it's good
@@ -22,16 +21,25 @@ add_managed_import() {
     case $status in
     0) {
         status="${BLUE}[FOUND]"
-    };;
+    } ;;
     1) {
         status="${RED}[NOT F]"
     } ;;
     2) {
         status="${RED}[NOT*F]"
     } ;;
+    *) {
+        status="$1[$2]"
+        shift 2
+        message="$*"
+    }
     esac
 
     MANAGED_LOADED+=("$status $message")
+}
+
+add_random_import() {
+    MANAGED_LOADED+=("$*")
 }
 
 # Same as 'loaded', but less involvment
@@ -56,7 +64,7 @@ track() {
     : "${CYAN}ENTER: $YELLOW$cmd$CYAN :ENTER$NORM"
     $cmd "$@"
     local ret="$?"
-    : "${CYAN}ENTER: $YELLOW$cmd$CYAN :EXIT$NORM"
+    : "${CYAN}EXIT: $YELLOW$cmd$CYAN :EXIT$NORM"
 
     # return commands code
     return "$ret"

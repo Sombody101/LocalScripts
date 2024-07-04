@@ -18,6 +18,20 @@ case $(hostname) in
 *) unknown=TRUE ;;               # Anything else
 esac
 
+# [[ "$CLEAN_PATH" ]] && {
+#     # Cleanup PATH
+#     tmp_path=""
+# 
+#     readarray -t tmp_path_arr < <(path.showpath)
+#     for dir in "${tmp_path_arr[@]}"; do
+#         [[ ! "$dir" =~ ^/mnt/c/.* ]] && tmp_path+="$dir:"
+#     done
+# 
+#     export PATH="${tmp_path%:}"
+# 
+#     unset tmp_path tmp_path_arr
+# }
+
 flag() {
     : "Options: HOME_DEV, MOBILE_DEV, WSL, SERVER, UNKNOWN"
     : "Returns: 0 if all flags are set, 1 otherwise (including unknown flags)"
@@ -128,6 +142,9 @@ setspace "$__using_path" # Reset namespace
 
 using() {
     : ".loader.bashrc: using"
+    : "<file path> <option>"
+    : "-f: Hide errors"
+    : "-o: Verbose info"
 
     local file="$1"
 
@@ -137,6 +154,9 @@ using() {
         local s_len="${#scripts[@]}"
 
         if [[ "$s_len" -gt 1 ]]; then
+
+            # More than one script found with this name (or prefix)
+
             warn "Found multiple scripts starting with '$file':"
             for item in "${scripts[@]}"; do
                 printf '\t%s\n' "$item"
@@ -160,8 +180,11 @@ using() {
         return 1
     fi
 
-    source "$file" 2>"/dev/null"
     add_managed_import 0 "${CYAN}full_path:$NORM $(realpath "$file")"
+
+    if ! source "$file"; then
+        add_managed_import "$RED" "ERROR" "${RED}full_path:$NORM $(realpath "$file")"
+    fi
 
     if [[ "$2" == "-o" ]]; then
         echo "$BLUE'$file' found [$1]$NORM"
@@ -172,12 +195,12 @@ using() {
 source "$LS/utils/managed_importer.sh"
 
 # using "utils/Colors.sh" # Legacy
-using "utils/colors.sh"
 using "command_registry.sh"
+using "utils/colors.sh"
 using "utils/happytime.sh"
 using "utils/text.sh"
 using "utils/utils.sh"
-using "utils/prompt_setter.sh"
+track using "utils/prompt_setter.sh"
 using ".cmds.sh"
 
 MountDrives() {
@@ -264,13 +287,12 @@ export DOTNET_ROOT="$HOME/dotnet"
 # Import bashext.sh
 EMERGENCY_LOADER=".emergency_backup_loader.sh"
 
-# shellcheck disable=SC2120
 __load_src() {
     : Check server, unknown, or FORCE_BACKUP
     if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
         # Skip right to loading "emergency" functions (No external media to load from)
         using "$EMERGENCY_LOADER"
-    elif track MountDrives; then
+    elif MountDrives; then
         # Assumes this is WSL
         using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
         unset EMERGENCY_LOADER
@@ -280,13 +302,14 @@ __load_src() {
         [[ ! "$1" ]] && {
             # Remove variables that could block bashext
             unset DRIVE BACKS backup_env emergency_backup_version
-            echo "Switching back to USB-BashExt"
-            __load_src : || warn "Failed to switch back to USB-BashExt"
+            echo "Attempting to switch back to USB-BashExt"
+            __load_src DONT_RECURSE || warn "Failed to switch back to USB-BashExt"
         }
     fi
 }
 
-track __load_src
+# Load bashext (From drive or backup)
+__load_src
 
 export DRIVE_BIN="$BACKS/bin"
 

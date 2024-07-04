@@ -75,12 +75,12 @@ ui() {
     : ".cmds.sh: ui"
 
     shift_ui() {
-        local ps1_name="$1"
-        local new_ps1="$2"
-        local reset="$3"
-        local silent="$4"
-        local force="$5"
-        local nosave=$"$6"
+        local ps1_name="$1" \
+            new_ps1="$2" \
+            reset="$3" \
+            silent="$4" \
+            force="$5" \
+            nosave=$"$6"
 
         [[ "$ACTIVE_UI" == "$ps1_name" ]] && [[ "$force" != "-f" ]] && {
             [[ "$silent" != "-s" ]] && echo "Already in $ps1_name"
@@ -99,8 +99,11 @@ ui() {
 
     case "$*" in
     "")
-        local stored_ui="$(cat "$ACTIVE_UIP")"
-        local output="$ACTIVE_UI"
+        local stored_ui output
+
+        stored_ui="$(cat "$ACTIVE_UIP")"
+        output="$ACTIVE_UI"
+
         [[ "$stored_ui" != "$ACTIVE_UI" ]] && {
             output="$stored_ui ($ACTIVE_UI)"
         }
@@ -138,3 +141,6 @@ ui() {
 [[ "$ACTIVE_UI" ]] && {
     ui "$ACTIVE_UI" !-r -s -f
 }
+
+# Keep script from returning 1 when nothing bad happened
+:

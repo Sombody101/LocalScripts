@@ -55,15 +55,17 @@ white() {
     tput setaf 7
 }
 
-if test -t 1 || [[ "$FORCE_COLOR" ]]; then
-    export BLACK="$(black)"
-    export RED="$(red)"
-    export GREEN="$(green)"
-    export YELLOW="$(yellow)"
-    export BLUE="$(blue)"
-    export MAGENTA="$(magenta)"
-    export CYAN="$(cyan)"
-    export WHITE="$(white)"
+if tput colors >/dev/null || [[ "$FORCE_COLOR" ]]; then
+    BLACK="$(black)"
+    RED="$(red)"
+    GREEN="$(green)"
+    YELLOW="$(yellow)"
+    BLUE="$(blue)"
+    MAGENTA="$(magenta)"
+    CYAN="$(cyan)"
+    WHITE="$(white)"
+
+    export BLACK RED GREEN YELLOW BLUE MAGENTA CYAN WHITE
 fi
 # red, orange, yellow, green, blue, indigo, and violet
 
@@ -183,6 +185,70 @@ norm() {
     tput sgr0
 }
 
-export NORM=$(norm)
+NORM=$(norm)
+export NORM
 
-# using "utils/ColorSheet.sh"
+readonly COLOR_SHEET="$LS/.colorsheet.sh"
+using "$COLOR_SHEET" -f
+
+# Color creator
+
+colors.make() {
+    : "colors.make: Create RGB color variables."
+    : "<color code> <color name>"
+    : "colors.make 255:255:255 white"
+    : "colors.make '255;255;255' white"
+
+    local format name new_color
+
+    [[ ! "$*" ]] && {
+        warn "No arguments given."
+        return 1
+    }
+
+    format="$1"
+    name="$2"
+
+    [[ ! "$name" ]] && {
+        warn "No color name given."
+        return 1
+    }
+
+    [ -v "$name" ] && {
+        warn "The variable '$name' is already defined."
+        return 1
+    }
+
+    new_color=$(printf '%s="\x1b[38;2;%sm"\n' "$name" "${format//:/\;}") # Replace ':' with ';' as shorthand
+    echo "$new_color" >>"$COLOR_SHEET"
+    source "$COLOR_SHEET"
+
+    echo "${!name}$name$NORM"
+}
+
+colors.remove() {
+    local target="$1"
+
+    if sed -i "/^$target=/d" "$COLOR_SHEET"; then
+        echo "Removed color '$target'"
+        return 0
+    fi
+
+    warn "Failed to find '$target'" >&2
+    return 1
+}
+
+colors.list() {
+    [ ! -f "$COLOR_SHEET" ] && {
+        warn "No color sheet"
+        return 1
+    }
+
+    local prefix
+    while IFS= read -r line; do
+        prefix=(${line/=/ })
+        echo "${prefix[0]} : ${!prefix[0]}SAMPLE$NORM"
+    done <"$COLOR_SHEET"
+}
+
+register_module colors
