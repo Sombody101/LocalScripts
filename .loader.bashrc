@@ -170,7 +170,7 @@ using() {
     fi
 
     if [[ ! -f "$file" ]]; then
-        [[ "$2" != "-f" ]] && {
+        [[ "$2" != '-f' ]] && {
             warn "Unable to find '$file'"
             add_managed_import 1 "$(_indigo)atmp_path:$NORM $file"
             return 1
@@ -186,7 +186,7 @@ using() {
         add_managed_import "$RED" "ERROR" "${RED}full_path:$NORM $(realpath "$file")"
     fi
 
-    if [[ "$2" == "-o" ]]; then
+    if [[ "$2" == '-o' ]]; then
         echo "$BLUE'$file' found [$1]$NORM"
         return 0
     fi
