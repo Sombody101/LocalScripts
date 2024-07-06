@@ -3,7 +3,9 @@
 NULL=/dev/null
 alias grep='grep --color=auto'
 
-PS1="\[\033[0m\]$PS1"
+# So the PS1 prompt never has colors bleeding from a previous command
+export PS1="\[\033[0m\]$PS1"
+export PS4='+\[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\] - \[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\] '
 
 newnav() {
     : ".BACKUPS: newnav"
@@ -63,9 +65,8 @@ setspace "$BACKS"
 using "command_parser.sh"
 using "utils.sh"
 using "debugging/verbose.sh"
-# I don't really use this ever since I started to use GitHub, so there's no reason importing such a large file
+# I don't really use this since I started to use GitHub, so there's no reason importing such a large file
 #using "backup_manager/backup.sh"
-#using "$BACKS/.EXTRAS.sh"
 regnload "$BACKS/.extras.sh (Unused)"
 using "tsklist/TASKLIST.sh"
 using "$CST_M"
@@ -82,12 +83,12 @@ using "showcase.sh"
 # Reset namespace
 setspace
 
-loadapps() {
+app.loadall() {
     cp "$APPS/"* "$LAPPS"
 }
 
-addapp() {
-    [[ "$*" == "" ]] && {
+app.add() {
+    [[ ! "$*" ]] && {
         warn "No app provided"
         return 1
     }
@@ -100,6 +101,8 @@ addapp() {
     sudo cp -p "$*" "$APPS"
     echo "App loaded into be.apps"
 }
+
+register_module app
 
 [ ! -d "$LAPPS" ] && {
     echo "Creating ls.apps"

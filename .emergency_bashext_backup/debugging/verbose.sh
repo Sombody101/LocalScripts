@@ -16,11 +16,14 @@ vset() {
 
 verbose() {
     : "Verbose check: $VERBOSE"
+
+    local stack
+
     [[ "$VERBOSE" == "FALSE" ]] && {
         return 1
     }
 
-    local stack="$(trace)"
+    stack="$(trace)"
     stack="${stack:-ROOT}"
     echo "[$stack]: $*"
 }

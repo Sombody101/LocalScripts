@@ -97,6 +97,7 @@ string.isstr() {
     return 1
 }
 
+
 applyBackspaces() {
     local input="$*"
 
@@ -143,7 +144,7 @@ lvar() {
     done
 }
 
-time_until_date() {
+time.until_date() {
     local target_date="$*"
     local current_epoch=$(date +%s)
     local target_epoch=$(date -d "$target_date" +%s)
@@ -159,7 +160,7 @@ time_until_date() {
     echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
 }
 
-seconds_until_date() {
+time.seconds_until_date() {
     local target_date="$*"
     local current_epoch=$(date +%s)
     local target_epoch=$(date -d "$target_date" +%s)
@@ -168,7 +169,7 @@ seconds_until_date() {
     printf "%'.f seconds\n" "$seconds"
 }
 
-flag HOME_DEV && {
+flag HOME && {
     D4D="/mnt/e/Downloads/hehehe/de4dot"
     d4d() {
         "$D4D/de4dot.exe" "$@"
@@ -177,11 +178,11 @@ flag HOME_DEV && {
 
 # Shits-n-giggles
 bday() {
-    time_until_date "2024-07-07 12:00:00"
+    time.until_date "2024-07-07 12:00:00"
 }
 
 lday() {
-    time_until_date "2024-05-23 12:00:00"
+    time.until_date "2024-05-23 12:00:00"
 }
 
 watch() {
@@ -244,3 +245,5 @@ git.set-url() {
 
     git remote -v
 }
+
+register_module path file array string time git

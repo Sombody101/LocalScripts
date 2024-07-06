@@ -5,7 +5,7 @@
     ___full_backup_path="$LS/.emergency_bashext_backup"
 }
 
-white 2>/dev/null # Set text color
+white 2>"$NULL" # Set text color
 
 sprint() {
     # Not a server and not unknown (Only give information when used as a backup, not a library)
