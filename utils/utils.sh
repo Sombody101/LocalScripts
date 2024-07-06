@@ -1,18 +1,28 @@
 #!/bin/bash
 
-padr () {
+# Import-Packages
+impacks() {
+    local updstr
+
+    updstr="$(red)<=== Content Refreshed ===>$(norm)"
+    regload "$updstr"
+
+    using "$BACKS/bashext.sh"
+}
+
+padr() {
     : "utils: padr"
     printf "%${!1}s" "${@:2}"
 }
 
-padl () {
- :  
+padl() {
+    :
 }
 
 binToDec() {
     : "utils: binToDec"
     for arg in "$@"; do
-        isnum "$arg" || { 
+        isnum "$arg" || {
             warn "$arg contains non-binary character"
             return 1
         }
@@ -26,7 +36,7 @@ binToDec() {
 binToHex() {
     : "utils: binToHex"
     for arg in "$@"; do
-        isnum "$arg" || { 
+        isnum "$arg" || {
             warn "$arg contains non-binary character"
             return 1
         }
@@ -40,7 +50,7 @@ binToHex() {
 decToBin() {
     : "utils: decToBin"
     for arg in "$@"; do
-        isnum "$arg" || { 
+        isnum "$arg" || {
             warn "$arg contains non-binary character"
             return 1
         }

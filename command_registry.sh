@@ -32,7 +32,7 @@ register_module() {
 
         while IFS= read -r cmd; do
             [[ $cmd =~ ^$module_name ]] && cmds+=("$cmd")
-        done < <(declare -F | cut -d ' ' -f 3 | grep ^"$module_name.")
+        done < <(declare -F | cut -d ' ' -f 3 | grep -E ^"$module_name\.|$module_name::")
 
         [[ "${#cmds[@]}" -eq 0 ]] && {
             warn "Failed to find any defined commands for module '$module_name'"

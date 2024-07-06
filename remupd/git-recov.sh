@@ -1,7 +1,5 @@
 #!/bin/bash
 
-regload "git-recov.sh (gitupdate)"
-
 gitupdate() {
     [ -v sdev ] && {
         warn "Cannot clone LocalScripts from remote while on $(hostname)"
@@ -80,3 +78,5 @@ gitupdate() {
     # Use sub-shell
     (get_remote_update "$*")
 }
+
+regload "git-recov.sh (gitupdate)"

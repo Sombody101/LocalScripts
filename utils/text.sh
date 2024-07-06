@@ -1,4 +1,5 @@
 #!/bin/bash
+
 Sprint() {
     lcoal text="$*"
     for ((i = 0; i < ${#text}; i++)); do

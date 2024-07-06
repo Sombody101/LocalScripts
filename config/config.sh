@@ -1,6 +1,8 @@
 #!/bin/bash
 
-### Configs ###
+### 
+# Configs
+###
 
 #
 # FORCE_BACKUP: Force the script to load a backup, even if the USB BashExt is available
@@ -22,14 +24,19 @@
 #
 CLEAN_PATH="TRUE"
 
-### End Configs ###
+# Import user defined configs
+source "$HOME/.lsconfig.sh"
+
+###
+# End Configs
+###
 
 ___full_backup_path="$FORCE_PATH"
 
 # Give configuration (when using set -x)
 : "Current configuration:"
-: "  $___full_backup_path"
-: "  $FORCE_BACKUP"
-: "  $CLEAN_PATH"
+: "  ___full_backup_path: $___full_backup_path"
+: "  FORCE_BACKUP: $FORCE_BACKUP"
+: "  CLEAN_PATH: $CLEAN_PATH"
 
-alias lscnfg='ed $HOME/LocalScripts/cfg/config.sh'
+alias lsconfig='ed $HOME/LocalScripts/cfg/config.sh'
