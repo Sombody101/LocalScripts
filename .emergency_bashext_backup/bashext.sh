@@ -5,35 +5,35 @@ alias grep='grep --color=auto'
 
 # So the PS1 prompt never has colors bleeding from a previous command
 export PS1="\[\033[0m\]$PS1"
-export PS4='+\[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\] - \[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\] '
+export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\] - \[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\] '
 
 newnav() {
     : ".BACKUPS: newnav"
 
+    local name path
+
     [[ ! "$1" ]] && {
-        warn No arguments provided
+        warn "No arguments provided"
         return 1
     }
 
     [[ ! "$2" ]] && {
-        warn No path provided
+        warn "No path provided"
         return 1
     }
 
-    local name=$1
-    local path=$2
+    name=$1
+    path=$2
     shift 2
 
-    eval "
-    $name() {
-        local path=\"\$(path.pathify \"$*\")\"
-        cd \"$path\"/\$path || warn \"Failed to locate \$path\";
-    }
-    "
+    eval "$name() {
+    local path=\"\$(path.pathify \"\$*\")\"
+    cd \"$path\"/\$path || warn \"Failed to locate \$path\";
+}"
 }
 
 BACKS="$DRIVE/.BACKUPS/.LOADER"
-[ "$backup_env" ] && BACKS="$LS/.emergency_bashext_backup"
+[[ "$backup_env" ]] && BACKS="$LS/.emergency_bashext_backup"
 
 export BACKS
 
@@ -75,7 +75,7 @@ using "$ST"
 using "showcase.sh"
 
 # Import EmergencyBackupGenerator if not currently using a backup
-[ ! "$backup_env" ] && {
+[[ ! "$backup_env" ]] && {
     EBG="$BACKS/.emergency_backup_module/"
     using "$EBG/.emergency_backup_generator.sh"
 }
@@ -93,7 +93,7 @@ app.add() {
         return 1
     }
 
-    [[ ! -f "$*" ]] && { 
+    [[ ! -f "$*" ]] && {
         warn "Failed to find app '$*'"
         return 1
     }
@@ -104,14 +104,15 @@ app.add() {
 
 register_module app
 
-[ ! -d "$LAPPS" ] && {
+[[ ! -d "$LAPPS" ]] && {
     echo "Creating ls.apps"
     loadapps
 }
 
-path.toppath "$BACKS/bin"
+path.add "$BACKS/.apps"
 regload "be.apps ($BACKS)"
-path.toppath "$LAPPS"
+
+path.add "$LAPPS"
 regload "ls.lapps ($LS)"
 
 # Cleanup
@@ -119,9 +120,7 @@ unset qunalias
 
 vs() {
     : ".BACKUPS: vs"
-    local inp="$*"
-    [[ ! "$inp" ]] && inp="."
-    (code "$inp")
+    (code "${*:-.}")
 }
 
 # Register file

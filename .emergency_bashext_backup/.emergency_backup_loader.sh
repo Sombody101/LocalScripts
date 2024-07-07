@@ -1,7 +1,7 @@
 #!/bin/bash
 
+# Allows for the backup path to be set externally
 [[ ! "$___full_backup_path" ]] && {
-    # Option for it to be set externally
     ___full_backup_path="$LS/.emergency_bashext_backup"
 }
 
@@ -19,30 +19,34 @@ initialize_sd_backup() {
 
     using "$___full_backup_path/backup_version.sh" -f
     if [[ "$emergency_backup_version" ]]; then
+        # Known BashExt version
+
         sprint "Using $(yellow)v$emergency_backup_version$(white)"
 
         # Set new PS1
         #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [\[\e[93m\]v${emergency_backup_version:-}\[\e[32m\]]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
-        [[ "$ACTIVE_UI" == "custom_1"* ]] && {
+        [[ "$ACTIVE_UI" =~ ^"custom_1" ]] && {
             ui custom_1_version -!r -s -f -nosave
         }
     else
+        # Unknown BashExt version
+
         if [[ "$server" ]]; then
             warn "No extension functions found"
         else
-            warn "No SD backup version | Unknown functions"
+            warn "No BashExt backup version | Unknown functions"
         fi
 
         #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [$(__get_emergency_var)]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
-        [[ "$ACTIVE_UI" == "custom_1"* ]] && {
+        [[ "$ACTIVE_UI" =~ ^"custom_1" ]] && {
             ui custom_1_noversion -!r -s -f -nosave
         }
     fi
 
     # Set variable to signify backup environment
-    export backup_env="TRUE"
-
-    export DRIVE="$___full_backup_path"
+    backup_env="TRUE"
+    DRIVE="$___full_backup_path"
+    export backup_env DRIVE
 
     # This is the entry point; Everything will be handled from there
     using "$___full_backup_path/bashext.sh" -f || {
@@ -55,7 +59,7 @@ initialize_sd_backup() {
 }
 
 sprint "Checking emergency backup status..."
-if [ -d "$___full_backup_path" ]; then
+if [[ -d "$___full_backup_path" ]]; then
     sprint "Found emergency backup"
     initialize_sd_backup
 else

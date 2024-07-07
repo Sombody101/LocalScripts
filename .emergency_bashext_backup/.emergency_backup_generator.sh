@@ -5,34 +5,31 @@ ___full_backup_path="$LS/.emergency_bashext_backup"
 # Copies $BACKS to $HOME/LocalScripts
 dump_all_sh_from_sd() {
 
+    local type suffix dt backv
+
     [[ "$emergency_backup_version" ]] && {
         warn "Cannot create a bash-ext backup while working in the emergency environment"
         echo "Version: $emergency_backup_version"
         return 155
     }
 
-    [ -d "$___full_backup_path" ] && {
+    [[ -d "$___full_backup_path" ]] && {
         warn "Removing current backup from '$___full_backup_path'"
         sudo rm -r "$___full_backup_path"
     }
 
-    echo -ne "$CYAN$BACKS$NORM -> $CYAN$___full_backup_path$NORM\r\n"
+    echo -ne "$CYAN$BACKS$NORM -> $CYAN$___full_backup_path$NORM\n"
     shopt -s dotglob
 
-    local type=
-    local suffix=
     for item in "$BACKS/"*; do
+        # Don't backup git or compiled apps
         if [[ "$item" == *"/.git" ]] || [[ "$item" == *"/.apps" ]]; then
             continue
         fi
 
-        #case $item in
-        #    *"/.git") continue ;;
-        #esac
-
         type="./file"
         suffix=
-        [ -d "$item" ] && {
+        [[ -d "$item" ]] && {
             type="-r dir"
             suffix='/'
         }
@@ -48,10 +45,9 @@ dump_all_sh_from_sd() {
 
     echo "Adding version number..."
 
-    local dt=
     dt="$(date +'%m.%d.%Y')"
 
-    local backv="$___full_backup_path/backup_version.sh"
+    backv="$___full_backup_path/backup_version.sh"
 
     echo "Signing with: $dt"
     echo -e "#!/bin/bash\nemergency_backup_version=\"$dt\"\n" >"$backv"

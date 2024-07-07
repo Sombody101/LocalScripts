@@ -1,11 +1,12 @@
 #!/bin/bash
 
-occ() {
-    : "bashext: occ"
-    while :; do
-        form -a "$@"
-    done
+core::warn() {
+    : "bashext: warn"
+    printf '%s: %s%s%s\n' "$(trace)" "$RED" "$*" "$NORM" >&2
 }
+
+# Until all usages are transered to 'core::warn'
+warn() { core::warn "$*"; }
 
 path.pathify() {
     : "bashext: pathify"
@@ -14,13 +15,8 @@ path.pathify() {
     unset IFS
 }
 
-warn() {
-    : "bashext: warn"
-    printf '%s: %s%s%s\n' "$(trace)" "$RED" "$*" "$NORM" >&2
-}
-
-path.toppath() {
-    : "bashext: addpath"
+path.top() {
+    : "bashext: path.top"
     [[ ! "$1" ]] && {
         warn "No path given to add to \$PATH"
         return 1
@@ -29,8 +25,8 @@ path.toppath() {
     [[ ! "$PATH" =~ $1 ]] && export PATH="$1:$PATH"
 }
 
-path.botpath() {
-    : "bashext: addpath"
+path.add() {
+    : "bashext: path.add"
     [[ ! "$1" ]] && {
         warn "No path given to add to \$PATH"
         return 1
@@ -39,8 +35,8 @@ path.botpath() {
     [[ ! "$PATH" =~ $1 ]] && export PATH="$PATH:$1"
 }
 
-path.showpath() {
-    : "bashext: showPath"
+path.show() {
+    : "bashext: path.show"
     tr ':' '\n' <<<"$PATH"
 }
 
@@ -68,59 +64,47 @@ path.towsl() {
 
 file.exists() {
     [[ -f "$1" ]]
-    return "$?"
 }
 
 array.contains() {
     : "array.contains: Check if an array contains a substring | <arr_name> <substring ...>"
 
+    local search_string
     local -n array="$1"
+
     shift
     search_string="$*"
-    if [[ " ${array[*]} " =~ [[:space:]]${search_string}[[:space:]] ]]; then
-        return 0
-    fi
-    return 1
+    [[ " ${array[*]} " =~ [[:space:]]${search_string}[[:space:]] ]]
 }
 
 string.isnum() {
-    if [[ $1 =~ ^[0-9]+$ ]]; then
-        return 0
-    fi
-    return 1
+    [[ $1 =~ ^[0-9]+$ ]]
 }
 
 string.isstr() {
-    if [[ $1 =~ ^[a-zA-z]+$ ]]; then
-        return 0
-    fi
-    return 1
+    [[ "$1" =~ ^[a-zA-z]+$ ]]
 }
 
-
 applyBackspaces() {
-    local input="$*"
+    local input="$*" char
 
     for ((i = 0; i < ${#input}; i++)); do
         char="${input:i:1}"
-        isstr "$char" && continue
+        string.isstr "$char"
     done
 }
 
 findf() {
-    local file="$1"
-    local dir="${2:-.}"
+    local file="$1" result # dir="${2:-.}"
 
     if [[ -z "$file" ]]; then
         warn "No file name"
         return 1
     fi
 
-    local result=$(find . -type f -name "$file" 2>/dev/null)
+    result=$(find . -type f -name "$file" 2>/dev/null)
 
-    if [[ -n "$result" ]]; then
-        echo "$result"
-    fi
+    [[ -n "$result" ]] && echo "$result"
 }
 
 # Get a command stack trace (debugging)
@@ -128,10 +112,10 @@ trace() {
     local stack
 
     for f in "${FUNCNAME[@]:2}"; do
-        [[ "$stack" ]] && stack="$(cyan)$f" || stack="$(cyan)$f$(yellow)>$(cyan)$stack"
+        [[ "$stack" ]] && stack="$CYAN$f" || stack="$CYAN$f$YELLOW>$CYAN$stack"
     done
 
-    echo "$stack$(norm)"
+    echo "${stack::-1}$NORM"
 }
 
 # Print variables and their values (debugging)
@@ -145,26 +129,31 @@ lvar() {
 }
 
 time.until_date() {
-    local target_date="$*"
-    local current_epoch=$(date +%s)
-    local target_epoch=$(date -d "$target_date" +%s)
-    local seconds=$((target_epoch - current_epoch))
-    local months=$((seconds / 2592000))
+    local target_date current_epoch target_epoch \
+        seconds months days hours minutes
+
+    target_date="$*"
+    current_epoch=$(date +%s)
+    target_epoch=$(date -d "$target_date" +%s)
+    seconds=$((target_epoch - current_epoch))
+    months=$((seconds / 2592000))
     seconds=$((seconds % 2592000))
-    local days=$((seconds / 86400))
+    days=$((seconds / 86400))
     seconds=$((seconds % 86400))
-    local hours=$((seconds / 3600))
+    hours=$((seconds / 3600))
     seconds=$((seconds % 3600))
-    local minutes=$((seconds / 60))
+    minutes=$((seconds / 60))
     seconds=$((seconds % 60))
     echo "$months months, $days days, $hours hours, $minutes minutes, $seconds seconds"
 }
 
 time.seconds_until_date() {
-    local target_date="$*"
-    local current_epoch=$(date +%s)
-    local target_epoch=$(date -d "$target_date" +%s)
-    local seconds=$((target_epoch - current_epoch))
+    local target_date current_epoch target_epoch seconds
+
+    target_date="$*"
+    current_epoch=$(date +%s)
+    target_epoch=$(date -d "$target_date" +%s)
+    seconds=$((target_epoch - current_epoch))
 
     printf "%'.f seconds\n" "$seconds"
 }
@@ -215,7 +204,7 @@ watch() {
 }
 
 resetwsl() {
-    if which "cmd.exe" >$NULL; then
+    if which "cmd.exe" >/dev/null; then
         echo "Resetting..."
         cmd.exe /C "wsl.exe" "--shutdown" # Kill
     else
@@ -228,7 +217,7 @@ git.set-url() {
     : "<remote name> <github token> <username> <project name>"
     : "origin some_token username project_name"
 
-    git rev-parse 2>"$NULL" || {
+    git rev-parse 2>"/dev/null" || {
         warn "Not in github repo"
         return 1
     }
