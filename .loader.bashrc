@@ -13,8 +13,15 @@ case $(hostname) in
 *"Q966") export hdev=TRUE ;;     # Home PC
 "server") export server=TRUE ;;  # Server
 "rasp"*) export server=TRUE ;;   # RaspberryPi
-*) export unknown=TRUE ;;               # Anything else
+*) export unknown=TRUE ;;        # Anything else
 esac
+
+[[ "$WSL" ]] && [[ ! "$PATH" =~ "/mnt/c/Windows" ]] && {
+    # Importand environment variables (VSCode and Windows utilities)
+    PATH="$PATH:$LS/.lapps:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
+}
+
+export PATH
 
 # [[ "$CLEAN_PATH" ]] && {
 #     # Cleanup PATH
@@ -58,7 +65,7 @@ core::flag() {
             [[ ! "$unknown" ]] && exit_code=1
             ;;
         *)
-            warn "Unknown flag: $arg"
+            core::warn "Unknown flag: $arg"
             exit_code=2
             ;;
         esac
@@ -92,7 +99,7 @@ core::lock_device() {
 [ -f "$HOME/.wget-hsts" ] && rm "$HOME/.wget-hsts"
 
 alias ed='sudo nano'
-alias drive='[[ $DRIVE != "DRIVE_NOT_FOUND" ]] && cd $DRIVE || warn "Drive not found : $DRIVE"'
+alias drive='[[ $DRIVE != "DRIVE_NOT_FOUND" ]] && cd $DRIVE || core::warn "Drive not found : $DRIVE"'
 alias refresh='using .cmds.sh'
 alias .cmds.sh='ed $HOME/LocalScripts/.cmds.sh'
 alias .bashrc='ed $HOME/.bashrc'
@@ -115,6 +122,18 @@ alias ref='exec $SHELL'
 
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
 
+using "$LS/config/config.sh" -f
+
+core::create_config() {
+    [[ -f "$HOME/.lsconfig.sh" ]] && [[ ! "$1" == "-f" ]] && {
+        core::warn "Config file already exists at $HOME/.lsconfig.sh"
+        return 1
+    }
+
+    cp "$LS/config/config.sh" "$HOME/.lsconfig.sh"
+    echo "Config created at $HOME/.lsconfig.sh"
+}
+
 using "$HOME/.lsconfig.sh" -f  # Import user defined configuration [OPTIONAL]
 using "command_registry.sh"    # Module/command registry
 using "utils/colors.sh"        # Color variables and aliases
@@ -136,7 +155,7 @@ core::mount_drives() {
 
     # OS check
     [ ! -v WSL ] && {
-        warn "!WSL: $WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
+        core::warn "!WSL: $WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
         return 1
     }
 
@@ -166,12 +185,12 @@ core::mount_drives() {
     for letter in {d..g}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs "$letter": "/mnt/$letter" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
-                warn "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
+                core::warn "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
                 continue
             }
 
             [[ -d "/mnt/$letter/.BACKUPS/" ]] && {
-                export DRIVE="/mnt/$letter"
+                core::export DRIVE="/mnt/$letter"
                 break
             }
         fi
@@ -197,8 +216,9 @@ flag WSL && {
 EMERGENCY_LOADER=".emergency_backup_loader.sh"
 
 core::load_source() {
-    : Check server, unknown, or FORCE_BACKUP
-    if [ "$server" ] || [ "$unknown" ] || [ "$FORCE_BACKUP" ]; then
+    : "Check server, unknown, or FORCE_BACKUP"
+
+    if [[ "$server" ]] || [[ "$unknown" ]] || [[ "$FORCE_BACKUP" ]]; then
         # Skip right to loading "emergency" functions (No external media to load from)
         using "$EMERGENCY_LOADER"
 
@@ -209,19 +229,19 @@ core::load_source() {
 
     elif [[ ! "$DRIVE" ]]; then
         using "$EMERGENCY_LOADER"
-    else
-        [[ ! "$1" ]] && {
-            # Remove variables that could block bashext
-            unset DRIVE BACKS backup_env emergency_backup_version
-            echo "Attempting to switch back to USB-BashExt"
-            core::load_source DONT_RECURSE || warn "Failed to switch back to USB-BashExt"
-        }
+
+    elif [[ ! "$1" ]]; then
+        # Remove variables that could block bashext
+        unset DRIVE BACKS backup_env emergency_backup_version
+        echo "Attempting to switch back to USB-BashExt"
+        core::load_source DONT_RECURSE || core::warn "Failed to switch back to USB-BashExt"
     fi
 }
 
 # Load bashext (From drive or backup)
 core::load_source :
 
+register_module core
 export DRIVE_BIN="$BACKS/bin"
 
 regload "$LS/.loader.bashrc"

@@ -33,7 +33,7 @@ using() {
 
             # More than one script found with this name (or prefix)
 
-            warn "Found multiple scripts starting with '$file':"
+            core::warn "Found multiple scripts starting with '$file':"
             for item in "${scripts[@]}"; do
                 printf '\t%s\n' "$item"
             done
@@ -47,7 +47,7 @@ using() {
 
     if [[ ! -f "$file" ]]; then
         [[ "$2" != '-f' ]] && {
-            warn "Unable to find '$file'"
+            core::warn "Unable to find '$file'"
             add_managed_import 1 "$(_indigo)atmp_path:$NORM $file"
             return 1
         }
@@ -58,7 +58,7 @@ using() {
 
     add_managed_import 0 "${CYAN}full_path:$NORM $(realpath "$file")"
 
-    if ! source "$file"; then
+    if ! source "$file" 2>/dev/null; then
         add_managed_import "$RED" "ERROR" "${RED}full_path:$NORM $(realpath "$file")"
     fi
 

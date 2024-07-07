@@ -2,4 +2,4 @@
 .PHONY: build
 
 build:
-	c++ main.cpp -o flag
+	c++ -s main.cpp -o flag

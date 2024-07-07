@@ -3,10 +3,14 @@
 # red, orange, yellow, green, blue, indigo, and violet
 
 happytime() {
-    if [[ "$*" == "" ]]; then
+    [[ ! "$*" ]] && {
         warn "No arguments provided"
         return 1
-    fi
+    }
+
+    write() {
+        figlet -w 100 "$@"
+    }
 
     while :; do
         norm
@@ -59,8 +63,4 @@ happytime() {
         #write "$@"
         #sleep .1
     done
-}
-
-write() {
-    figlet -w 100 "$@"
 }

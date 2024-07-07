@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### 
-# Configs
+# LocalScripts Configs
 ###
 
 #
@@ -24,9 +24,6 @@
 #
 CLEAN_PATH="TRUE"
 
-# Import user defined configs
-source "$HOME/.lsconfig.sh"
-
 ###
 # End Configs
 ###
@@ -38,5 +35,3 @@ ___full_backup_path="$FORCE_PATH"
 : "  ___full_backup_path: $___full_backup_path"
 : "  FORCE_BACKUP: $FORCE_BACKUP"
 : "  CLEAN_PATH: $CLEAN_PATH"
-
-alias lsconfig='ed $HOME/LocalScripts/cfg/config.sh'
