@@ -5,6 +5,7 @@
 # before running WSL dependent commands, but I can't gaurentee that is enough.
 
 LS="$HOME/LocalScripts"
+LAPPS="$LS/.lapps"
 
 # Determine machine
 [ -v WSL_DISTRO_NAME ] && export WSL=TRUE
@@ -18,7 +19,7 @@ esac
 
 [[ "$WSL" ]] && [[ ! "$PATH" =~ "/mnt/c/Windows" ]] && {
     # Importand environment variables (VSCode and Windows utilities)
-    PATH="$PATH:$LS/.lapps:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
+    PATH="$PATH:$LAPPS:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
 }
 
 export PATH
