@@ -15,7 +15,7 @@ showPath() {
     done
 }
 
-warn() {
+core::warn() {
     : ".loader: warn [TEMPORARY]"
     echo "$RED$*$NORM"
 }

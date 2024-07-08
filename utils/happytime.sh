@@ -14,8 +14,6 @@ happytime() {
 
     while :; do
         norm
-        #black
-        #write "$@"
         sleep .1
         _red
         write "$@"
@@ -38,29 +36,5 @@ happytime() {
         _violet
         write "$@"
         sleep .1
-        #,black
-        #write "$@"
-        #sleep .1
-        #,red
-        #write "$@"
-        #sleep .1
-        #,green
-        #write "$@"
-        #sleep .1
-        #yellow
-        #write "$@"
-        #sleep .1
-        #blue
-        #write "$@"
-        #sleep .1
-        #magenta
-        #write "$@"
-        #sleep .1
-        #cyan
-        #write "$@"
-        #sleep .1
-        #white
-        #write "$@"
-        #sleep .1
     done
 }

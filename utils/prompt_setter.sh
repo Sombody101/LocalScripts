@@ -49,28 +49,6 @@ __legacy_set_ui() {
     fi
 }
 
-KALI() {
-    : ".cmds.sh: KALI"
-    [[ "$ACTIVE_UI" == "KALI" ]] && {
-        echo "Already in KALI"
-        return
-    }
-
-    echo "KALI" >"$ACTIVE_UIP"
-    ref
-}
-
-UBUNTU() {
-    : ".cmds.sh: UBUNTU"
-    [[ "$ACTIVE_UI" == "UBUNTU" ]] && {
-        echo "Already in UBUNTU"
-        return
-    }
-
-    echo "UBUNTU" >"$ACTIVE_UIP"
-    ref
-}
-
 ui() {
     : ".cmds.sh: ui"
 
@@ -124,7 +102,7 @@ ui() {
         ;;
 
     *)
-        [ -f "$HOME/LocalScripts/utils/cps/$1" ] && {
+        [[ -f "$HOME/LocalScripts/utils/cps/$1" ]] && {
             local new_ui_name="$1"
             shift
             shift_ui "$new_ui_name" "$(cat "$HOME/LocalScripts/utils/cps/$new_ui_name")" "$@"

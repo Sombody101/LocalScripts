@@ -123,6 +123,7 @@ alias ref='exec $SHELL'
 
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
 
+using "$LS/utils/.temporary.sh"
 using "$LS/config/config.sh" -f
 
 core::create_config() {
@@ -191,7 +192,7 @@ core::mount_drives() {
             }
 
             [[ -d "/mnt/$letter/.BACKUPS/" ]] && {
-                core::export DRIVE="/mnt/$letter"
+                export DRIVE="/mnt/$letter"
                 break
             }
         fi
