@@ -3,6 +3,9 @@
 # red, orange, yellow, green, blue, indigo, and violet
 
 happytime() {
+
+    local DELAY=".25"
+
     [[ ! "$*" ]] && {
         warn "No arguments provided"
         return 1
@@ -16,51 +19,51 @@ happytime() {
         norm
         #black
         #write "$@"
-        sleep .1
+        sleep "$DELAY"
         _red
         write "$@"
-        sleep .1
+        sleep "$DELAY"
         _orange
         write "$@"
-        sleep .1
+        sleep "$DELAY"
         _yellow
         write "$@"
-        sleep .1
+        sleep "$DELAY"
         _green
         write "$@"
-        sleep .1
+        sleep "$DELAY"
         _blue
         write "$@"
-        sleep .1
+        sleep "$DELAY"
         _indigo
         write "$@"
-        sleep .1
+        sleep "$DELAY"
         _violet
         write "$@"
-        sleep .1
+        sleep "$DELAY"
         #,black
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
         #,red
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
         #,green
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
         #yellow
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
         #blue
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
         #magenta
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
         #cyan
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
         #white
         #write "$@"
-        #sleep .1
+        #sleep "$DELAY"
     done
 }
