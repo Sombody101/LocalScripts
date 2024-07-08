@@ -4,6 +4,8 @@
 # It will boot on other versions of bash, but some commands will not work. I will check for WSL
 # before running WSL dependent commands, but I can't gaurentee that is enough.
 
+PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\] - \[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\]: '
+
 LS="$HOME/LocalScripts"
 LAPPS="$LS/.lapps"
 
@@ -124,7 +126,8 @@ alias ref='exec $SHELL'
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
 
 using "$LS/utils/.temporary.sh"
-using "$LS/config/config.sh" -f
+using "utils/.temporary.sh"
+using "config/config.sh" -f
 
 core::create_config() {
     [[ -f "$HOME/.lsconfig.sh" ]] && [[ ! "$1" == "-f" ]] && {
@@ -229,7 +232,7 @@ core::load_source() {
         using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
         unset EMERGENCY_LOADER
 
-    elif [[ ! "$DRIVE" ]]; then
+    elif [[ "$backup_env" ]] || [[ ! "$DRIVE" ]] || [[ "$DRIVE" =~ "importer.sh"$ ]]; then
         using "$EMERGENCY_LOADER"
 
     elif [[ ! "$1" ]]; then
