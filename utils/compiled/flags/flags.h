@@ -19,7 +19,8 @@ FlagMap FlagNames{
     {"MOBILE", "sdev"},
     {"WSL", "WSL"},
     {"SERVER", "server"},
-    {"UNKNOWN", "unknown"}};
+    {"UNKNOWN", "unknown"},
+    {"BACKUP", "backup_env"}};
 
 enum FilterTypes
 {

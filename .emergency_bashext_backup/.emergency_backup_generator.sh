@@ -8,13 +8,13 @@ dump_all_sh_from_sd() {
     local type suffix dt backv
 
     [[ "$emergency_backup_version" ]] && {
-        warn "Cannot create a bash-ext backup while working in the emergency environment"
+        core::warn "Cannot create a bash-ext backup while working in the emergency environment"
         echo "Version: $emergency_backup_version"
         return 155
     }
 
     [[ -d "$___full_backup_path" ]] && {
-        warn "Removing current backup from '$___full_backup_path'"
+        core::warn "Removing current backup from '$___full_backup_path'"
         sudo rm -r "$___full_backup_path"
     }
 
@@ -23,9 +23,7 @@ dump_all_sh_from_sd() {
 
     for item in "$BACKS/"*; do
         # Don't backup git or compiled apps
-        if [[ "$item" == *"/.git" ]] || [[ "$item" == *"/.apps" ]]; then
-            continue
-        fi
+        [[ "$item" == *"/.git" ]] || [[ "$item" == *"/.apps" ]] && continue
 
         type="./file"
         suffix=
@@ -41,7 +39,7 @@ dump_all_sh_from_sd() {
     shopt -u dotglob
 
     echo "Updating emergency loader file..."
-    cp "$EBG/.emergency_backup_loader.sh" "$HOME/LocalScripts"
+    cp -f "$EBG/.emergency_backup_loader.sh" "$LS"
 
     echo "Adding version number..."
 
@@ -50,9 +48,10 @@ dump_all_sh_from_sd() {
     backv="$___full_backup_path/backup_version.sh"
 
     echo "Signing with: $dt"
+
     echo -e "#!/bin/bash\nemergency_backup_version=\"$dt\"\n" >"$backv"
 
-    echo "Making readonly"
+    # Restore readonly
     chmod 500 -R "$___full_backup_path"
     chmod 500 "$LS/.emergency_backup_loader.sh"
 

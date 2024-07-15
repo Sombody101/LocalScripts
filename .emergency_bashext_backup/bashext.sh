@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NULL=/dev/null
+NULL="STOP USING THIS"
 alias grep='grep --color=auto'
 
 # So the PS1 prompt never has colors bleeding from a previous command
@@ -42,10 +42,9 @@ CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"
 #GC="$BACKS/git-cmds/git_cmds.sh"
 APPS="$BACKS/.apps"
-LAPPS="$LS/.lapps"
 
 # Quiet Un-Alias
-qunalias() { unalias "$1" 2>$NULL; }
+qunalias() { unalias "$1" 2>/dev/null; }
 
 # Support issues with pre-summer devices (requires unalias)
 qunalias drive
@@ -65,14 +64,12 @@ setspace "$BACKS"
 using "command_parser.sh"
 using "utils.sh"
 using "debugging/verbose.sh"
-# I don't really use this since I started to use GitHub, so there's no reason importing such a large file
 #using "backup_manager/backup.sh"
-regnload "$BACKS/.extras.sh (Unused)"
 using "tsklist/TASKLIST.sh"
 using "$CST_M"
 #using "$GC" # -f # The file gets sourced, but using logs a "File Not Found" error, so -f
 using "$ST"
-using "showcase.sh"
+#using "showcase.sh"
 
 # Import EmergencyBackupGenerator if not currently using a backup
 [[ ! "$backup_env" ]] && {

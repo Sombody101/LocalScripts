@@ -21,7 +21,11 @@ esac
 
 [[ "$WSL" ]] && [[ ! "$PATH" =~ "/mnt/c/Windows" ]] && {
     # Importand environment variables (VSCode and Windows utilities)
-    PATH="$PATH:$LAPPS:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
+    PATH="$PATH:/mnt/c/Users/e??n?/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
+}
+
+[[ ! "$PATH" =~ $LAPPS ]] && {
+    PATH="$PATH:$LAPPS"
 }
 
 export PATH

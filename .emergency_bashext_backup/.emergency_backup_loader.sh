@@ -32,9 +32,9 @@ initialize_sd_backup() {
         # Unknown BashExt version
 
         if [[ "$server" ]]; then
-            warn "No extension functions found"
+            core::warn "No extension functions found"
         else
-            warn "No BashExt backup version | Unknown functions"
+            core::warn "No BashExt backup version | Unknown functions"
         fi
 
         #PS1='\[\e[32m\]┌──(\[\e[94;1m\]\u@\h\[\e[0;32m\])-[\[\e[92;1m\]\w\[\e[0;32m\]] [$?] [$(__get_emergency_var)]\n╰─\[\e[94;1m\]\$\[\e[0m\] '
@@ -46,11 +46,12 @@ initialize_sd_backup() {
     # Set variable to signify backup environment
     backup_env="TRUE"
     DRIVE="$___full_backup_path"
+    
     export backup_env DRIVE
 
     # This is the entry point; Everything will be handled from there
     using "$___full_backup_path/bashext.sh" -f || {
-        warn "Failed to find bashext entry point"
+        core::warn "Failed to find bashext entry point"
         return 1
     }
 
