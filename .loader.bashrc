@@ -9,6 +9,9 @@ PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$
 LS="$HOME/LocalScripts"
 LAPPS="$LS/.lapps"
 
+# Disable variable escaping in shell
+shopt -s direxpand
+
 # Determine machine
 [ -v WSL_DISTRO_NAME ] && export WSL=TRUE
 case $(hostname) in
@@ -21,29 +24,17 @@ esac
 
 [[ "$WSL" ]] && [[ ! "$PATH" =~ "/mnt/c/Windows" ]] && {
     # Importand environment variables (VSCode and Windows utilities)
-    PATH="$PATH:/mnt/c/Users/e??n?/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
+    PATH="$PATH:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
 }
 
+# Include .lapps in PATH
 [[ ! "$PATH" =~ $LAPPS ]] && {
     PATH="$PATH:$LAPPS"
 }
 
 export PATH
 
-# [[ "$CLEAN_PATH" ]] && {
-#     # Cleanup PATH
-#     tmp_path=""
-#
-#     readarray -t tmp_path_arr < <(path.showpath)
-#     for dir in "${tmp_path_arr[@]}"; do
-#         [[ ! "$dir" =~ ^/mnt/c/.* ]] && tmp_path+="$dir:"
-#     done
-#
-#     export PATH="${tmp_path%:}"
-#
-#     unset tmp_path tmp_path_arr
-# }
-
+# A fallback to .lapps/flag
 core::flag() {
     : "Options: HOME_DEV, MOBILE_DEV, WSL, SERVER, UNKNOWN"
     : "Returns: 0 if all flags are set, 1 otherwise (including unknown flags)"
@@ -51,11 +42,11 @@ core::flag() {
 
     for arg in "${@:1}"; do
         case "$arg" in
-        "HOME_DEV")
+        "HOME")
             : "Checking hdev"
             [[ ! "$hdev" ]] && exit_code=1
             ;;
-        "SCHOOL_DEV")
+        "MOBILE")
             : "Checking sdev"
             [[ ! "$sdev" ]] && exit_code=1
             ;;
@@ -153,6 +144,12 @@ using "utils/prompt_setter.sh" # Sets the PS1 prompt (ui)
 using "remupd/git-recov.sh"    # Provides 'gitupdate'
 using ".cmds.sh"               # VERY old (probably legacy) commands from my days on ChromeOS Embedded Linux
 
+# Verify .lapps/flag works
+if ! flag; then
+    core::warn "Failed to find flag. Defaulting to core::flag"
+    alias flag='core::flag'
+fi
+
 ###
 #* Mount drive and import BashExt
 ###
@@ -160,27 +157,25 @@ using ".cmds.sh"               # VERY old (probably legacy) commands from my day
 core::mount_drives() {
     : ".loader: core::mount_drives"
 
-    local cached_drive_path uid gid
+    local cached_drive_path="$HOME/.active_drive" uid gid
 
     # OS check
-    [ ! -v WSL ] && {
+    [[ ! -v WSL ]] && {
         core::warn "!WSL: $WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
         return 1
     }
 
-    : Check if DRIVE is for emergency backup
+    # Check if DRIVE is for emergency backup
     [[ -f "$DRIVE/backup_version.sh" ]] && {
         return 1 # non zero for second if statement
     }
 
-    : Check if the drive has already been exported, returns if it is
+    # Check if the drive has already been exported, returns if it is
     [[ -d "$DRIVE/.BACKUPS/" ]] && {
         return
     }
 
-    cached_drive_path="$HOME/.active_drive"
-
-    : Check if cached drive path works
+    # Check if cached drive path works
     [[ -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
         DRIVE="$(cat "$cached_drive_path")"
         export DRIVE
@@ -214,7 +209,6 @@ core::mount_drives() {
 }
 
 export DOTNET_ROOT="$HOME/dotnet"
-#[[ ! $PATH =~ "$HOME/dotnet:/mnt/c/Users/evans/.platformio/penv/Scripts" ]] && export PATH="$PATH:$HOME/dotnet:/mnt/c/Users/evans/.platformio/penv/Scripts"
 
 flag WSL && {
     alias lua='luajit-2.1.0-beta3'
@@ -227,7 +221,7 @@ EMERGENCY_LOADER=".emergency_backup_loader.sh"
 core::load_source() {
     : "Check server, unknown, or FORCE_BACKUP"
 
-    if [[ "$server" ]] || [[ "$unknown" ]] || [[ "$FORCE_BACKUP" ]]; then
+    if [[ "$server" || "$unknown" || "$FORCE_BACKUP" ]]; then
         # Skip right to loading "emergency" functions (No external media to load from)
         using "$EMERGENCY_LOADER"
 
@@ -236,7 +230,7 @@ core::load_source() {
         using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
         unset EMERGENCY_LOADER
 
-    elif [[ "$backup_env" ]] || [[ ! "$DRIVE" ]] || [[ "$DRIVE" =~ "importer.sh"$ ]]; then
+    elif [[ "$backup_env" || ! "$DRIVE" || "$DRIVE" =~ "importer.sh"$ ]]; then
         using "$EMERGENCY_LOADER"
 
     elif [[ ! "$1" ]]; then

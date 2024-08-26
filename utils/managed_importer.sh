@@ -24,13 +24,16 @@ using() {
 
     local file="$1"
 
+    if [[ -f "$file" ]]; then
+        # The file path is local 
+        file="$(realpath "$file")"
+        
     # Check if arg is not an absolute path
-    if [[ "$file" != "/"* ]]; then
+    elif [[ ! "$file" =~ ^"/" ]]; then
         local scripts=("$__using_path/$file"*)
         local s_len="${#scripts[@]}"
 
         if [[ "$s_len" -gt 1 ]]; then
-
             # More than one script found with this name (or prefix)
 
             core::warn "Found multiple scripts starting with '$file':"
@@ -43,9 +46,7 @@ using() {
         fi
 
         file="${scripts[0]}"
-    fi
-
-    if [[ ! -f "$file" ]]; then
+    else
         [[ "$2" != '-f' ]] && {
             core::warn "Unable to find '$file'"
             add_managed_import 1 "$(_indigo)atmp_path:$NORM $file"

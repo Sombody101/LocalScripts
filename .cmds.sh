@@ -12,9 +12,11 @@ norm
 # Register script file
 regload "$HOME/LocalScripts/.cmds.sh"
 
+alias sonar-make='build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make'
+
 flag WSL && {
     USER_="/mnt/c/Users/????s"
-    alias evs='cd $USER_'
+    alias "$USER_"='cd $USER_'
     alias docs='cd $USER_/OneDrive/Documents/'
     alias down='cd $USER_/Downloads'
 }
