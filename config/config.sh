@@ -24,6 +24,11 @@
 #
 CLEAN_PATH="TRUE"
 
+#
+# DEBUG: Enables debugging for the entire environment (uses 'set -uo pipefail') [VERY BROKEN]
+#
+# DEBUG="TRUE"
+
 ###
 # End Configs
 ###
@@ -32,6 +37,7 @@ ___full_backup_path="$FORCE_PATH"
 
 # Give configuration (when using set -x)
 : "Current configuration:"
-: "  ___full_backup_path: $___full_backup_path"
-: "  FORCE_BACKUP: $FORCE_BACKUP"
-: "  CLEAN_PATH: $CLEAN_PATH"
+: "  ___full_backup_path:   $___full_backup_path"
+: "  FORCE_BACKUP:          $FORCE_BACKUP"
+: "  CLEAN_PATH:            $CLEAN_PATH"
+: "  DEBUG:                 $DEBUG"

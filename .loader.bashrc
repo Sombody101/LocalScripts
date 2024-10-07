@@ -135,6 +135,10 @@ core::create_config() {
 }
 
 using "$HOME/.lsconfig.sh" -f  # Import user defined configuration [OPTIONAL]
+using "debugging/debug_root.sh"
+
+[[ "$DEBUG" ]] && debug # Enable environment debugging
+
 using "command_registry.sh"    # Module/command registry
 using "utils/colors.sh"        # Color variables and aliases
 using "utils/happytime.sh"     # A joke command (Figlet)
@@ -166,14 +170,10 @@ core::mount_drives() {
     }
 
     # Check if DRIVE is for emergency backup
-    [[ -f "$DRIVE/backup_version.sh" ]] && {
-        return 1 # non zero for second if statement
-    }
+    [[ -f "$DRIVE/backup_version.sh" ]] && return 1 # non zero for second if statement
 
     # Check if the drive has already been exported, returns if it is
-    [[ -d "$DRIVE/.BACKUPS/" ]] && {
-        return
-    }
+    [[ -d "$DRIVE/.BACKUPS/" ]] && return
 
     # Check if cached drive path works
     [[ -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
@@ -189,7 +189,8 @@ core::mount_drives() {
     for letter in {d..g}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs "$letter": "/mnt/$letter" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
-                core::warn "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
+                # core::warn "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
+                core::warn "${letter^}:\\ not mounted on Windows :: Cannot mount to /mnt/$letter"
                 continue
             }
 
@@ -200,9 +201,7 @@ core::mount_drives() {
         fi
     done
 
-    if [[ ! "$DRIVE" ]]; then
-        return 1
-    fi
+    [[ ! "$DRIVE" ]] && return 1
 
     export DRIVE
     echo "$DRIVE" >"$cached_drive_path"

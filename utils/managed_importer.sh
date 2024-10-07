@@ -75,7 +75,7 @@ add_managed_import() {
     : "managed_importer.sh: add_managed_import"
     : "<arg1> : Status code"
     : "<arg2> : Message"
-    : "[arg2 == {$NULL} => arg2<=>arg1]"
+    : "[arg2 == \$NULL => arg2<=>arg1]"
 
     local status=1 message
 
