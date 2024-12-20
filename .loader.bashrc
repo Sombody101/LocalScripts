@@ -155,7 +155,7 @@ using ".cmds.sh"               # VERY old (probably legacy) commands from my day
 
 # Verify .lapps/flag works
 if ! flag; then
-    core::warn "Failed to find flag. Defaulting to core::flag"
+    core::warn "Failed to find flag command (compilation might be required). Defaulting to core::flag"
     alias flag='core::flag'
 fi
 
