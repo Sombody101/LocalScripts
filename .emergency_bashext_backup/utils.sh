@@ -1,13 +1,5 @@
 #!/bin/bash
 
-core::warn() {
-    : "bashext: warn"
-    printf '%s: %s%s%s\n' "$(trace)" "$RED" "$*" "$NORM" >&2
-}
-
-# Until all usages are converted to 'core::warn'
-warn() { core::warn "$*"; }
-
 path.pathify() {
     : "bashext: path.pathify"
     IFS="/"
@@ -102,18 +94,23 @@ findf() {
         return 1
     fi
 
-    result=$(find . -type f -name "$file" 2>/dev/null)
-
-    [[ -n "$result" ]] && echo "$result"
+    find . -type f -name "$file" 2>/dev/null
 }
 
 # Get a command stack trace (debugging)
 trace() {
-    local stack
+    local stack skip="${1:-2}" prefix="$2" suffix="${3:-:}"
 
-    for f in "${FUNCNAME[@]:2}"; do
-        [[ "$stack" ]] && stack="$CYAN$f" || stack="$CYAN$f$YELLOW>$CYAN$stack"
+    for f in "${FUNCNAME[@]:$skip}"; do
+        [[ "$stack" ]] && stack="$prefix$CYAN$f" || stack="$CYAN$f$YELLOW>$CYAN$stack"
     done
+
+    stack="$stack$suffix"
+
+    [[ "$stack" == "${prefix}${suffix}" ]] && {
+        # No stack was found, so just return nothing
+        return
+    }
 
     echo "$stack$NORM"
 }
@@ -208,7 +205,7 @@ resetwsl() {
         echo "Resetting..."
         cmd.exe /C "wsl.exe" "--shutdown" # Kill
     else
-        warn "Failed to get powershell. Is this WSL and C:\\ mounted?"
+        core::warn "Failed to get powershell. Is this WSL and C:\\ mounted?"
     fi
 }
 
@@ -218,21 +215,67 @@ git.set-url() {
     : "origin some_token username project_name"
 
     git rev-parse 2>"/dev/null" || {
-        warn "Not in github repo"
+        core::warn "Not in github repo"
         return 1
     }
 
-    local name="$1"
-    local token="$2"
-    local username="$3"
-    local projName="$4"
+    local name="$1" token="$(token git)" username="$2" projName="$3"
 
     git remote set-url "$name" "https://$username:$token@github.com/$username/$projName.git" || {
-        warn "Failed to set remote url"
+        core::error "Failed tot set remote url"
         return 1
     }
 
     git remote -v
 }
 
-register_module path file array string time git
+dir.sizes() {
+    for item in $(ls -a); do
+        du -sh "$item"
+    done
+}
+
+cpair() {
+    local filename="$1"
+
+    [[ ! "$filename" ]] && {
+        core::warn "No file name given"
+        return 1
+    }
+
+    local file_h="$filename.h" \
+        file_cpp="$filename.cpp" \
+        exit=
+
+    [[ -f "$file_h" ]] && {
+        core::warn "The file $file_h already exists"
+        exit="true"
+    }
+
+    [[ -f "$file_cpp" ]] && {
+        core::warn "The file $file_cpp already exists"
+        exit="true"
+    }
+
+    [[ "$exit" ]] && return 1
+
+    touch "$file_h"
+
+    {
+        echo "#ifndef ${filename}_h"
+        echo "#define ${filename}_h"
+        echo
+        echo "#endif"
+    } >>"$file_h"
+
+    touch "$file_cpp"
+    echo "#include \"$file_h\"" >>"$file_cpp"
+}
+
+register_module path \
+    file \
+    array \
+    string \
+    time \
+    git \
+    dir

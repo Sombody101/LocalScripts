@@ -9,7 +9,6 @@ export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINEN
 newnav() {
     : ".BACKUPS: newnav"
 
-
     [[ ! "$1" ]] && {
         warn "No arguments provided"
         return 1
@@ -52,7 +51,18 @@ newnav home "$HOME"
 newnav main "/"
 newnav cst "$CST"
 
-flag WSL && newnav apps "/mnt/e/AppsIWillNeverFinish/"
+flag WSL && {
+    newnav apps "/mnt/d/AppsIWillNeverFinish/"
+
+    token() {
+        [[ ! "$1" ]] && {
+            core::error "No token name supplied"
+            return 1
+        }
+
+        cat "$DRIVE"/z-?????/"$1".to?
+    }
+}
 
 alias clrhist='> $HOME/.bash_history'
 
@@ -119,7 +129,7 @@ vs() {
 
     # No VSCode, so use Nano
     [[ ! "$(which code)" ]] && {
-	ed "$file_path"
+        ed "$file_path"
         return $?
     }
 

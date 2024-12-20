@@ -3,24 +3,24 @@
 regload "$BACKS/command_parser.sh"
 
 command_not_found_handle() {
-    local cmd="$1"
+    local cmd="$1" cmd
 
     if [[ "$cmd" == *"++" ]]; then
-        _cmd=${cmd%??}
-        if [[ ${!_cmd} =~ ^[0-9]+$ ]]; then
-            eval "$((${!_cmd} + 1))"
+        cmd=${cmd%??}
+        if [[ ${!cmd} =~ ^[0-9]+$ ]]; then
+            eval "$((${!cmd} + 1))"
             return 0
         fi
     elif [[ "$cmd" == *"--" ]]; then
-        _cmd=${cmd%??}
-        if [[ ${!_cmd} =~ ^[0-9]+$ ]]; then
-            eval "$((${!_cmd} - 1))"
+        cmd=${cmd%??}
+        if [[ ${!cmd} =~ ^[0-9]+$ ]]; then
+            eval "$((${!cmd} - 1))"
             return 0
         fi
     # Check if the command is a variable
     elif [[ "$cmd" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
         local out="${!cmd}"
-        [[ "$out" != "" ]] && {
+        [[ "$out" ]] && {
             echo "$out"
             return 0
         }
@@ -39,7 +39,7 @@ command_not_found_handle() {
 
     # Otherwise, print the command not found error
     printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
-    return 1
+    return 127
 }
 
 __report_command() {
