@@ -2,11 +2,11 @@
 
 # This version of .bashrc was designed with WSL (Windows Sub-system for Linux) in mind.
 # It will boot on other versions of bash, but some commands will not work. I will check for WSL
-# before running WSL dependent commands, but I can't gaurentee that is enough.
+# before running WSL dependent commands, but I can't guarantee that is enough.
 
 PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\] - \[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\]: '
 
-LS="$HOME/LocalScripts"
+LS="$(dirname $BASH_SOURCE)"
 LAPPS="$LS/.lapps"
 
 # Disable variable escaping in shell
@@ -16,14 +16,14 @@ shopt -s direxpand
 [ -v WSL_DISTRO_NAME ] && export WSL=TRUE
 case $(hostname) in
 *"SchoolLT") export sdev=TRUE ;; # School laptop
-*"Q966") export hdev=TRUE ;;     # Home PC
+*"Desktop") export hdev=TRUE ;;  # Home PC
 "server") export server=TRUE ;;  # Server
 "rasp"*) export server=TRUE ;;   # RaspberryPi
 *) export unknown=TRUE ;;        # Anything else
 esac
 
-[[ "$WSL" ]] && [[ ! "$PATH" =~ "/mnt/c/Windows" ]] && {
-    # Importand environment variables (VSCode and Windows utilities)
+[[ "$WSL" && ! "$PATH" =~ "/mnt/c/Windows" ]] && {
+    # Important environment variables (VSCode and Windows utilities)
     PATH="$PATH:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
 }
 
@@ -33,6 +33,9 @@ esac
 }
 
 export PATH
+
+# Provides all "core" functions (warn, error, etc)
+source "./core.sh"
 
 # A fallback to .lapps/flag
 core::flag() {
@@ -134,12 +137,14 @@ core::create_config() {
     echo "Config created at $HOME/.lsconfig.sh"
 }
 
-using "$HOME/.lsconfig.sh" -f  # Import user defined configuration [OPTIONAL]
+using "$HOME/.lsconfig.sh" -f # Import user defined configuration [OPTIONAL]
 using "debugging/debug_root.sh"
 
 [[ "$DEBUG" ]] && debug # Enable environment debugging
 
 using "command_registry.sh"    # Module/command registry
+register_module core
+
 using "utils/colors.sh"        # Color variables and aliases
 using "utils/happytime.sh"     # A joke command (Figlet)
 using "utils/text.sh"          # Provides 'Sprint' and 'array'
@@ -207,9 +212,9 @@ core::mount_drives() {
     echo "$DRIVE" >"$cached_drive_path"
 }
 
-export DOTNET_ROOT="$HOME/dotnet"
-
 flag WSL && {
+    export DOTNET_ROOT="$HOME/.dotnet"
+    export PATH="$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools"
     alias lua='luajit-2.1.0-beta3'
     alias msbuild='/mnt/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe'
 }
@@ -247,3 +252,7 @@ register_module core
 export DRIVE_BIN="$BACKS/bin"
 
 regload "$LS/.loader.bashrc"
+
+[[ "$1" == "install" ]] && {
+    source "./install.sh" "$2"
+}

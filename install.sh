@@ -31,12 +31,14 @@ function write_rc() {
 
 echo "Adding .loader.bashrc to ~/.bashrc..."
 
+LS="${LS:-"$HOME/LocalScripts/"}"
+
 # Padding/importer
 write_rc
 write_rc
 write_rc '# Import LocalScripts'
-write_rc 'if [[ -d "$HOME/LocalScripts/" ]]; then'
-write_rc '  source "$HOME/LocalScripts/.loader.bashrc"'
+write_rc 'if [[ -d "$LS" && -f "$LS/.loader.bashrc" ]]; then'
+write_rc '  source "$LS/.loader.bashrc"'
 write_rc 'else'
 write_rc '  echo "Unable to find .loader.bashrc!"'
 write_rc '  echo "Check if it was removed, or reinstall it from GitHub"'
