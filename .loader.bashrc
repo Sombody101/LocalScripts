@@ -35,7 +35,7 @@ esac
 export PATH
 
 # Provides all "core" functions (warn, error, etc)
-source "./core.sh"
+source "$LS/core.sh"
 
 # A fallback to .lapps/flag
 core::flag() {
@@ -143,8 +143,6 @@ using "debugging/debug_root.sh"
 [[ "$DEBUG" ]] && debug # Enable environment debugging
 
 using "command_registry.sh"    # Module/command registry
-register_module core
-
 using "utils/colors.sh"        # Color variables and aliases
 using "utils/happytime.sh"     # A joke command (Figlet)
 using "utils/text.sh"          # Provides 'Sprint' and 'array'
@@ -219,9 +217,6 @@ flag WSL && {
     alias msbuild='/mnt/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe'
 }
 
-# Import bashext.sh
-EMERGENCY_LOADER=".emergency_backup_loader.sh"
-
 core::load_source() {
     : "Check server, unknown, or FORCE_BACKUP"
 
@@ -232,7 +227,6 @@ core::load_source() {
     elif core::mount_drives; then
         # Assumes this is WSL
         using "$DRIVE/.BACKUPS/.LOADER/bashext.sh"
-        unset EMERGENCY_LOADER
 
     elif [[ "$backup_env" || ! "$DRIVE" || "$DRIVE" =~ "importer.sh"$ ]]; then
         using "$EMERGENCY_LOADER"
@@ -241,12 +235,12 @@ core::load_source() {
         # Remove variables that could block bashext
         unset DRIVE BACKS backup_env emergency_backup_version
         echo "Attempting to switch back to USB-BashExt"
-        core::load_source DONT_RECURSE || core::warn "Failed to switch back to USB-BashExt"
+        core::load_source NO_RECURSE || core::warn "Failed to switch back to USB-BashExt."
     fi
 }
 
 # Load bashext (From drive or backup)
-core::load_source :
+EMERGENCY_LOADER=".emergency_backup_loader.sh" core::load_source :
 
 register_module core
 export DRIVE_BIN="$BACKS/bin"
