@@ -49,4 +49,6 @@ write_rc 'fi'
     exec "$SHELL"
 }
 
+unset -f write_rc
+
 exit_script 0

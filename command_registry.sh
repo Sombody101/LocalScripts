@@ -63,3 +63,14 @@ cmds() {
         [[ $cmd =~ ^$module_name. ]] && echo "$cmd"
     done < <(array __REGISTERED_COMMANDS)
 }
+
+chelp() {
+    [[ "$1" == "--help" ]] && {
+        shift
+        echo "$@"
+        return 1
+    }
+
+    : "${CYAN}HELP INFORMATION${NORM}"
+    : "$1"
+}
