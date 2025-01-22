@@ -13,7 +13,7 @@ gitupdate() {
 
     [[ "$*" =~ "clean" ]] && {
         flag any HOME MOBILE && {
-            core::warn "Cannot remove LocalScripts while on the developer machine (not forceable)"
+            core::error "Cannot remove LocalScripts while on the developer machine (not forceable)"
             return 255
         }
 
@@ -27,7 +27,7 @@ gitupdate() {
         # Safe-CD
         scd() {
             pushd "$*" || {
-                core::warn "Failed to cd into '$*'"
+                core::error "Failed to cd into '$*'"
                 exit
             }
         }
@@ -42,13 +42,13 @@ gitupdate() {
         using_group=TRUE
 
         case "$1" in
-        "local"*) {
-            repo="LocalScripts"
-            using_group=FALSE
+        "ext") {
+            repo="bash-ext"
         } ;;
 
-        "ext" | *) {
-            repo="bash-ext"
+        "local"* | *) {
+            repo="LocalScripts"
+            using_group=FALSE
         } ;;
         esac
 
@@ -56,7 +56,7 @@ gitupdate() {
 
         # Get extension repo
         command git clone "https://github.com/Sombody101/$repo.git" || {
-            core::warn "Failed to update LocalScripts"
+            core::error "Failed to update LocalScripts"
             return 1
         }
 
