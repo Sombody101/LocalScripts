@@ -213,6 +213,7 @@ core::mount_drives() {
 flag WSL && {
     export DOTNET_ROOT="$HOME/.dotnet"
     export PATH="$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools"
+    export DOTNET_CLI_TELEMETRY_OPTOUT="true"
     alias lua='luajit-2.1.0-beta3'
     alias msbuild='/mnt/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe'
 }
