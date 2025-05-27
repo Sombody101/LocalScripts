@@ -106,6 +106,8 @@ alias .cmds.sh='ed $HOME/LocalScripts/.cmds.sh'
 alias .bashrc='ed $HOME/.bashrc'
 alias .loader='ed $HOME/LocalScripts/.loader.bashrc'
 
+which -s eza && alias ls='eza'
+
 alias ll='ls -l'
 alias l='ls -CF'
 alias c='clear'
@@ -176,10 +178,10 @@ core::mount_drives() {
     [[ -f "$DRIVE/backup_version.sh" ]] && return 1 # non zero for second if statement
 
     # Check if the drive has already been exported, returns if it is
-    [[ -d "$DRIVE/.BACKUPS/" ]] && return
+    [[ "$1" != "-f" && -d "$DRIVE/.BACKUPS/" ]] && return
 
     # Check if cached drive path works
-    [[ -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
+    [[ "$1" != "-f" &&  -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
         DRIVE="$(cat "$cached_drive_path")"
         export DRIVE
         return
@@ -199,7 +201,6 @@ core::mount_drives() {
 
             [[ -d "/mnt/$letter/.BACKUPS/" ]] && {
                 export DRIVE="/mnt/$letter"
-                break
             }
         fi
     done
@@ -212,7 +213,7 @@ core::mount_drives() {
 
 flag WSL && {
     export DOTNET_ROOT="$HOME/.dotnet"
-    export PATH="$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools"
+    export PATH="$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools:$HOME/.local/bin"
     export DOTNET_CLI_TELEMETRY_OPTOUT="true"
     alias lua='luajit-2.1.0-beta3'
     alias msbuild='/mnt/c/Program\ Files/Microsoft\ Visual\ Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe'
