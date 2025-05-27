@@ -62,7 +62,7 @@ ui() {
 
         [[ "$ACTIVE_UI" == "$ps1_name" ]] && [[ "$force" != "-f" ]] && {
             [[ "$silent" != "-s" ]] && echo "Already in $ps1_name"
-            return
+            return 0
         }
 
         : $ps1_name -\> $ACTIVE_UIP
@@ -106,7 +106,7 @@ ui() {
             local new_ui_name="$1"
             shift
             shift_ui "$new_ui_name" "$(cat "$HOME/LocalScripts/utils/cps/$new_ui_name")" "$@"
-            return
+            return 0
         }
 
         warn "Failed to find UI '$1' in \$LS/utils/cps/"
