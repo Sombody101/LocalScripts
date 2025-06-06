@@ -54,6 +54,13 @@ path.towsl() {
     printf "%q\n" "$path" | tr -d "'"
 }
 
+path.cdtowsl() {
+    : "path.cdtowsl: Calls 'path.towsl' and automatically CDs into the returned directory"
+    cd "$(path.towsl "$*"/)"
+}
+
+alias wcd='path.cdtowsl'
+
 file.exists() {
     [[ -f "$1" ]]
 }
@@ -210,9 +217,8 @@ resetwsl() {
 }
 
 git.set-url() {
-    : "Assign a new remote for a github repo"
-    : "<remote name> <github token> <username> <project name>"
-    : "origin some_token username project_name"
+    ! chelp $1 "utils.sh: git.set-url: Assign a new remote for a github repo
+    git.set-url <remote name> <username> <project name>" && return
 
     git rev-parse 2>"/dev/null" || {
         core::warn "Not in github repo"
