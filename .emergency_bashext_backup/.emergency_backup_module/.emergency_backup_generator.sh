@@ -4,8 +4,6 @@ ___full_backup_path="$LS/.emergency_bashext_backup"
 
 # Copies $BACKS to $HOME/LocalScripts
 dump_all_sh_from_sd() {
-
-
     [[ "$emergency_backup_version" ]] && {
         core::warn "Cannot create a bash-ext backup while working in the emergency environment"
         echo "Version: $emergency_backup_version"
@@ -21,11 +19,10 @@ dump_all_sh_from_sd() {
 
     echo -ne "$CYAN$BACKS$NORM -> $CYAN$___full_backup_path$NORM\n"
     shopt -s dotglob
-    
+
     local type suffix dt backv
 
     for item in $(find "$BACKS" -not -path "*.git/*"); do
-
         [[ "$item" == "$BACKS" ]] && continue
 
         # Don't backup git or compiled apps

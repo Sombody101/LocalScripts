@@ -109,7 +109,11 @@ trace() {
     local stack skip="${1:-2}" prefix="$2" suffix="${3:-:}"
 
     for f in "${FUNCNAME[@]:$skip}"; do
-        [[ "$stack" ]] && stack="$prefix$CYAN$f" || stack="$CYAN$f$YELLOW>$CYAN$stack"
+        if [[ "$stack" ]]; then
+            stack="$CYAN$f$YELLOW>$CYAN$stack"
+        else
+            stack="$prefix$CYAN$f"
+        fi
     done
 
     stack="$stack$suffix"
@@ -167,15 +171,6 @@ flag HOME && {
     d4d() {
         "$D4D/de4dot.exe" "$@"
     }
-}
-
-# Shits-n-giggles
-bday() {
-    time.until_date "2024-07-07 12:00:00"
-}
-
-lday() {
-    time.until_date "2024-05-23 12:00:00"
 }
 
 watch() {

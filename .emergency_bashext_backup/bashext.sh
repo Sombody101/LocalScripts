@@ -69,7 +69,7 @@ alias clrhist='> $HOME/.bash_history'
 # Set the namespace
 setspace "$BACKS"
 
-using "command_parser.sh"
+using "commanderr/command_parser.sh"
 using "utils.sh"
 using "debugging/verbose.sh"
 #using "backup_manager/backup.sh"

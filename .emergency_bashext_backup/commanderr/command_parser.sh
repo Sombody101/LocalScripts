@@ -3,42 +3,20 @@
 regload "$BACKS/command_parser.sh"
 
 command_not_found_handle() {
-    local cmd="$1" cmd
+    local cmd="$1"
 
-    if [[ "$cmd" == *"++" ]]; then
-        cmd=${cmd%??}
-        if [[ ${!cmd} =~ ^[0-9]+$ ]]; then
-            eval "$((${!cmd} + 1))"
-            return 0
-        fi
-    elif [[ "$cmd" == *"--" ]]; then
-        cmd=${cmd%??}
-        if [[ ${!cmd} =~ ^[0-9]+$ ]]; then
-            eval "$((${!cmd} - 1))"
-            return 0
-        fi
     # Check if the command is a variable
-    elif [[ "$cmd" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+    if [[ "$cmd" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
         local out="${!cmd}"
         [[ "$out" ]] && {
             echo "$out"
-            return 0
+            return
         }
-
-        # Check if the variable is set
-        #if [ -n "$val" ]; then
-        #   echo "$((val))"
-        #else
-        #   echo "$(blue)bash: $(yellow)$cmd: $(red)Command not found$(norm)"
-        #fi
-    # Check if the command is an arithmetic expression
-    elif [[ "$cmd" =~ ^[0-9]+([-+*/%][0-9]+)*$ ]]; then
-        echo "$(($cmd))"
-        return 0
     fi
 
     # Otherwise, print the command not found error
     printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
+    # __report_command "$cmd"
     return 127
 }
 
@@ -56,3 +34,5 @@ __report_command() {
         fi
     fi
 }
+
+alias search='__report_command'
