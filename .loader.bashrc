@@ -106,6 +106,7 @@ alias .cmds.sh='ed $HOME/LocalScripts/.cmds.sh'
 alias .bashrc='ed $HOME/.bashrc'
 alias .loader='ed $HOME/LocalScripts/.loader.bashrc'
 
+# Very new. Not all machines will have this installed, but use it if it is.
 which -s eza && alias ls='eza'
 
 alias ll='ls -l'
@@ -125,12 +126,13 @@ alias ref='exec $SHELL'
 
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
 
-using "$LS/utils/.temporary.sh"
+using "utils/colors.sh" # Color variables and aliases
+
 using "utils/.temporary.sh"
 using "config/config.sh" -f
 
 core::create_config() {
-    [[ -f "$HOME/.lsconfig.sh" ]] && [[ ! "$1" == "-f" ]] && {
+    [[ -f "$HOME/.lsconfig.sh" && ! "$1" == "-f" ]] && {
         core::warn "Config file already exists at $HOME/.lsconfig.sh"
         return 1
     }
@@ -145,7 +147,6 @@ using "debugging/debug_root.sh"
 [[ "$DEBUG" ]] && debug # Enable environment debugging
 
 using "command_registry.sh"    # Module/command registry
-using "utils/colors.sh"        # Color variables and aliases
 using "utils/happytime.sh"     # A joke command (Figlet)
 using "utils/text.sh"          # Provides 'Sprint' and 'array'
 using "utils/utils.sh"         # Misc commands for basic operations
@@ -181,7 +182,7 @@ core::mount_drives() {
     [[ "$1" != "-f" && -d "$DRIVE/.BACKUPS/" ]] && return
 
     # Check if cached drive path works
-    [[ "$1" != "-f" &&  -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
+    [[ "$1" != "-f" && -d $(cat "$cached_drive_path")/.BACKUPS/ ]] && {
         DRIVE="$(cat "$cached_drive_path")"
         export DRIVE
         return
@@ -237,7 +238,7 @@ core::load_source() {
         # Remove variables that could block bashext
         unset DRIVE BACKS backup_env emergency_backup_version
         echo "Attempting to switch back to USB-BashExt"
-        core::load_source NO_RECURSE || core::warn "Failed to switch back to USB-BashExt."
+        core::load_source -no_recurse || core::warn "Failed to switch back to USB-BashExt."
     fi
 }
 
