@@ -10,7 +10,7 @@ bash_rc="$HOME/.bashrc"
 
 function exit_script() {
     # In case someone sourced the file instead of running it with bash
-    unset bash_rc write_rc
+    unset bash_rc
 
     if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         exit "${1:-1}"
@@ -25,30 +25,26 @@ function exit_script() {
     exit_script
 }
 
-function write_rc() {
-    printf '%s\n' "$*" >>"$bash_rc"
-}
-
 echo "Adding .loader.bashrc to ~/.bashrc..."
 
-LS="${LS:-"$HOME/LocalScripts/"}"
+LS="${LS:-"$HOME/LocalScripts"}"
 
-# Padding/importer
-write_rc
-write_rc
-write_rc '# Import LocalScripts'
-write_rc 'if [[ -d "$LS" && -f "$LS/.loader.bashrc" ]]; then'
-write_rc '  source "$LS/.loader.bashrc"'
-write_rc 'else'
-write_rc '  echo "Unable to find .loader.bashrc!"'
-write_rc '  echo "Check if it was removed, or reinstall it from GitHub"'
-write_rc 'fi'
+{
+    echo -e '\n\n# Import LocalScripts'
+    echo "if [[ \$NOLS ]]; then : Skipping LocalScripts;"
+    echo "elif [[ -d '$LS' && -f '$LS/.loader.bashrc' ]]; then"
+    echo "  source '$LS/.loader.bashrc'"
+    echo "else"
+    echo "  echo 'Unable to find .loader.bashrc!'"
+    echo "  echo 'Check if it was removed, or reinstall it from GitHub'"
+    echo "fi"
+} >>"$bash_rc"
 
 [[ "$0" == "-r" ]] && {
     # Restart shell
     exec "$SHELL"
 }
 
-unset -f write_rc
+echo "LocalScripts installed."
 
 exit_script 0

@@ -17,17 +17,26 @@ alias getspace='echo "$__using_path"'
 setspace "$__using_path" # Reset namespace
 
 using() {
-    : ".loader.bashrc: using"
-    : "<file path> <option>"
-    : "-f: Hide errors"
-    : "-o: Verbose info"
+    [[ "$1" == "-h" ]] && {
+        echo ".loader.bashrc: using"
+        echo "  <file path> <option> | <-space> <path>"
+        echo "  -f: Hide errors"
+        echo "  -o: Verbose info"
+        return
+    }
 
     local file="$1"
 
+    [[ "$file" == "-space" ]] && {
+        shift 1
+        export __using_path="$*"
+        return 0
+    }
+
     if [[ -f "$file" ]]; then
-        # The file path is local 
+        # The file path is local
         file="$(realpath "$file")"
-        
+
     # Check if arg is not an absolute path
     elif [[ ! "$file" =~ ^"/" ]]; then
         local scripts=("$__using_path/$file"*)
@@ -59,8 +68,9 @@ using() {
 
     add_managed_import 0 "${CYAN}full_path:$NORM $(realpath "$file")"
 
-    if ! source "$file" 2>/dev/null; then
-        add_managed_import "$RED" "ERROR" "${RED}full_path:$NORM $(realpath "$file")"
+    # shellcheck disable=SC1090
+    if ! source "$file"; then
+        add_managed_import "$RED" "ERROR" "${RED}full_path: [Script crashed]$NORM $(realpath "$file")"
     fi
 
     if [[ "$2" == '-o' ]]; then
@@ -72,10 +82,13 @@ using() {
 MANAGED_LOADED=()
 
 add_managed_import() {
-    : "managed_importer.sh: add_managed_import"
-    : "<arg1> : Status code"
-    : "<arg2> : Message"
-    : "[arg2 == \$NULL => arg2<=>arg1]"
+    [[ "$1" == "-h" ]] && {
+        echo "managed_importer.sh: add_managed_import"
+        echo "  <arg1> : Status code [0|1|2 found|not found|found many]"
+        echo "  <arg2> : Message"
+        echo "  [arg2 == \$NULL => arg2<=>arg1]"
+        return
+    }
 
     local status=1 message
 
@@ -92,10 +105,10 @@ add_managed_import() {
         status="${BLUE}[FOUND]"
     } ;;
     1) {
-        status="${RED}[NOT F]"
+        status="${RED}[VOID ]"
     } ;;
     2) {
-        status="${RED}[NOT*F]"
+        status="${RED}[MANY ]"
     } ;;
     *) {
         status="$1[$2]"

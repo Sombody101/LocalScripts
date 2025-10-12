@@ -56,7 +56,9 @@ path.towsl() {
 
 path.cdtowsl() {
     : "path.cdtowsl: Calls 'path.towsl' and automatically CDs into the returned directory"
-    cd "$(path.towsl "$*"/)"
+
+    # shellcheck disable=SC2164 # It already returns. No point adding '|| return'
+    cd "$(path.towsl "$*"/ | sed 's/\\//g')"
 }
 
 alias wcd='path.cdtowsl'
@@ -94,36 +96,14 @@ applyBackspaces() {
 }
 
 findf() {
-    local file="$1" result # dir="${2:-.}"
+    local file="$1" # result # dir="${2:-.}"
 
     if [[ -z "$file" ]]; then
-        warn "No file name"
+        core::warn "No file name"
         return 1
     fi
 
     find . -type f -name "$file" 2>/dev/null
-}
-
-# Get a command stack trace (debugging)
-trace() {
-    local stack skip="${1:-2}" prefix="$2" suffix="${3:-:}"
-
-    for f in "${FUNCNAME[@]:$skip}"; do
-        if [[ "$stack" ]]; then
-            stack="$CYAN$f$YELLOW>$CYAN$stack"
-        else
-            stack="$prefix$CYAN$f"
-        fi
-    done
-
-    stack="$stack$suffix"
-
-    [[ "$stack" == "${prefix}${suffix}" ]] && {
-        # No stack was found, so just return nothing
-        return
-    }
-
-    echo "$stack$NORM"
 }
 
 # Print variables and their values (debugging)
@@ -212,19 +192,19 @@ resetwsl() {
 }
 
 git.set-url() {
-    ! chelp $1 "utils.sh: git.set-url: Assign a new remote for a github repo
+    ! chelp "$1" "utils.sh: git.set-url: Assign a new remote for a github repo
     git.set-url <remote name> <username> <project name>" && return
 
     git rev-parse 2>"/dev/null" || {
         core::warn "Not in github repo"
-        return 1
+        return
     }
 
     local name="$1" token="$(token git)" username="$2" projName="$3"
 
     git remote set-url "$name" "https://$username:$token@github.com/$username/$projName.git" || {
         core::error "Failed tot set remote url"
-        return 1
+        return
     }
 
     git remote -v

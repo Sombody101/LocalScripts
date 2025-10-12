@@ -199,28 +199,31 @@ colors.make() {
     : "colors.make 255:255:255 white"
     : "colors.make '255;255;255' white"
 
-    local format name new_color
+    local format name
 
     [[ ! "$*" ]] && {
-        warn "No arguments given."
-        return 1
+        core::error "No arguments given."
+        return
     }
 
     format="$1"
     name="$2"
 
     [[ ! "$name" ]] && {
-        warn "No color name given."
-        return 1
+        core::error "No color name given."
+        return
     }
 
     [ -v "$name" ] && {
-        warn "The variable '$name' is already defined."
-        return 1
+        core::error "The variable '$name' is already defined."
+        return
     }
 
-    new_color=$(printf '%s="\x1b[38;2;%sm"\n' "$name" "${format//:/\;}") # Replace ':' with ';' as shorthand
-    echo "$new_color" >>"$COLOR_SHEET"
+    # Replace ':' with ';' as shorthand
+    printf '%s="\x1b[38;2;%sm"\n' "$name" "${format//:/\;}" >>"$COLOR_SHEET"
+
+    # Use source here so the path isn't added to mimports again.
+    # shellcheck source=/dev/null
     source "$COLOR_SHEET"
 
     echo "${!name}$name$NORM"
@@ -231,23 +234,24 @@ colors.remove() {
 
     if sed -i "/^$target=/d" "$COLOR_SHEET"; then
         echo "Removed color '$target'"
-        return 0
+        unset "$target"
+        return
     fi
 
-    warn "Failed to find '$target'" >&2
-    return 1
+    core::error "Failed to find '$target'" >&2
+    return
 }
 
 colors.list() {
     [ ! -f "$COLOR_SHEET" ] && {
-        warn "No color sheet"
-        return 1
+        core::error "No color sheet"
+        return
     }
 
     local prefix
     while IFS= read -r line; do
         prefix=(${line/=/ })
-        echo "${prefix[0]} : ${!prefix[0]}SAMPLE$NORM"
+        echo "${!prefix[0]}${prefix[0]}$NORM"
     done <"$COLOR_SHEET"
 }
 

@@ -1,21 +1,19 @@
 #!/bin/bash
 
-alias grep='grep --color=auto'
+[[ "$DEBUG_EXT" ]] && set -x
 
-# So the PS1 prompt never has colors bleeding from a previous command
-export PS1="\[\033[0m\]$PS1"
-export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}\[$NORM\] - \[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\] '
+alias grep='grep --color=auto'
 
 newnav() {
     : ".BACKUPS: newnav"
 
     [[ ! "$1" ]] && {
-        warn "No arguments provided"
+        core::warn "No arguments provided"
         return 1
     }
 
     [[ ! "$2" ]] && {
-        warn "No path provided"
+        core::warn "No path provided for '$1'"
         return 1
     }
 
@@ -24,10 +22,13 @@ newnav() {
 
     shift
 
-    eval "$name() { local path=\"\$(path.pathify \"$*\" \"\$*\")\"; cd \"\$path\" || warn \"Failed to locate \$path\"; }"
+    eval "$name() { \
+        local path=\"\$(path.pathify \"$*\" \"\$*\")\"; \
+        cd \"\$path\" || core::warn \"Failed to locate \$path\"; \
+    }"
 }
 
-BACKS="$DRIVE/.BACKUPS/.LOADER"
+BACKS="$LS/bashext"
 [[ "$backup_env" ]] && BACKS="$LS/.emergency_bashext_backup"
 
 export BACKS
@@ -35,7 +36,6 @@ export BACKS
 CST="$BACKS/cstools"
 CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"
-#GC="$BACKS/git-cmds/git_cmds.sh"
 APPS="$BACKS/.apps"
 
 # Quiet Un-Alias
@@ -55,19 +55,24 @@ flag WSL && {
     newnav apps "/mnt/d/AppsIWillNeverFinish/"
 
     token() {
-        [[ ! "$1" ]] && {
-            core::error "No token name supplied"
-            return 1
+        [[ "$backup_env" ]] && {
+            core::warn "Tokens are not available in a backup environment."
+            return
         }
 
-        cat "$DRIVE"/z-?????/"$1".to?
+        [[ ! "$1" ]] && {
+            core::error "No token name supplied"
+            return
+        }
+
+        ! cat "$DRIVE"/z-?????/"$1".to? 2>/dev/null && core::error "No token file '$1' found."
     }
 }
 
-alias clrhist='> $HOME/.bash_history'
+clrhist() { : >"$HOME/.bash_history"; }
 
 # Set the namespace
-setspace "$BACKS"
+using -space "$BACKS"
 
 using "commanderr/command_parser.sh"
 using "utils.sh"
@@ -75,15 +80,15 @@ using "debugging/verbose.sh"
 #using "backup_manager/backup.sh"
 using "tsklist/TASKLIST.sh"
 using "$CST_M"
-#using "$GC" # -f # The file gets sourced, but using logs a "File Not Found" error, so -f
 using "$ST"
-#using "showcase.sh"
+using "javautils.sh"
+using "showcase.sh"
 
 # Import EmergencyBackupGenerator if not currently using a backup
-[[ ! "$backup_env" ]] && {
-    EBG="$BACKS/.emergency_backup_module/"
-    using "$EBG/.emergency_backup_generator.sh"
-}
+# [[ ! "$backup_env" ]] && {
+#     EBG="$BACKS/.emergency_backup_module/"
+#     using "$EBG/.emergency_backup_generator.sh"
+# }
 
 # Reset namespace
 setspace
@@ -94,16 +99,16 @@ app.loadall() {
 
 app.add() {
     [[ ! "$*" ]] && {
-        warn "No app provided"
-        return 1
+        core::warn "No app provided"
+        return
     }
 
     [[ ! -f "$*" ]] && {
-        warn "Failed to find app '$*'"
-        return 1
+        core::warn "Failed to find app '$*'"
+        return
     }
 
-    sudo cp -p "$*" "$APPS"
+    cp -p "$*" "$APPS"
     echo "App loaded into be.apps"
 }
 
@@ -138,3 +143,8 @@ vs() {
 
 # Register file
 regload "$BACKS/bashext.sh"
+
+[[ "$DEBUG_EXT" && ! "$DEBUG_LOADER" ]] && set +x
+
+# Stops the script from returning false if the debug check fails
+true

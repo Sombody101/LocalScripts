@@ -16,7 +16,7 @@ command_not_found_handle() {
 
     # Otherwise, print the command not found error
     printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
-    # __report_command "$cmd"
+     __report_command "$cmd"
     return 127
 }
 

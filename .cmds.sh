@@ -1,22 +1,25 @@
 #!/bin/bash
 
-# Source the independant file for each computer if it's there
+# Source the independent file for each computer if it's there
 using "$HOME/.ind.sh" -f
 
 blue
 echo -ne 'Imported     '
-[[ "$ACTIVE_UI" != "ubuntu" ]] && echo
+# Add an extra line if PS1, because ui-ubuntu doesn't use two lines.
+#[[ "$ACTIVE_UI" != "ubuntu" ]] && echo
+[[ "$PS1" == *'\n'* ]] && echo
 LINE=TRUE
 norm
 
 # Register script file
 regload "$HOME/LocalScripts/.cmds.sh"
 
-alias sonar-make='build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make'
-
 flag WSL && {
-    USER_="/mnt/c/Users/????s"
-    alias "$USER_"='cd $USER_'
-    alias docs='cd $USER_/Documents/'
-    alias down='cd $USER_/Downloads'
+    WIN_USER="$(echo /mnt/c/Users/${USER}?)"
+    DOWNLOADS="$WIN_USER/Downloads"
+    DOCUMENTS="$WIN_USER/Documents"
+
+    docs() { cd $DOCUMENTS; }
+    down() { cd $DOWNLOADS; }
+    alias 'sonar-make'='build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make'
 }
