@@ -46,7 +46,7 @@ qunalias drive
 qunalias home
 qunalias main
 newnav backs "$BACKS"
-newnav drive "$DRIVE"
+flag WSL && newnav drive "$DRIVE"
 newnav home "$HOME"
 newnav main "/"
 newnav cst "$CST"
