@@ -36,6 +36,8 @@ esac
     PATH="$PATH:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
 }
 
+flag SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
+
 # Include .lapps in PATH
 [[ ! "$PATH" =~ $LAPPS ]] && {
     PATH="$PATH:$LAPPS"
