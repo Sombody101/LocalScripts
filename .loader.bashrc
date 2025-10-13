@@ -176,7 +176,7 @@ if ! flag; then
     alias flag='core::flag'
 fi
 
-flag SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
+flag any SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
 
 ###
 #* Mount drive and import BashExt
