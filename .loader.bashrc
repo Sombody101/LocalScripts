@@ -218,9 +218,9 @@ flag WSL && {
     export DOTNET_ROOT="$HOME/.dotnet"
     export PATH="$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools:$HOME/.local/bin"
     export DOTNET_CLI_TELEMETRY_OPTOUT="true"
-}
 
-core::mount_drives
+    core::mount_drives
+}
 
 using "bashext/bashext.sh"
 
