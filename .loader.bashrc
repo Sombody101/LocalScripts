@@ -115,7 +115,7 @@ core::lock_device() {
     :() { echo "$*" >&2; }
 }
 
-alias ed='sudo nano'
+alias ed='nano'
 alias drive='[[ $DRIVE != "DRIVE_NOT_FOUND" ]] && cd $DRIVE || core::warn "Drive not found : $DRIVE"'
 alias refresh='using .cmds.sh'
 alias .cmds.sh='ed $HOME/LocalScripts/.cmds.sh'
