@@ -1,9 +1,9 @@
 #!/bin/bash
 
-ACTIVE_UIP="$HOME/..ACTIVE_UI"
+readonly ACTIVE_UIP="$HOME/.active_ui"
 
 [ ! -f "$ACTIVE_UIP" ] && {
-    warn "No ACTIVE_UI : Creating one (Newest known)"
+    core::warn "No ACTIVE_UI : Creating one (Newest known)"
     echo "custom_1" >"$ACTIVE_UIP"
 }
 

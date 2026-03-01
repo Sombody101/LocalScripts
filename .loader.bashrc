@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# This version of .bashrc was designed with WSL (Windows Sub-system for Linux) in mind.
-# It will boot on other versions of bash, but some commands will not work. I will check for WSL
-# before running WSL dependent commands, but I can't guarantee that is enough.
-
 [[ "$DEBUG" ]] && set -x
 
 # Print all ':' statements (usually used for debug lines only visible in with set-x)
@@ -11,12 +7,12 @@
 
 # So the prompt never has colors bleeding from a previous command
 export PS1="\[\033[0m\]$PS1"
-#export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\]:\[$CYAN\][SLV:${SHLVL},SUB:${BASH_SUBSHELL},EX:$?]\[$NORM\]: '
+export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\]:\[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\]: '
 #export PS4='\[${BLUE}\]$(printf "[%s] @%s " $(date +%T) $LINENO)\[${NORM}\]'
-export PS4='\[$NORM\]# $(basename ${BASH_SOURCE}):${LINENO}: ${FUNCNAME}(): '
+#export PS4='\[$NORM\]# $(basename ${BASH_SOURCE}):${LINENO}: ${FUNCNAME}(): '
 
 LS="$(dirname "${BASH_SOURCE[0]}")"
-LAPPS="$LS/.lapps"
+LAPPS="$LS/bin"
 
 # Disable variable escaping in shell
 shopt -s direxpand
@@ -46,44 +42,6 @@ export PATH
 # Provides all "core" functions (warn, error, trace, etc)
 # shellcheck disable=SC1091
 source "$LS/core.sh"
-
-# A fallback to .lapps/flag
-core::flag() {
-    : "Options: HOME_DEV, MOBILE_DEV, WSL, SERVER, UNKNOWN"
-    : "Returns: 0 if all flags are set, 1 otherwise (including unknown flags)"
-    local exit_code=0
-
-    for arg in "${@:1}"; do
-        case "$arg" in
-        "HOME")
-            : "Checking hdev"
-            [[ ! "$hdev" ]] && exit_code=1
-            ;;
-        "MOBILE")
-            : "Checking sdev"
-            [[ ! "$sdev" ]] && exit_code=1
-            ;;
-        "WSL")
-            : "Checking WSL"
-            [[ ! "$WSL" ]] && exit_code=1
-            ;;
-        "SERVER")
-            : "Checking server"
-            [[ ! "$server" ]] && exit_code=1
-            ;;
-        "UNKNOWN")
-            : "Checking unknown"
-            [[ ! "$unknown" ]] && exit_code=1
-            ;;
-        *)
-            core::warn "Unknown flag: $arg"
-            exit_code=2
-            ;;
-        esac
-    done
-
-    return $exit_code
-}
 
 # This is just something I added when I started learning bash.
 # It's genuinely useless, but I like it.
@@ -117,10 +75,11 @@ core::lock_device() {
 
 alias ed='nano'
 alias drive='[[ $DRIVE != "DRIVE_NOT_FOUND" ]] && cd $DRIVE || core::warn "Drive not found : $DRIVE"'
+# This is obsolete and was used before the whole "Local Scripts" library. It's still here for legacy installations.
 alias refresh='using .cmds.sh'
-alias .cmds.sh='ed $HOME/LocalScripts/.cmds.sh'
+alias .cmds.sh='ed $LS/.cmds.sh'
 alias .bashrc='ed $HOME/.bashrc'
-alias .loader='ed $HOME/LocalScripts/.loader.bashrc'
+alias .loader='ed $LS/.loader.bashrc'
 
 # Very new. Not all machines will have this installed, but use it if it is.
 which -s eza && alias ls='eza'
@@ -140,14 +99,24 @@ alias ref='exec $SHELL'
 #* Main imports
 ###
 
+# Verify .lapps/flag works
+if ! command -v flag >/dev/null; then
+    core::warn "Failed to find flag command (compilation may be required). Defaulting to core::flag"
+    using "utils/fallback_flags"
+    alias flag='core::flag'
+fi
+
+flag any SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
+
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
 
-using "command_registry.sh" # Module/command registry
-using "utils/colors.sh"     # Color variables and aliases
+# Colors needs to come _after_ the registry as colors is a module, so swapping them leads to a missing command error.
+using "command_registry.sh"
+using "utils/colors.sh"
 
 using "utils/.temporary.sh"
-using "config/config.sh" -f
 
+using "config/config.sh" -f
 core::create_config() {
     [[ -f "$HOME/.lsconfig.sh" && ! "$1" == "-f" ]] && {
         core::warn "Config file already exists at $HOME/.lsconfig.sh"
@@ -169,14 +138,6 @@ using "utils/utils.sh"         # Misc commands for basic operations
 using "utils/prompt_setter.sh" # Sets the PS1 prompt (ui)
 using "remupd/git-recov.sh"    # Provides 'gitupdate'
 using ".cmds.sh"               # VERY old (probably legacy) commands from my days on ChromeOS Embedded Linux
-
-# Verify .lapps/flag works
-if ! flag; then
-    core::warn "Failed to find flag command (compilation might be required). Defaulting to core::flag"
-    alias flag='core::flag'
-fi
-
-flag any SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
 
 ###
 #* Mount drive and import BashExt
@@ -200,8 +161,7 @@ core::mount_drives() {
     uid=$(id -u "$USER")
     gid=$(id -g "$USER")
 
-    # ExtStorage has never been given a letter lower than G:\, and won't be given one higher than D:\
-    for letter in {d..g}; do
+    for letter in {a..z}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs "$letter": "/mnt/$letter" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
                 core::warn -s "${letter^}:\\ not mounted on Windows :: Cannot mount to /mnt/$letter [$?]"
@@ -216,13 +176,23 @@ core::mount_drives() {
 
 flag WSL && {
     export DOTNET_ROOT="$HOME/.dotnet"
-    export PATH="$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools:$HOME/.local/bin"
     export DOTNET_CLI_TELEMETRY_OPTOUT="true"
+    export BROWSER="/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe"
 
     core::mount_drives
 }
 
 using "bashext/bashext.sh"
+
+flag WSL && {
+    path.add '/mnt/c/rsl/platform-tools'
+    path.add "$DOTNET_ROOT:$DOTNET_ROOT/tools:$HOME/.local/bin"
+    _tmp_vspath=$(path.towsl 'C:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\IDE')
+    [[ -d $_tmp_vspath ]] && path.add "$_tmp_vspath"
+    alias vsx='devenv.exe'
+
+    unset _tmp_vspath
+}
 
 # Load bashext (From drive or backup)
 # EMERGENCY_LOADER=".emergency_backup_loader.sh" core::load_source :

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-export VERBOSE=FALSE
+[[ ! "$VERBOSE" ]] && export VERBOSE=FALSE
 
 vset() {
     if [[ "$1" == "true" ]]; then
-        VERBOSE=TRUE
+        export VERBOSE=TRUE
         return 0
     elif [[ "$1" == "false" ]]; then
-        VERBOSE=FALSE
+        export VERBOSE=FALSE
         return 0
     fi
 
@@ -17,13 +17,12 @@ vset() {
 verbose() {
     : "Verbose check: $VERBOSE"
 
-    local stack
-
     [[ "$VERBOSE" == "FALSE" ]] && {
         return 1
     }
 
-    stack="$(trace)"
+    local stack
+    stack="$(core::trace)"
     stack="${stack:-ROOT}"
     echo "[$stack]: $*"
 }

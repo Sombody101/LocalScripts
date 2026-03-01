@@ -19,6 +19,7 @@ path.top() {
 
 path.add() {
     : "bashext: path.add"
+    verbose "Adding: $1"
     [[ ! "$1" ]] && {
         warn "No path given to add to \$PATH"
         return 1
@@ -59,6 +60,10 @@ path.cdtowsl() {
 
     # shellcheck disable=SC2164 # It already returns. No point adding '|| return'
     cd "$(path.towsl "$*"/ | sed 's/\\//g')"
+}
+
+path.trim_spaces() {
+    export PATH="$(echo "$PATH" | tr ':' '\n' | grep -v ' ' | grep -v '/mnt/c' | paste -sd: -)"
 }
 
 alias wcd='path.cdtowsl'

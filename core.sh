@@ -90,3 +90,7 @@ error() {
     core::warn "[CORE] Update from obsolete error to core::error"
     core::error "$@"
 }
+
+# Export basic logging functions
+export -f core::warn core::error __print_log core::trace
+#export RED YELLOW CYAN NORM

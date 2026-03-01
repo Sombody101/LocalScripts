@@ -26,8 +26,14 @@ function exit_script() {
 }
 
 echo "Adding .loader.bashrc to ~/.bashrc..."
+echo "Attempting localscripts import..."
 
-LS="${LS:-"$HOME/LocalScripts"}"
+loader_path="$(dirname "${BASH_SOURCE[0]}")/.loader.bashrc"
+
+[[ ! -f "$loader_path" ]] && {
+    echo "Failed to start localscripts, installation failed."
+    exit_script 1
+}
 
 {
     echo -e '\n\n# Import LocalScripts'

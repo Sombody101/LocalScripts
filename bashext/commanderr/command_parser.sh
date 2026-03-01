@@ -16,7 +16,7 @@ command_not_found_handle() {
 
     # Otherwise, print the command not found error
     printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
-     __report_command "$cmd"
+    __report_command "$cmd"
     return 127
 }
 
@@ -29,10 +29,19 @@ __report_command() {
             /usr/share/command-not-found/command-not-found -- "$1"
             return $?
         else
-            printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
+
             return 127
         fi
     fi
+}
+
+__log_missing() {
+    local cmd="$1"
+    [[ ! "$cmd" ]] && {
+        core::error "No command argument given"
+        return
+    }
+    printf '%sbash: %s%s: %sCommand not found%s\n' "$BLUE" "$YELLOW" "$cmd" "$RED" "$NORM"
 }
 
 alias search='__report_command'

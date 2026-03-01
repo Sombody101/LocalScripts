@@ -5,7 +5,7 @@
 alias grep='grep --color=auto'
 
 newnav() {
-    : ".BACKUPS: newnav"
+    : "bashext: newnav"
 
     [[ ! "$1" ]] && {
         core::warn "No arguments provided"
@@ -26,6 +26,16 @@ newnav() {
         local path=\"\$(path.pathify \"$*\" \"\$*\")\"; \
         cd \"\$path\" || core::warn \"Failed to locate \$path\"; \
     }"
+
+    # command -v complete &>/dev/null && {
+    #     complete -F __nav_autocomplete "$name"
+    # }
+}
+
+__nav_autocomplete() {
+    : "bashext: __nav_autocomplete"
+    [[ ! -d "$1" ]] && return 1
+    echo "$1"/*
 }
 
 BACKS="$LS/bashext"
@@ -56,12 +66,17 @@ flag WSL && {
 
     token() {
         [[ "$backup_env" ]] && {
-            core::warn "Tokens are not available in a backup environment."
+            core::error "Tokens are not available in a backup environment."
+            return
+        }
+
+        [[ ! "$DRIVE" ]] && {
+            core::error "Drive path is not set."
             return
         }
 
         [[ ! "$1" ]] && {
-            core::error "No token name supplied"
+            core::error "No token name supplied."
             return
         }
 
@@ -71,9 +86,7 @@ flag WSL && {
 
 clrhist() { : >"$HOME/.bash_history"; }
 
-# Set the namespace
 using -space "$BACKS"
-
 using "commanderr/command_parser.sh"
 using "utils.sh"
 using "debugging/verbose.sh"
@@ -81,7 +94,7 @@ using "debugging/verbose.sh"
 using "tsklist/TASKLIST.sh"
 using "$CST_M"
 using "$ST"
-using "javautils.sh"
+using "adbutils.sh"
 using "showcase.sh"
 
 # Import EmergencyBackupGenerator if not currently using a backup
@@ -129,7 +142,7 @@ regload "ls.lapps ($LS)"
 unset qunalias
 
 vs() {
-    : ".BACKUPS: vs"
+    : "bashext: vs"
     local file_path="${*:-.}"
 
     # No VSCode, so use Nano
