@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# This file can't use other functions or modules defined in other files because this provides the importing functionality to include them.
+#
+
 # Set search dir:
 setspace() {
     local path="$*"

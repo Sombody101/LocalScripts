@@ -36,3 +36,5 @@ core::flag() {
 
     return $exit_code
 }
+
+alias flag='core::flag'

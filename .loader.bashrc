@@ -43,32 +43,6 @@ export PATH
 # shellcheck disable=SC1091
 source "$LS/core.sh"
 
-# This is just something I added when I started learning bash.
-# It's genuinely useless, but I like it.
-core::lock_device() {
-    : ".loader: LockDevice"
-
-    clear
-    trap : SIGINT
-    echo -ne "$RANDOM:$RANDOM:$RANDOM@$RANDOM\t\t\t--\r\n-DFF" >"$HOME/.bash.sysloader.o"
-    while :; do
-        echo -e "\e[31mDont use computers that arent yours"
-        read -r res
-        [[ "$res" == "Device::Unlock" ]] && {
-            echo -e "\e[32mWelcome back"
-            break
-        }
-
-        clear
-    done
-
-    rm "$HOME/.bash.sysloader.o"
-}
-[ -f "$HOME/.bash.sysloader.o" ] && core::lock_device
-
-# I use wget randomly, but don't need it to remember anything about my sessions.
-[ -f "$HOME/.wget-hsts" ] && rm "$HOME/.wget-hsts"
-
 [[ "$PRINT_DEBUG_LINES" ]] && {
     :() { echo "$*" >&2; }
 }
@@ -99,16 +73,13 @@ alias ref='exec $SHELL'
 #* Main imports
 ###
 
-# Verify .lapps/flag works
-if ! command -v flag >/dev/null; then
-    core::warn "Failed to find flag command (compilation may be required). Defaulting to core::flag"
-    using "utils/fallback_flags"
-    alias flag='core::flag'
-fi
-
-flag any SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
 
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
+
+using "utils/flags"
+
+# shellcheck disable=SC2034 # emergency_backup_version is used for custom PS1 prompts (./utils/cps)
+flag any SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
 
 # Colors needs to come _after_ the registry as colors is a module, so swapping them leads to a missing command error.
 using "command_registry.sh"
@@ -193,9 +164,6 @@ flag WSL && {
 
     unset _tmp_vspath
 }
-
-# Load bashext (From drive or backup)
-# EMERGENCY_LOADER=".emergency_backup_loader.sh" core::load_source :
 
 register_module core
 export DRIVE_BIN="$BACKS/bin"
