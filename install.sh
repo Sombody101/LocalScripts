@@ -7,7 +7,7 @@
 }
 
 bash_rc="$HOME/.bashrc"
-LS=$(dirname "${BASH_SOURCE[0]}")
+LS=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
 
 function exit_script() {
     # In case someone sourced the file instead of running it with bash
@@ -74,8 +74,6 @@ for link_name in "${!utils[@]}"; do
     util_name="${repo##*/}"
     download_util "$repo" "$util_name" "$link_name"
 done
-
-exit_script
 
 [[ ! -f "$bash_rc" ]] && {
     echo "There is no .bashrc file!"
