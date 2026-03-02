@@ -91,16 +91,19 @@ loader_path="$LS/.loader.bashrc"
     exit_script 1
 }
 
-{
-    echo -e '\n\n# Import LocalScripts'
-    echo "if [[ \$NOLS ]]; then : Skipping LocalScripts;"
-    echo "elif [[ -d '$LS' && -f '$LS/.loader.bashrc' ]]; then"
-    echo "  source '$LS/.loader.bashrc'"
-    echo "else"
-    echo "  echo 'Unable to find .loader.bashrc!'"
-    echo "  echo 'Check if it was removed, or reinstall it from GitHub'"
-    echo "fi"
-} >>"$bash_rc"
+import_title="# Import LocalScripts"
+if grep -q "$import_title" "$bash_rc"; then
+    {
+        echo -e "\n\n$import_title"
+        echo "if [[ \$NOLS ]]; then : Skipping LocalScripts;"
+        echo "elif [[ -d '$LS' && -f '$LS/.loader.bashrc' ]]; then"
+        echo "  source '$LS/.loader.bashrc'"
+        echo "else"
+        echo "  echo 'Unable to find .loader.bashrc!'"
+        echo "  echo 'Check if it was removed, or reinstall it from GitHub'"
+        echo "fi"
+    } >>"$bash_rc"
+fi
 
 [[ "$0" == "-r" ]] && {
     # Restart shell
