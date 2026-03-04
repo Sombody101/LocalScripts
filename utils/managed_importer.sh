@@ -106,16 +106,16 @@ add_managed_import() {
 
     case $status in
     0) {
-        status="${BLUE}[FOUND]"
+        status="[steelblue1][[FOUND]]"
     } ;;
     1) {
-        status="${RED}[VOID ]"
+        status="[red][[VOID ]]"
     } ;;
     2) {
-        status="${RED}[MANY ]"
+        status="[red][[MANY ]]"
     } ;;
     *) {
-        status="$1[$2]"
+        status="$1[[$2]]"
         shift 2
         message="$*"
     } ;;

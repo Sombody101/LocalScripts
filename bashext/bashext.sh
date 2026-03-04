@@ -46,7 +46,6 @@ export BACKS
 CST="$BACKS/cstools"
 CST_M="$CST/cstools.main.sh"
 ST="$BACKS/site-tools/site-tools.sh"
-APPS="$BACKS/.apps"
 
 # Quiet Un-Alias
 qunalias() { unalias "$1" 2>/dev/null; }
@@ -105,38 +104,6 @@ using "showcase.sh"
 
 # Reset namespace
 setspace
-
-app.loadall() {
-    cp "$APPS/"* "$LAPPS"
-}
-
-app.add() {
-    [[ ! "$*" ]] && {
-        core::warn "No app provided"
-        return
-    }
-
-    [[ ! -f "$*" ]] && {
-        core::warn "Failed to find app '$*'"
-        return
-    }
-
-    cp -p "$*" "$APPS"
-    echo "App loaded into be.apps"
-}
-
-register_module app
-
-[[ ! -d "$LAPPS" ]] && {
-    echo "Creating ls.apps"
-    loadapps
-}
-
-path.add "$BACKS/.apps"
-regload "be.apps ($BACKS)"
-
-path.add "$LAPPS"
-regload "ls.lapps ($LS)"
 
 # Cleanup
 unset qunalias

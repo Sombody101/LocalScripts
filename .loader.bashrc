@@ -12,7 +12,6 @@ export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINEN
 #export PS4='\[$NORM\]# $(basename ${BASH_SOURCE}):${LINENO}: ${FUNCNAME}(): '
 
 LS="$(dirname "${BASH_SOURCE[0]}")"
-LAPPS="$LS/bin"
 
 # Disable variable escaping in shell
 shopt -s direxpand
@@ -30,11 +29,7 @@ esac
 [[ "$WSL" && ! "$PATH" =~ "/mnt/c/Windows" ]] && {
     # Important environment variables (VSCode and Windows utilities)
     PATH="$PATH:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
-}
-
-# Include .lapps in PATH
-[[ ! "$PATH" =~ $LAPPS ]] && {
-    PATH="$PATH:$LAPPS"
+    alias rustr='/mnt/c/Program\ Files/JetBrains/RustRover\ 2025.3.4/bin/rustrover64.exe'
 }
 
 export PATH
@@ -56,7 +51,7 @@ alias .bashrc='ed $HOME/.bashrc'
 alias .loader='ed $LS/.loader.bashrc'
 
 # Very new. Not all machines will have this installed, but use it if it is.
-which -s eza && alias ls='eza'
+command -v eza >/dev/null && alias ls='eza'
 
 alias ll='ls -l'
 alias l='ls -CF'
@@ -73,17 +68,16 @@ alias ref='exec $SHELL'
 #* Main imports
 ###
 
-
+# shellcheck disable=SC1091
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
+source "$LS/.colorsheet.sh" # Not a module, just variables
 
 using "utils/flags"
 
 # shellcheck disable=SC2034 # emergency_backup_version is used for custom PS1 prompts (./utils/cps)
-flag any SERVER UNKNOWN && emergency_backup_version="$(git -C $LS log -1 --format='%ad' --date=format:'%m.%d.%Y')"
+flag any SERVER UNKNOWN && emergency_backup_version="$(git -C "$LS" log -1 --format='%ad' --date=format:'%m.%d.%Y')"
 
-# Colors needs to come _after_ the registry as colors is a module, so swapping them leads to a missing command error.
 using "command_registry.sh"
-using "utils/colors.sh"
 
 using "utils/.temporary.sh"
 
@@ -103,7 +97,9 @@ using "debugging/debug_root.sh"
 
 [[ "$DEBUG" ]] && debug # Enable environment debugging
 
+using "utils/colors"
 using "utils/happytime.sh"     # A joke command (Figlet)
+using "utils/cum"              # Limited utility install/update
 using "utils/text.sh"          # Provides 'Sprint' and 'array'
 using "utils/utils.sh"         # Misc commands for basic operations
 using "utils/prompt_setter.sh" # Sets the PS1 prompt (ui)
@@ -135,7 +131,7 @@ core::mount_drives() {
     for letter in {a..z}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs "$letter": "/mnt/$letter" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
-                core::warn -s "${letter^}:\\ not mounted on Windows :: Cannot mount to /mnt/$letter [$?]"
+                core::warn -s "${letter^}:\\ not mounted on Windows :: Cannot mount to /mnt/$letter [[$?]]"
                 : "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
                 continue
             }

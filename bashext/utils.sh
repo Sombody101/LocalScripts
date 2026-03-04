@@ -10,7 +10,7 @@ path.pathify() {
 path.top() {
     : "bashext: path.top"
     [[ ! "$1" ]] && {
-        warn "No path given to add to \$PATH"
+        core::warn "No path given to add to \$PATH"
         return 1
     }
 
@@ -21,7 +21,7 @@ path.add() {
     : "bashext: path.add"
     verbose "Adding: $1"
     [[ ! "$1" ]] && {
-        warn "No path given to add to \$PATH"
+        core::warn "No path given to add to \$PATH"
         return 1
     }
 
@@ -160,7 +160,7 @@ flag HOME && {
 
 watch() {
     [[ ! "$*" ]] && {
-        warn "No input provided"
+        core::warn "No input provided"
     }
 
     local type="$1"

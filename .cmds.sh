@@ -21,5 +21,4 @@ flag WSL && {
 
     docs() { cd $DOCUMENTS; }
     down() { cd $DOWNLOADS; }
-    alias 'sonar-make'='build-wrapper-linux-x86-64 --out-dir build_wrapper_output_directory make'
 }

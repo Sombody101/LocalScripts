@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ ! "$PATH" == *"$HOME/.local/bin"* ]] && export PATH="$PATH:$HOME/.local/bin"
+
 # Get a command stack trace (debugging)
 core::trace_legacy() {
     local stack skip="${1:-2}" prefix="$2" suffix="${3:-:}"
@@ -42,10 +44,10 @@ core::trace() {
         line="${BASH_LINENO[i]}"
         command="${FUNCNAME[i]}"
 
-        stack="${CYAN}${file}@${command}():${line}${YELLOW}>${CYAN}${stack}"
+        stack="[cyan]${file}@${command}():${line}[yellow]>${stack}"
     done
 
-    echo "${stack}${NORM}"
+    echo "$stack"
 }
 
 obsolete() {
@@ -64,20 +66,18 @@ __print_log() {
         trace="$(core::trace '3' '' ': ' "$1") "
     fi
 
-    printf '%s%s%s%s\n' "$trace" "$color" "$*" "$NORM" >&2
+    gecho "${trace}[${color}]${*}[/]" >&2
 }
 
 core::error() {
     : "core.sh: core::error"
-    __print_log "$RED" "$@"
-    #printf '%s %s%s%s\n' "$(core::trace '2' '' ': ' "$1")" "$RED" "$*" "$NORM" >&2
+    __print_log red "$@"
     return 4
 }
 
 core::warn() {
     : "core.sh: core::warn"
-    __print_log "$YELLOW" "$@"
-    #printf '%s %s%s%s\n' "$(core::trace '2' '' ': ' "$1")" "$YELLOW" "$*" "$NORM" >&2
+    __print_log yellow "$@"
     return 3
 }
 
