@@ -54,7 +54,7 @@ using() {
                 printf '\t%s\n' "$item"
             done
 
-            add_managed_import 2 "$(_indigo)atmp_path:$NORM $file"
+            add_managed_import 2 "[deeppink4_1]atmp_path:[/]" "$file"
             return 1
         fi
 
@@ -62,23 +62,23 @@ using() {
     else
         [[ "$2" != '-f' ]] && {
             core::warn "Unable to find '$file'"
-            add_managed_import 1 "$(_indigo)atmp_path:$NORM $file"
+            add_managed_import 1 "[deeppink4_1]atmp_path:[/]" "$file"
             return 1
         }
 
-        add_managed_import 1 "${MAGENTA}soft_path:$NORM $file"
+        add_managed_import 1 "[darkviolet]soft_path:[/]" "$file"
         return 1
     fi
 
-    add_managed_import 0 "${CYAN}full_path:$NORM $(realpath "$file")"
+    add_managed_import 0 "[dodgerblue]full_path:[/]" "$(realpath "$file")"
 
     # shellcheck disable=SC1090
     if ! source "$file"; then
-        add_managed_import "$RED" "ERROR" "${RED}full_path: [Script crashed]$NORM $(realpath "$file")"
+        add_managed_import 0 "[red]full_path: [[Script crashed][/]" "$(realpath "$file")"
     fi
 
     if [[ "$2" == '-o' ]]; then
-        echo "$BLUE'$file' found [$1]$NORM"
+        gecho "[blue]'$file' found [[$1]][/]"
         return 0
     fi
 }
@@ -102,26 +102,27 @@ add_managed_import() {
     else
         status="$1"
         message="$2"
+        file="$3"
     fi
 
     case $status in
     0) {
-        status="[steelblue1][[FOUND]]"
+        status="[steelblue1][[FOUND]"
     } ;;
     1) {
-        status="[red][[VOID ]]"
+        status="[red][[VOID ]"
     } ;;
     2) {
-        status="[red][[MANY ]]"
+        status="[red][[MANY ]"
     } ;;
     *) {
-        status="$1[[$2]]"
+        status="$1[[$2]"
         shift 2
         message="$*"
     } ;;
     esac
 
-    MANAGED_LOADED+=("$status $message")
+    MANAGED_LOADED+=("$(gecho "$status $message [darkorange]$file"'[/]')")
 }
 
 add_random_import() {
@@ -134,11 +135,15 @@ alias mimports='array MANAGED_LOADED'
 LOADED=()
 
 regload() {
-    LOADED+=("[$MAGENTA+$NORM]:  $*")
+    __add_reg "[[[magenta]+[/]]:" "$*"
 }
 
 regnload() {
-    LOADED+=("[$RED-$NORM]:  $*")
+    __add_reg "[[[red]-[/]]:" "$*"
+}
+
+__add_reg() {
+    LOADED+=("$(gecho "$1 [darkorange]$2[/]")")
 }
 
 alias loaded='array LOADED'

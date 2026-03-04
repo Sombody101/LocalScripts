@@ -22,10 +22,10 @@ utils.install() {
 __utils.download_util() {
     local repo="$1" util="$2" slink="$3" arch release_data release_version url
 
-    local readonly __local_bins="$HOME/.local/bin"
-    local readonly __local_opts="$HOME/.local/opt"
-    mkdir -p "$__local_opts"
-    mkdir -p "$__local_bins"
+    local local_bins="$HOME/.local/bin"
+    local local_opts="$HOME/.local/opt"
+    mkdir -p "$local_opts"
+    mkdir -p "$local_bins"
 
     echo "Downloading $util"
 
@@ -41,7 +41,7 @@ __utils.download_util() {
 
     release_data=$(curl -s "https://api.github.com/repos/$repo/releases/latest")
     release_version=$(echo "$release_data" | jq -r '.tag_name')
-    local version_dir="$__local_opts/$util/$release_version"
+    local version_dir="$local_opts/$util/$release_version"
     local download_bin="$version_dir/${util}-lin-${arch}"
 
     [[ -d "$version_dir" ]] && {
@@ -61,5 +61,5 @@ __utils.download_util() {
     chmod +x "$download_bin"
 
     echo "Linking $util to $slink"
-    ln -sf "$download_bin" "$__local_bins/$slink"
+    ln -sf "$download_bin" "$local_bins/$slink"
 }

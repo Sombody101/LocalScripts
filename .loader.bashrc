@@ -75,7 +75,7 @@ source "$LS/.colorsheet.sh" # Not a module, just variables
 using "utils/flags"
 
 # shellcheck disable=SC2034 # emergency_backup_version is used for custom PS1 prompts (./utils/cps)
-flag any SERVER UNKNOWN && emergency_backup_version="$(git -C "$LS" log -1 --format='%ad' --date=format:'%m.%d.%Y')"
+flag SERVER UNKNOWN && emergency_backup_version="$(git -C "$LS" log -1 --format='%ad' --date=format:'%m.%d.%Y')"
 
 using "command_registry.sh"
 
@@ -99,7 +99,7 @@ using "debugging/debug_root.sh"
 
 using "utils/colors"
 using "utils/happytime.sh"     # A joke command (Figlet)
-using "utils/cum"              # Limited utility install/update
+using "utils/cum"              # Cheap Utility Manager
 using "utils/text.sh"          # Provides 'Sprint' and 'array'
 using "utils/utils.sh"         # Misc commands for basic operations
 using "utils/prompt_setter.sh" # Sets the PS1 prompt (ui)
@@ -131,7 +131,7 @@ core::mount_drives() {
     for letter in {a..z}; do
         if [[ -d /mnt/$letter ]]; then
             sudo mount -t drvfs "$letter": "/mnt/$letter" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
-                core::warn -s "${letter^}:\\ not mounted on Windows :: Cannot mount to /mnt/$letter [[$?]]"
+                core::warn -s "${letter^}:\\ not mounted on Windows :: Cannot mount to /mnt/$letter [[$?]"
                 : "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
                 continue
             }
