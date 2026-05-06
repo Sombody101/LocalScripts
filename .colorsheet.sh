@@ -185,5 +185,5 @@ norm() {
     tput sgr0
 }
 
-NORM=$(norm)
+NORM="$(norm)"
 export NORM

@@ -7,7 +7,7 @@
 
 # So the prompt never has colors bleeding from a previous command
 export PS1="\[\033[0m\]$PS1"
-export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE} 2>/dev/null):\[$RED\]${LINENO}: \[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]}()\[$NORM\]:\[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\]: '
+export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE%.sh} 2>/dev/null):\[$RED\]${LINENO}:\[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]// /:+ \[$NORM\]:}\[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\]: '
 #export PS4='\[${BLUE}\]$(printf "[%s] @%s " $(date +%T) $LINENO)\[${NORM}\]'
 #export PS4='\[$NORM\]# $(basename ${BASH_SOURCE}):${LINENO}: ${FUNCNAME}(): '
 
@@ -17,19 +17,17 @@ LS="$(dirname "${BASH_SOURCE[0]}")"
 shopt -s direxpand
 
 # Determine machine
-[ -v WSL_DISTRO_NAME ] && export WSL=TRUE
+[[ -v WSL_DISTRO_NAME ]] && export WSL=TRUE
 case $(hostname) in
 *"SchoolLT") export sdev=TRUE ;; # School laptop
 *"Desktop") export hdev=TRUE ;;  # Home PC
 "server") export server=TRUE ;;  # Server
-"rasp"*) export server=TRUE ;;   # RaspberryPi
+#"rasp"*) export server=TRUE ;;   # RaspberryPi
 *) export unknown=TRUE ;;        # Anything else
 esac
 
 [[ "$WSL" && ! "$PATH" =~ "/mnt/c/Windows" ]] && {
-    # Important environment variables (VSCode and Windows utilities)
-    PATH="$PATH:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Windows/system32:/mnt/c/Windows"
-    alias rustr='/mnt/c/Program\ Files/JetBrains/RustRover\ 2025.3.4/bin/rustrover64.exe'
+    PATH="$PATH:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin"
 }
 
 export PATH
@@ -70,18 +68,7 @@ alias ref='exec $SHELL'
 
 # shellcheck disable=SC1091
 source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
-source "$LS/.colorsheet.sh" # Not a module, just variables
-
-using "utils/flags"
-
-# shellcheck disable=SC2034 # emergency_backup_version is used for custom PS1 prompts (./utils/cps)
-flag SERVER UNKNOWN && emergency_backup_version="$(git -C "$LS" log -1 --format='%ad' --date=format:'%m.%d.%Y')"
-
-using "command_registry.sh"
-
-using "utils/.temporary.sh"
-
-using "config/config.sh" -f
+source "$LS/.colorsheet.sh"            # Not a module, just variables
 core::create_config() {
     [[ -f "$HOME/.lsconfig.sh" && ! "$1" == "-f" ]] && {
         core::warn "Config file already exists at $HOME/.lsconfig.sh"
@@ -91,6 +78,15 @@ core::create_config() {
     cp "$LS/config/config.sh" "$HOME/.lsconfig.sh"
     echo "Config created at $HOME/.lsconfig.sh"
 }
+
+using "utils/flags"
+
+# shellcheck disable=SC2034 # emergency_backup_version is used for custom PS1 prompts (./utils/cps)
+flag SERVER UNKNOWN && emergency_backup_version="$(git -C "$LS" log -1 --format='%ad' --date=format:'%m.%d.%Y')"
+
+using "command_registry.sh"
+using "utils/.temporary.sh"
+using "config/config.sh" -f
 
 using "$HOME/.lsconfig.sh" -f # Import user defined configuration [OPTIONAL]
 using "debugging/debug_root.sh"
@@ -113,6 +109,7 @@ using ".cmds.sh"               # VERY old (probably legacy) commands from my day
 # shellcheck disable=SC2120
 core::mount_drives() {
     : ".loader: core::mount_drives"
+    core::hide_trace
 
     # OS check
     ! flag WSL && {

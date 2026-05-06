@@ -9,10 +9,11 @@ declare -g -A FLAG_MAP=(
 )
 
 core::flag() {
-    local exit_code=0
-    local arg var_name
+    core::hide_trace
 
-    [[ "$1" =~ any|or ]] && gecho "$(core::trace '1' '' ': ' "$1") Use of '$1' when it's no longer implemented." 
+    local exit_code=0 arg var_name
+
+    [[ "$1" =~ any|or ]] && gecho "$(core::trace '1' '' ': ' "$1") Use of '$1' when it's no longer implemented."
 
     for arg in "$@"; do
         var_name=${FLAG_MAP[$arg]}

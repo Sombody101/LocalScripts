@@ -7,17 +7,19 @@ path.pathify() {
     unset IFS
 }
 
-path.top() {
-    : "bashext: path.top"
+path.prepend() {
+    core::hide_trace
+    : "bashext: path.prepend"
     [[ ! "$1" ]] && {
         core::warn "No path given to add to \$PATH"
         return 1
     }
 
-    [[ ! "$PATH" =~ $1 ]] && export PATH="$1:$PATH"
+    [[ ":$PATH:" != *":$1:"* && -d "$1" ]] && export PATH="$1:$PATH"
 }
 
 path.add() {
+    core::hide_trace
     : "bashext: path.add"
     verbose "Adding: $1"
     [[ ! "$1" ]] && {
@@ -25,7 +27,7 @@ path.add() {
         return 1
     }
 
-    [[ ! "$PATH" =~ $1 ]] && export PATH="$PATH:$1"
+    [[ ":$PATH:" != *":$1:"* && -d "$1" ]] && export PATH="$PATH:$1"
 }
 
 path.show() {
@@ -42,6 +44,7 @@ path.towin() {
 }
 
 path.towsl() {
+    core::hide_trace
     : "path.towsl: Transform a Windows path to a WSL compatible path"
 
     local path

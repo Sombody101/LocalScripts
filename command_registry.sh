@@ -3,21 +3,8 @@
 __REGISTERED_COMMANDS=()
 _PAD_SIZE=20
 
-register_command() {
-    warn "Don't use this"
-    return
-
-    local command_name description formatted_string
-
-    command_name="$1"
-    shift
-    description="$*"
-
-    formatted_string=$(printf '%*s : %s' "$command_name" "$_PAD_SIZE" "$description")
-    __REGISTERED_COMMANDS+=("$formatted_string")
-}
-
 register_module() {
+    core::hide_trace
     local module_name cmds
 
     while [[ "$*" ]]; do
@@ -46,8 +33,6 @@ register_module() {
         shift
     done
 }
-
-#alias cmds='array __REGISTERED_COMMANDS'
 
 cmds() {
     local module_name

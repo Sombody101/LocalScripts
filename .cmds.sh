@@ -19,6 +19,6 @@ flag WSL && {
     DOWNLOADS="$WIN_USER/Downloads"
     DOCUMENTS="$WIN_USER/Documents"
 
-    docs() { cd $DOCUMENTS; }
-    down() { cd $DOWNLOADS; }
+    docs() { cd "$DOCUMENTS"; }
+    down() { cd "$DOWNLOADS"; }
 }

@@ -15,6 +15,7 @@ vset() {
 }
 
 verbose() {
+    core::hide_trace
     : "Verbose check: $VERBOSE"
 
     [[ "$VERBOSE" == "FALSE" ]] && {
@@ -24,5 +25,6 @@ verbose() {
     local stack
     stack="$(core::trace)"
     stack="${stack:-ROOT}"
+    core::show_trace
     echo "[$stack]: $*"
 }

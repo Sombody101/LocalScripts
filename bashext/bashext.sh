@@ -5,6 +5,7 @@
 alias grep='grep --color=auto'
 
 newnav() {
+    core::hide_trace
     : "bashext: newnav"
 
     [[ ! "$1" ]] && {
@@ -33,6 +34,7 @@ newnav() {
 }
 
 __nav_autocomplete() {
+    core::hide_trace
     : "bashext: __nav_autocomplete"
     [[ ! -d "$1" ]] && return 1
     echo "$1"/*
@@ -60,34 +62,10 @@ newnav home "$HOME"
 newnav main "/"
 newnav cst "$CST"
 
-flag WSL && {
-    newnav apps "/mnt/d/AppsIWillNeverFinish/"
-
-    token() {
-        [[ "$backup_env" ]] && {
-            core::error "Tokens are not available in a backup environment."
-            return
-        }
-
-        [[ ! "$DRIVE" ]] && {
-            core::error "Drive path is not set."
-            return
-        }
-
-        [[ ! "$1" ]] && {
-            core::error "No token name supplied."
-            return
-        }
-
-        ! cat "$DRIVE"/z-?????/"$1".to? 2>/dev/null && core::error "No token file '$1' found."
-    }
-}
-
-clrhist() { : >"$HOME/.bash_history"; }
-
 using -space "$BACKS"
 using "commanderr/command_parser.sh"
 using "utils.sh"
+using "winalias.sh"
 using "debugging/verbose.sh"
 #using "backup_manager/backup.sh"
 using "tsklist/TASKLIST.sh"
@@ -96,11 +74,10 @@ using "$ST"
 using "adbutils.sh"
 using "showcase.sh"
 
-# Import EmergencyBackupGenerator if not currently using a backup
-# [[ ! "$backup_env" ]] && {
-#     EBG="$BACKS/.emergency_backup_module/"
-#     using "$EBG/.emergency_backup_generator.sh"
-# }
+flag WSL && {
+    newnav apps "/mnt/d/AppsIWillNeverFinish/"
+    using "gitutils.sh"
+}
 
 # Reset namespace
 setspace

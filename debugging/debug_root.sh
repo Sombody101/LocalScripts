@@ -1,4 +1,11 @@
 #!/bin/bash
 
-alias debug='set -uo pipefail'
-alias stop-debug='set +uo pipefail'
+debug() {
+    export DEBUG=1
+    set -x
+}
+
+debug-stop() {
+    unset DEBUG
+    set +x
+}

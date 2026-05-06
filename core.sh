@@ -1,6 +1,12 @@
 #!/bin/bash
 
+# DEFINE: FORCE_DEBUG # Forces xtrace logs, even if `core::hide_trace` is used on a function. Doesn't apply to `core::ignore_trace`
+
 [[ ! "$PATH" == *"$HOME/.local/bin"* ]] && export PATH="$PATH:$HOME/.local/bin"
+
+alias 'core::hide_trace'='{ [[ ! -v BASH_XTRACEFD && ! "$FORCE_DEBUG" ]] && { local BASH_XTRACEFD; exec {BASH_XTRACEFD}>/dev/null; } } 2>/dev/null'
+alias 'core::ignore_trace'='{ local BASH_XTRACEFD; exec {BASH_XTRACEFD}>/dev/null; } 2>/dev/null'
+alias 'core::show_trace'='{ unset BASH_XTRACEFD; } 2>/dev/null'
 
 # Get a command stack trace (debugging)
 core::trace_legacy() {
@@ -8,7 +14,7 @@ core::trace_legacy() {
 
     for f in "${FUNCNAME[@]:$skip}"; do
         if [[ "$stack" ]]; then
-            stack="$CYAN$f$YELLOW>$CYAN$stack"
+            stack="${CYAN}${f}${YELLOW}>${CYAN}${stack}"
         else
             stack="$prefix$CYAN$f"
         fi
@@ -21,7 +27,7 @@ core::trace_legacy() {
         return
     }
 
-    echo "$stack$NORM"
+    echo "${stack}${NORM}"
 }
 
 core::trace() {
@@ -56,6 +62,7 @@ obsolete() {
 
 __print_log() {
     # "<color> [-s] <message>"
+    core::hide_trace
 
     local color="$1" trace
     shift
@@ -66,7 +73,7 @@ __print_log() {
         trace="$(core::trace '3' '' ': ' "$1") "
     fi
 
-    gecho "${trace}[${color}]${*}[/]" >&2
+    gecho "${trace# }[${color}]${*}[/]" >&2
 }
 
 core::error() {
@@ -93,4 +100,3 @@ error() {
 
 # Export basic logging functions
 export -f core::warn core::error __print_log core::trace
-#export RED YELLOW CYAN NORM

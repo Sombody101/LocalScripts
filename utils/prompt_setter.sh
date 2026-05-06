@@ -78,17 +78,10 @@ ui() {
 }
 
 __ui_autocomplete() {
-    local cur prev
+    local cur="${COMP_WORDS[COMP_CWORD]}" \
+        uis="$LS/utils/cps"
 
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD - 1]}"
-
-    if [[ "$prev" == "ui" ]]; then
-        local file_dir="$LS/utils/cps"
-        read -ar COMPREPLY <<<"$(compgen -f -d -- "$file_dir/$cur" 2>/dev/null | sed "s|^$file_dir/||")"
-    else
-        COMPREPLY=()
-    fi
+    mapfile -t COMPREPLY < <(compgen -f -- "$uis/$cur" 2>/dev/null | sed "s|^$uis/||")
 }
 
 complete -F __ui_autocomplete ui

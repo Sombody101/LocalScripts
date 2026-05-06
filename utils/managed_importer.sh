@@ -20,7 +20,11 @@ setspace() {
 alias getspace='echo "$__using_path"'
 setspace "$__using_path" # Reset namespace
 
+# Import 
 using() {
+    # using: Script managed importer
+    core::hide_trace
+
     [[ "$1" == "-h" ]] && {
         echo ".loader.bashrc: using"
         echo "  <file path> <option> | <-space> <path>"
@@ -42,7 +46,7 @@ using() {
         file="$(realpath "$file")"
 
     # Check if arg is not an absolute path
-    elif [[ ! "$file" =~ ^"/" ]]; then
+    elif [[ ! "$file" =~ ^/|~ ]]; then
         local scripts=("$__using_path/$file"*)
         local s_len="${#scripts[@]}"
 
@@ -72,10 +76,14 @@ using() {
 
     add_managed_import 0 "[dodgerblue]full_path:[/]" "$(realpath "$file")"
 
+    core::show_trace
     # shellcheck disable=SC1090
-    if ! source "$file"; then
+    source "$file"
+    local result="$?"
+    core::hide_trace
+    [[ ! "$result" -eq 0 ]] && {
         add_managed_import 0 "[red]full_path: [[Script crashed][/]" "$(realpath "$file")"
-    fi
+    }
 
     if [[ "$2" == '-o' ]]; then
         gecho "[blue]'$file' found [[$1]][/]"
