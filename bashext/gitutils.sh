@@ -6,11 +6,6 @@ token() {
         return
     }
 
-    [[ "$backup_env" ]] && {
-        core::error "Tokens are not available in a backup environment."
-        return
-    }
-
     [[ ! "$DRIVE" ]] && {
         core::error "Drive path is not set."
         return

@@ -46,18 +46,16 @@ loader_path="$LS/.loader.bashrc"
 }
 
 import_title="# Import LocalScripts"
-if grep -q "$import_title" "$bash_rc"; then
-    {
-        echo -e "\n\n$import_title"
-        echo "if [[ \$NOLS ]]; then : Skipping LocalScripts;"
-        echo "elif [[ -d '$LS' && -f '$LS/.loader.bashrc' ]]; then"
-        echo "  source '$LS/.loader.bashrc'"
-        echo "else"
-        echo "  echo 'Unable to find .loader.bashrc!'"
-        echo "  echo 'Check if it was removed, or reinstall it from GitHub'"
-        echo "fi"
-    } >>"$bash_rc"
-fi
+grep -q "$import_title" "$bash_rc" && {
+    echo -e "\n\n$import_title"
+    echo "if [[ \$NOLS ]]; then : Skipping LocalScripts;"
+    echo "elif [[ -d '$LS' && -f '$LS/.loader.bashrc' ]]; then"
+    echo "  source '$LS/.loader.bashrc'"
+    echo "else"
+    echo "  echo 'Unable to find .loader.bashrc!'"
+    echo "  echo 'Check if it was removed, or reinstall it from GitHub'"
+    echo "fi"
+} >>"$bash_rc"
 
 [[ "$0" == "-r" ]] && {
     # Restart shell
@@ -65,5 +63,18 @@ fi
 }
 
 echo "LocalScripts installed."
+
+install_flyline() {
+    curl -sSfL https://github.com/HalFrgrd/flyline/releases/latest/download/install.sh | sh
+}
+
+echo "Install flyline? [Y/n]"
+read -p "[y/n]: " yn
+case $yn in
+    [Yy]*) return 0  ;;
+    [Nn]*) echo "No install." ;;
+esac
+
+unset -f install_flyline
 
 exit_script 0

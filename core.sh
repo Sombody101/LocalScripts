@@ -4,9 +4,24 @@
 
 [[ ! "$PATH" == *"$HOME/.local/bin"* ]] && export PATH="$PATH:$HOME/.local/bin"
 
+# Check if a command exists
+cmdchk() {
+    command -v "$1" &>/dev/null
+}
+
+# shellcheck disable=SC2142
+alias 'core::skip'='{ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then exit 101; else return 101; fi; }'
 alias 'core::hide_trace'='{ [[ ! -v BASH_XTRACEFD && ! "$FORCE_DEBUG" ]] && { local BASH_XTRACEFD; exec {BASH_XTRACEFD}>/dev/null; } } 2>/dev/null'
 alias 'core::ignore_trace'='{ local BASH_XTRACEFD; exec {BASH_XTRACEFD}>/dev/null; } 2>/dev/null'
 alias 'core::show_trace'='{ unset BASH_XTRACEFD; } 2>/dev/null'
+
+if ! cmdchk 'core::hide_trace'; then
+    # Prevents errors in non-interactive instances
+    function core::skip() { :; }
+    function core::hide_trace() { :; }
+    function core::ignore_trace() { :; }
+    function core::show_trace() { :; }
+fi
 
 # Get a command stack trace (debugging)
 core::trace_legacy() {
@@ -31,8 +46,7 @@ core::trace_legacy() {
 }
 
 core::trace() {
-    : "core.sh: core::trace"
-
+    core::ignore_trace
     [[ "$4" == '-s' ]] && return
 
     local stack skip="${1:-2}" prefix="$2" suffix="${3:-:}"
@@ -40,10 +54,11 @@ core::trace() {
     # BASH_SOURCE: File
     # BASH_LINENO: Line
     # FUNCNAME: Command
-    local file line command len="${#FUNCNAME[@]}"
+    local file line command len="${#FUNCNAME[@]}" 
+    local bsrc="${BASH_SOURCE[len - 1]}" 
 
-    [[ "${BASH_SOURCE[len - 1]}" == *"/.profile" ]] && ((len -= 2))
-    [[ "${BASH_SOURCE[len - 1]}" == *"/.bashrc" ]] && ((len--))
+    [[ "$bsrc" == *"/.profile" ]] && ((len -= 2))
+    [[ "$bsrc" == *"/.bashrc" ]] && ((len--))
 
     for ((i = skip; i < len; ++i)); do
         file="$(basename "${BASH_SOURCE[i]}")"
@@ -56,9 +71,19 @@ core::trace() {
     echo "$stack"
 }
 
-obsolete() {
-    core::error "Not implemented yet"
+core::create_config() {
+    [[ -f "$HOME/.lsconfig.sh" && ! "$1" == "-f" ]] && {
+        core::warn "Config file already exists at $HOME/.lsconfig.sh"
+        return 1
+    }
+
+    cp "$LS/config/config.sh" "$HOME/.lsconfig.sh"
+    echo "Config created at $HOME/.lsconfig.sh"
 }
+
+#
+# Logging
+#
 
 __print_log() {
     # "<color> [-s] <message>"
@@ -70,33 +95,59 @@ __print_log() {
     if [[ "$1" == '-s' ]]; then
         shift
     else
-        trace="$(core::trace '3' '' ': ' "$1") "
+        trace="$(core::trace '3' '' ': ' "$1" :) "
     fi
 
     gecho "${trace# }[${color}]${*}[/]" >&2
 }
 
 core::error() {
-    : "core.sh: core::error"
     __print_log red "$@"
     return 4
 }
 
 core::warn() {
-    : "core.sh: core::warn"
     __print_log yellow "$@"
     return 3
 }
 
-warn() {
-    core::warn "[CORE] Update from obsolete warn to core::warn"
-    core::warn "$@"
+core::info() {
+    __print_log deepskyblue "$@"
+    return 0
 }
 
-error() {
-    core::warn "[CORE] Update from obsolete error to core::error"
-    core::error "$@"
+core::success() {
+    __print_log green "$@"
+    return 0
 }
+
+core::verbose() {
+    core::hide_trace
+    [[ ! "$VERBOSE" ]] && return 0
+    core::show_trace
+
+    __print_log magenta "verbose: " "$@"
+    return 0
+}
+
+core::obsolete() {
+    core::hide_trace
+    [[ ! "$1" ]] && { 
+        core::warn "Missing obsolete function name."
+        return
+    }
+    [[ ! "$2" ]] && {
+        core::warn "Missing replacement function name."
+        return
+    }
+    core::show_trace
+
+    __print_log yellow "obsolete call to '$1', replace with '$2'"
+    return 101
+}
+
+alias warn='core::obsolete warn core::warn; core::warn'
+alias error='core::obsolete error core::error; core::error'
 
 # Export basic logging functions
-export -f core::warn core::error __print_log core::trace
+export -f core::warn core::error core::info __print_log core::trace

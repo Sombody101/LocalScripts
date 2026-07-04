@@ -5,7 +5,11 @@ _PAD_SIZE=20
 
 register_module() {
     core::hide_trace
-    local module_name cmds
+    local export_mod module_name cmds
+
+    [[ "$1" == export ]] && {
+        export_mod=true
+    }
 
     while [[ "$*" ]]; do
         module_name="$1"
@@ -19,6 +23,7 @@ register_module() {
 
         while IFS= read -r cmd; do
             [[ $cmd =~ ^$module_name ]] && cmds+=("$cmd")
+            [[ "$export_mod" ]] && export -f "${cmd?}"
         done < <(declare -F | cut -d ' ' -f 3 | grep -E ^"$module_name\.|$module_name::")
 
         [[ "${#cmds[@]}" -eq 0 ]] && {
@@ -28,7 +33,7 @@ register_module() {
 
         __REGISTERED_COMMANDS+=("${cmds[@]}")
 
-        : "${CYAN}MODULE REGISTERED: $module_name$NORM"
+        : "${CYAN}MODULE REGISTERED: ${module_name}${NORM}"
 
         shift
     done

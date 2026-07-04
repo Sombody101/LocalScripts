@@ -16,3 +16,5 @@ core::ignore_trace() { :; }
 
 # 
 core::show_trace() { :; }
+
+source "./.colorsheet.sh"

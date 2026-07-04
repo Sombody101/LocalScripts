@@ -6,6 +6,8 @@ declare -g -A FLAG_MAP=(
     ["WSL"]="WSL"
     ["SERVER"]="server"
     ["UNKNOWN"]="unknown"
+    ["DEBUG"]="DEBUG"
+    ["VERBOSE"]="VERBOSE"
 )
 
 core::flag() {
@@ -13,15 +15,15 @@ core::flag() {
 
     local exit_code=0 arg var_name
 
-    [[ "$1" =~ any|or ]] && gecho "$(core::trace '1' '' ': ' "$1") Use of '$1' when it's no longer implemented."
+    [[ "$1" =~ any|or ]] && core::warn "Use of '$1' when it's no longer implemented."
 
     for arg in "$@"; do
         var_name=${FLAG_MAP[$arg]}
 
         if [[ -n "$var_name" ]]; then
-            if [[ -z "${!var_name}" ]]; then
+            [[ -z "${!var_name}" ]] && {
                 exit_code=1
-            fi
+            }
         else
             core::warn "Unknown flag: $arg"
             [[ $exit_code -eq 0 || $exit_code -eq 1 ]] && exit_code=2

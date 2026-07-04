@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#alias ':'='core::warn "use of deprecated doc"'
+
 [[ "$DEBUG" ]] && set -x
 
 # Print all ':' statements (usually used for debug lines only visible in with set-x)
@@ -13,6 +15,10 @@ export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE%.sh} 2>/dev/null):\[$RED\]${L
 
 LS="$(dirname "${BASH_SOURCE[0]}")"
 
+# Provides all "core" functions (warn, error, trace, etc)
+# shellcheck disable=SC1091
+source "$LS/core.sh"
+
 # Disable variable escaping in shell
 shopt -s direxpand
 
@@ -23,22 +29,14 @@ case $(hostname) in
 *"Desktop") export hdev=TRUE ;;  # Home PC
 "server") export server=TRUE ;;  # Server
 #"rasp"*) export server=TRUE ;;   # RaspberryPi
-*) export unknown=TRUE ;;        # Anything else
+*) export unknown=TRUE ;; # Anything else
 esac
 
-[[ "$WSL" && ! "$PATH" =~ "/mnt/c/Windows" ]] && {
-    PATH="$PATH:/mnt/c/Users/evans/AppData/Local/Programs/Microsoft VS Code/bin"
+[[ "$WSL" && ! "$PATH" =~ "Microsoft VS Code" ]] && {
+    PATH="$PATH:/mnt/c/Program Files/VSCodium/bin"
 }
 
 export PATH
-
-# Provides all "core" functions (warn, error, trace, etc)
-# shellcheck disable=SC1091
-source "$LS/core.sh"
-
-[[ "$PRINT_DEBUG_LINES" ]] && {
-    :() { echo "$*" >&2; }
-}
 
 alias ed='nano'
 alias drive='[[ $DRIVE != "DRIVE_NOT_FOUND" ]] && cd $DRIVE || core::warn "Drive not found : $DRIVE"'
@@ -49,7 +47,7 @@ alias .bashrc='ed $HOME/.bashrc'
 alias .loader='ed $LS/.loader.bashrc'
 
 # Very new. Not all machines will have this installed, but use it if it is.
-command -v eza >/dev/null && alias ls='eza'
+cmdchk eza && alias ls='eza'
 
 alias ll='ls -l'
 alias l='ls -CF'
@@ -67,17 +65,8 @@ alias ref='exec $SHELL'
 ###
 
 # shellcheck disable=SC1091
-source "$LS/utils/managed_importer.sh" # Provides 'using' and import commands
+source "$LS/utils/mimp.sh" # Provides 'using' and import commands
 source "$LS/.colorsheet.sh"            # Not a module, just variables
-core::create_config() {
-    [[ -f "$HOME/.lsconfig.sh" && ! "$1" == "-f" ]] && {
-        core::warn "Config file already exists at $HOME/.lsconfig.sh"
-        return 1
-    }
-
-    cp "$LS/config/config.sh" "$HOME/.lsconfig.sh"
-    echo "Config created at $HOME/.lsconfig.sh"
-}
 
 using "utils/flags"
 
@@ -100,65 +89,22 @@ using "utils/text.sh"          # Provides 'Sprint' and 'array'
 using "utils/utils.sh"         # Misc commands for basic operations
 using "utils/prompt_setter.sh" # Sets the PS1 prompt (ui)
 using "remupd/git-recov.sh"    # Provides 'gitupdate'
-using ".cmds.sh"               # VERY old (probably legacy) commands from my days on ChromeOS Embedded Linux
-
-###
-#* Mount drive and import BashExt
-###
-
-# shellcheck disable=SC2120
-core::mount_drives() {
-    : ".loader: core::mount_drives"
-    core::hide_trace
-
-    # OS check
-    ! flag WSL && {
-        core::warn "!WSL: $WSL_DISTRO_NAME: Cannot mount drives (Not WSL)"
-        return 1
-    }
-
-    ! sudo -n true && {
-        : "Sudo not available. Skipping drive mount."
-        return 1
-    }
-
-    uid=$(id -u "$USER")
-    gid=$(id -g "$USER")
-
-    for letter in {a..z}; do
-        if [[ -d /mnt/$letter ]]; then
-            sudo mount -t drvfs "$letter": "/mnt/$letter" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
-                core::warn -s "${letter^}:\\ not mounted on Windows :: Cannot mount to /mnt/$letter [[$?]"
-                : "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
-                continue
-            }
-
-            [[ -d "/mnt/$letter/.BACKUPS" ]] && export DRIVE="/mnt/$letter"
-        fi
-    done
+cmdchk flyline && {
+    using "utils/builtins/flyline.sh"
 }
 
 flag WSL && {
     export DOTNET_ROOT="$HOME/.dotnet"
     export DOTNET_CLI_TELEMETRY_OPTOUT="true"
-    export BROWSER="/mnt/c/Program\ Files/Google/Chrome/Application/chrome.exe"
-
+    using "utils/wslutil.sh"
     core::mount_drives
 }
 
 using "bashext/bashext.sh"
 
-flag WSL && {
-    path.add '/mnt/c/rsl/platform-tools'
-    path.add "$DOTNET_ROOT:$DOTNET_ROOT/tools:$HOME/.local/bin"
-    _tmp_vspath=$(path.towsl 'C:\Program Files\Microsoft Visual Studio\18\Insiders\Common7\IDE')
-    [[ -d $_tmp_vspath ]] && path.add "$_tmp_vspath"
-    alias vsx='devenv.exe'
+# Configures additional paths, requires bashext
+init_wsl_tools
 
-    unset _tmp_vspath
-}
-
-register_module core
 export DRIVE_BIN="$BACKS/bin"
 
 regload "$LS/.loader.bashrc"
@@ -169,12 +115,13 @@ regload "$LS/.loader.bashrc"
 }
 
 # Binary characters keep appearing in my main PCs history file.
-flag HOME && [[ "$(file -b ~/.bash_history)" == "data" ]] && {
-    : "Cleaning bash history"
+[[ "$(file -b ~/.bash_history)" == "data" ]] && {
+    core::verbose "Cleaning bash history"
     cat ~/.bash_history | col -b >~/.bash_history.spare
     mv ~/.bash_history.spare ~/.bash_history
 }
 
-[[ "$DEBUG" ]] && set +x
+# Source the independent file for each computer if it's there
+using "$HOME/.ind.sh" -f
 
 return 0 # Mask return if there was no debug variable

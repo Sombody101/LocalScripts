@@ -58,7 +58,7 @@ using() {
                 printf '\t%s\n' "$item"
             done
 
-            add_managed_import 2 "[deeppink4_1]atmp_path:[/]" "$file"
+            addmimp 2 "[deeppink4_1]atmp_path:[/]" "$file"
             return 1
         fi
 
@@ -66,15 +66,15 @@ using() {
     else
         [[ "$2" != '-f' ]] && {
             core::warn "Unable to find '$file'"
-            add_managed_import 1 "[deeppink4_1]atmp_path:[/]" "$file"
+            addmimp 1 "[deeppink4_1]atmp_path:[/]" "$file"
             return 1
         }
 
-        add_managed_import 1 "[darkviolet]soft_path:[/]" "$file"
+        addmimp 1 "[darkviolet]soft_path:[/]" "$file"
         return 1
     fi
 
-    add_managed_import 0 "[dodgerblue]full_path:[/]" "$(realpath "$file")"
+    addmimp 0 "[dodgerblue]full_path:[/]" "$(realpath "$file")"
 
     core::show_trace
     # shellcheck disable=SC1090
@@ -82,7 +82,7 @@ using() {
     local result="$?"
     core::hide_trace
     [[ ! "$result" -eq 0 ]] && {
-        add_managed_import 0 "[red]full_path: [[Script crashed][/]" "$(realpath "$file")"
+        addmimp 0 "[red]full_path: [[Script crashed][/]" "$(realpath "$file")"
     }
 
     if [[ "$2" == '-o' ]]; then
@@ -93,7 +93,7 @@ using() {
 
 MANAGED_LOADED=()
 
-add_managed_import() {
+addmimp() {
     [[ "$1" == "-h" ]] && {
         echo "managed_importer.sh: add_managed_import"
         echo "  <arg1> : Status code [0|1|2 found|not found|found many]"
@@ -133,20 +133,18 @@ add_managed_import() {
     MANAGED_LOADED+=("$(gecho "$status $message [darkorange]$file"'[/]')")
 }
 
-add_random_import() {
-    MANAGED_LOADED+=("$*")
-}
-
 # Same as 'loaded', but less involvment
 alias mimports='array MANAGED_LOADED'
 
 LOADED=()
 
 regload() {
+    core::hide_trace
     __add_reg "[[[magenta]+[/]]:" "$*"
 }
 
 regnload() {
+    core::hide_trace
     __add_reg "[[[red]-[/]]:" "$*"
 }
 
@@ -157,14 +155,21 @@ __add_reg() {
 alias loaded='array LOADED'
 
 track() {
+    core::ignore_trace
     local cmd="$1"
     shift
+    core::show_trace
 
     : "${CYAN}ENTER: $YELLOW$cmd$CYAN :ENTER$NORM"
+
+    core::ignore_trace
     $cmd "$@"
     local ret="$?"
+    core::show_trace
+
     : "${CYAN}EXIT: $YELLOW$cmd$CYAN :EXIT$NORM"
 
+    core::ignore_trace
     # return commands code
     return "$ret"
 }

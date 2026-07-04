@@ -13,8 +13,8 @@ Sprint() {
 }
 
 array() {
-    local -n arr="$1"
-    printf '%s\n' "${arr[@]}"
+    local -n __arr="$1"
+    printf '%s\n' "${__arr[@]}"
 }
 
 TAB="$(printf '\t')"

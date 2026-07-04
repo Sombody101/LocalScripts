@@ -3,6 +3,8 @@
 debug() {
     export DEBUG=1
     set -x
+
+    [[ "$1" ]] && debug-stop
 }
 
 debug-stop() {

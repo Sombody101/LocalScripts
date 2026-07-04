@@ -35,7 +35,6 @@ newnav() {
 
 __nav_autocomplete() {
     core::hide_trace
-    : "bashext: __nav_autocomplete"
     [[ ! -d "$1" ]] && return 1
     echo "$1"/*
 }
@@ -44,10 +43,6 @@ BACKS="$LS/bashext"
 [[ "$backup_env" ]] && BACKS="$LS/.emergency_bashext_backup"
 
 export BACKS
-
-CST="$BACKS/cstools"
-CST_M="$CST/cstools.main.sh"
-ST="$BACKS/site-tools/site-tools.sh"
 
 # Quiet Un-Alias
 qunalias() { unalias "$1" 2>/dev/null; }
@@ -60,7 +55,6 @@ newnav backs "$BACKS"
 flag WSL && newnav drive "$DRIVE"
 newnav home "$HOME"
 newnav main "/"
-newnav cst "$CST"
 
 using -space "$BACKS"
 using "commanderr/command_parser.sh"
@@ -68,11 +62,9 @@ using "utils.sh"
 using "winalias.sh"
 using "debugging/verbose.sh"
 #using "backup_manager/backup.sh"
-using "tsklist/TASKLIST.sh"
-using "$CST_M"
-using "$ST"
 using "adbutils.sh"
 using "showcase.sh"
+using "debugging/prof.sh"
 
 flag WSL && {
     newnav apps "/mnt/d/AppsIWillNeverFinish/"
@@ -87,18 +79,16 @@ unset qunalias
 
 vs() {
     : "bashext: vs"
-    local file_path="${*:-.}"
+    local file_path="${*:-.}"    
 
-    # No VSCode, so use Nano
-    [[ ! "$(which code)" ]] && {
-        ed "$file_path"
-        return $?
+    cmdchk codium && { (codium "$file_path"); return; }
+    cmdchk code && { (code "$file_path"); return; }
+    [[ -d "$file_path" ]] && { 
+        core::error "No valid editor path found, and given path is a directory. nano fallback will not work."
+        return; 
     }
-
-    (code "$file_path")
 }
 
-# Register file
 regload "$BACKS/bashext.sh"
 
 [[ "$DEBUG_EXT" && ! "$DEBUG_LOADER" ]] && set +x

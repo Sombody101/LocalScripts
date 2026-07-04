@@ -2,7 +2,7 @@
 
 readonly ACTIVE_UIP="$HOME/.active_ui"
 
-[ ! -f "$ACTIVE_UIP" ] && {
+[[ ! -f "$ACTIVE_UIP" ]] && {
     core::warn "No ACTIVE_UI : Creating one (Newest known)"
     echo "custom_1" >"$ACTIVE_UIP"
 }

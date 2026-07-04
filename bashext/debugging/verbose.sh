@@ -1,13 +1,12 @@
 #!/bin/bash
 
-[[ ! "$VERBOSE" ]] && export VERBOSE=FALSE
-
 vset() {
-    if [[ "$1" == "true" ]]; then
+    local v=${1:-true}
+    if [[ "$v" == "true" ]]; then
         export VERBOSE=TRUE
         return 0
-    elif [[ "$1" == "false" ]]; then
-        export VERBOSE=FALSE
+    elif [[ "$v" == "false" ]]; then
+        unset VERBOSE
         return 0
     fi
 
@@ -15,10 +14,12 @@ vset() {
 }
 
 verbose() {
-    core::hide_trace
-    : "Verbose check: $VERBOSE"
+    core::warn "Call to legacy 'verbose'. Change it to 'core::verbose'"
+    core::verbose "$@"
+    return
 
-    [[ "$VERBOSE" == "FALSE" ]] && {
+    core::hide_trace
+    [[ ! "$VERBOSE" ]] && {
         return 1
     }
 
@@ -26,5 +27,5 @@ verbose() {
     stack="$(core::trace)"
     stack="${stack:-ROOT}"
     core::show_trace
-    echo "[$stack]: $*"
+    gecho "$stack $*"
 }

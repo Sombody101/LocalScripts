@@ -21,7 +21,7 @@ path.prepend() {
 path.add() {
     core::hide_trace
     : "bashext: path.add"
-    verbose "Adding: $1"
+    core::verbose "Adding: $1"
     [[ ! "$1" ]] && {
         core::warn "No path given to add to \$PATH"
         return 1
