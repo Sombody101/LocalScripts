@@ -6,11 +6,13 @@
 
 [[ "$DEBUG" ]] && set -x
 
-# So the prompt never has colors bleeding from a previous command
-export PS1="\[\033[0m\]$PS1"
-export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE%.sh} 2>/dev/null):\[$RED\]${LINENO}:\[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]// /:+ \[$NORM\]:}\[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\]: '
-#export PS4='\[${BLUE}\]$(printf "[%s] @%s " $(date +%T) $LINENO)\[${NORM}\]'
-#export PS4='\[$NORM\]# $(basename ${BASH_SOURCE}):${LINENO}: ${FUNCNAME}(): '
+[[ ! "$__PROFILER_RUN" ]] && { 
+    # So the prompt never has colors bleeding from a previous command
+    export PS1="\[\033[0m\]$PS1"
+    export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE%.sh} 2>/dev/null):\[$RED\]${LINENO}:\[$(echo -ne "\e[38;2;255;165;0m")\]${FUNCNAME[0]// /:+ \[$NORM\]:}\[$CYAN\][${SHLVL},${BASH_SUBSHELL},$?]\[$NORM\]: '
+    #export PS4='\[${BLUE}\]$(printf "[%s] @%s " $(date +%T) $LINENO)\[${NORM}\]'
+    #export PS4='\[$NORM\]# $(basename ${BASH_SOURCE}):${LINENO}: ${FUNCNAME}(): '
+}
 
 LS="$(dirname "${BASH_SOURCE[0]}")"
 

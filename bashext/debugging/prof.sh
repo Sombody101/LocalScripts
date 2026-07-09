@@ -1,38 +1,65 @@
 #!/bin/bash
 
 prof.start() {
-    # see https://stackoverflow.com/a/20855353
-    exec 3>&2 2> >(tee /tmp/sample-$$.log |
-        sed -u 's/^.*$/now/' |
-        date -f - +%s.%N >/tmp/sample-$$.tim)
+    export __PROFILER_RUN=running
+    PROF_LOG="/tmp/prof-$$.log"
+    export PS4='+ [${EPOCHREALTIME}] [${BASH_SOURCE}:${LINENO}] '
+    exec 4>&2 2>"$PROF_LOG"
     set -x
 }
 
 prof.stop() {
     set +x
-    exec 2>&3 3>&-
-
-    echo "To view timing log:"
-    echo "bash_prof_show $$"
+    exec 2>&4 4>&-
+    unset __PROFILER_RUN
 }
 
 prof.show() {
-    local pid=${1:?missing pid}
-    local tim_file=/tmp/sample-${pid}.tim
-    local log_file=/tmp/sample-${pid}.log
+    local log="${1:-/tmp/prof-$$.log}"
+    if [[ ! -f "$log" ]]; then
+        echo "Profile log $log not found." >&2
+        return 1
+    fi
 
-    paste <(
-        while read -r tim; do
-            [[ -z "$last" ]] && last="${tim//./}" && first="${tim//./}"
-            crt=000000000$((${tim//./} - 10#0$last))
-            ctot=000000000$((${tim//./} - 10#0$first))
-            
-            printf "%12.9f %12.9f\n" ${crt:0:${#crt}-9}.${crt:${#crt}-9} \
-                ${ctot:0:${#ctot}-9}.${ctot:${#ctot}-9}
-            
-            last="${tim//./}"
-        done <"${tim_file}"
-    ) "${log_file}"
+    awk '
+    BEGIN { last = 0 }
+    
+    # Matched one or more + symbols at the start of the trace line
+    /^\++ \[/ {
+        # Extract floating-point seconds timestamp
+        split($0, parts, "[[]|]"); 
+        time = parts[2];
+        
+        # Strip PS4 prefix matching variable depth (+ or ++ or +++)
+        cmd = $0;
+        sub(/^\++ \[[0-9.]+] /, "", cmd);
+
+        if (last > 0) {
+            delta_ms = (time - last) * 1000.0;
+            total_time_ms[prev_cmd] += delta_ms;
+            counts[prev_cmd]++;
+        }
+        last = time;
+        prev_cmd = cmd;
+    }
+    END {
+        if (last > 0) {
+            total_time_ms[prev_cmd] += 0;
+            counts[prev_cmd]++;
+        }
+        
+        print "================ TOP SLOWEST COMMANDS ================";
+        for (c in total_time_ms) {
+            printf "%10.3f ms total (%4d calls) | %s'$NORM'\n", total_time_ms[c], counts[c], c;
+        }
+    }' "$log" | sort -rn -k1,1
+}
+
+prof.run() {
+    prof.start
+    "$@"
+    prof.stop
+    prof.show "/tmp/prof-$$.log"
 }
 
 prof.bench() {
@@ -51,46 +78,5 @@ prof.bench() {
     echo "Average time: $((out/iter))"
 }
 
-prof.fbench() {
-    local iter="${1:-500000}" test="$2"
-
-    [[ ! "$test" ]] && {
-        core::error "No test supplied"
-        return
-    }
-
-    echo "Running $iter times..."
-    
-    local TIMEFORMAT='%3R,%3U,%3S'
-    
-    local tmp_time
-    tmp_time=$(mktemp)
-
-    exec 3>&2
-    {
-        time {
-            eval "for ((i=0; i<iter; ++i)); do $test; done"
-        }
-    } 2> "$tmp_time" 3>&2
-    exec 3>&-
-
-    local metrics
-    metrics=$(cat "$tmp_time")
-    rm -f "$tmp_time"
-
-    local raw_real
-    raw_real=$(echo "$metrics" | cut -d',' -f1)
-
-    local ms_real
-    ms_real=$(echo "$raw_real" | tr -d '.')
-    
-    ! cmdchk bc && {
-        core::warn "bc not found, no iteration-specific timings can be processed."        
-        return
-    }
-
-    echo "Average time: $((ms_real / iter))ms per iteration"
-}
-
-regmod prof
-export -f prof.start prof.stop
+#regmod prof
+#export -f prof.start prof.stop
