@@ -11,8 +11,6 @@ ACTIVE_UI=$(cat "$ACTIVE_UIP")
 UIP="$LS/utils/cps"
 
 ui() {
-    : ".cmds.sh: ui"
-
     shift_ui() {
         local ps1_name="$1" \
             new_ps1="$2" \
@@ -26,11 +24,10 @@ ui() {
             return 0
         }
 
-        : "$ps1_name -> $ACTIVE_UIP"
+        core::verbose "$ps1_name -> $ACTIVE_UIP"
         [[ "$nosave" != "-nosave" ]] && echo "$ps1_name" >"$ACTIVE_UIP"
 
-        new_ps1="${new_ps1:-Failed to set PS1>}"
-        PS1="$new_ps1 "
+        PS1="${new_ps1:-Failed to set PS1>} "
         ACTIVE_UI="$ps1_name"
 
         [[ "$reset" == "-r" ]] && ref
@@ -47,7 +44,7 @@ ui() {
             output="$stored_ui ($ACTIVE_UI)"
         }
 
-        printf "\033[38;5;208m%s\033[m\n" "$output"
+        gecho "[orange]${output}[/]"
         ;;
 
     "ubuntu")

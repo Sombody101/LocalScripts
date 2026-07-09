@@ -1,7 +1,6 @@
 #!/bin/bash
 
 path.pathify() {
-    : "bashext: path.pathify"
     IFS="/"
     echo "$*"
     unset IFS
@@ -9,7 +8,6 @@ path.pathify() {
 
 path.prepend() {
     core::hide_trace
-    : "bashext: path.prepend"
     [[ ! "$1" ]] && {
         core::warn "No path given to add to \$PATH"
         return 1
@@ -20,7 +18,6 @@ path.prepend() {
 
 path.add() {
     core::hide_trace
-    : "bashext: path.add"
     core::verbose "Adding: $1"
     [[ ! "$1" ]] && {
         core::warn "No path given to add to \$PATH"
@@ -31,7 +28,6 @@ path.add() {
 }
 
 path.show() {
-    : "bashext: path.show"
     tr ':' '\n' <<<"$PATH"
 }
 
@@ -45,8 +41,6 @@ path.towin() {
 
 path.towsl() {
     core::hide_trace
-    : "path.towsl: Transform a Windows path to a WSL compatible path"
-
     local path
 
     if [[ ! "$*" ]]; then
@@ -55,29 +49,20 @@ path.towsl() {
         path="$(wslpath -u "$*")"
     fi
 
-    printf "%q\n" "$path" | tr -d "'"
+    echo "$path" | tr -d "'"
 }
 
+alias wcd='path.cdtowsl'
 path.cdtowsl() {
-    : "path.cdtowsl: Calls 'path.towsl' and automatically CDs into the returned directory"
-
     # shellcheck disable=SC2164 # It already returns. No point adding '|| return'
     cd "$(path.towsl "$*"/ | sed 's/\\//g')"
 }
 
 path.trim_spaces() {
-    export PATH="$(echo "$PATH" | tr ':' '\n' | grep -v ' ' | grep -v '/mnt/c' | paste -sd: -)"
-}
-
-alias wcd='path.cdtowsl'
-
-file.exists() {
-    [[ -f "$1" ]]
+    export PATH="$(echo "$PATH" | tr ':' '\n' | grep -v -E ' |/mnt/c' | paste -sd: -)"
 }
 
 array.contains() {
-    : "array.contains: Check if an array contains a substring | <arr_name> <substring ...>"
-
     local search_string
     local -n array="$1"
 
@@ -87,7 +72,7 @@ array.contains() {
 }
 
 string.isnum() {
-    [[ $1 =~ ^[0-9]+$ ]]
+    [[ "$1" =~ ^[0-9]+$ ]]
 }
 
 string.isstr() {
@@ -155,10 +140,8 @@ time.seconds_until_date() {
 }
 
 flag HOME && {
-    D4D="/mnt/e/Downloads/hehehe/de4dot"
-    d4d() {
-        "$D4D/de4dot.exe" "$@"
-    }
+    readonly D4D="/mnt/e/Downloads/hehehe/de4dot"
+    alias d4d="$D4D/de4dot.exe"
 }
 
 watch() {
@@ -219,50 +202,12 @@ git.set-url() {
 }
 
 dir.sizes() {
-    for item in $(ls -a); do
+    for item in ./* ./.*; do
         du -sh "$item"
     done
 }
 
-cpair() {
-    local filename="$1"
-
-    [[ ! "$filename" ]] && {
-        core::warn "No file name given"
-        return 1
-    }
-
-    local file_h="$filename.h" \
-        file_cpp="$filename.cpp" \
-        exit=
-
-    [[ -f "$file_h" ]] && {
-        core::warn "The file $file_h already exists"
-        exit="true"
-    }
-
-    [[ -f "$file_cpp" ]] && {
-        core::warn "The file $file_cpp already exists"
-        exit="true"
-    }
-
-    [[ "$exit" ]] && return 1
-
-    touch "$file_h"
-
-    {
-        echo "#ifndef ${filename}_h"
-        echo "#define ${filename}_h"
-        echo
-        echo "#endif"
-    } >>"$file_h"
-
-    touch "$file_cpp"
-    echo "#include \"$file_h\"" >>"$file_cpp"
-}
-
-register_module path \
-    file \
+regmod path \
     array \
     string \
     time \

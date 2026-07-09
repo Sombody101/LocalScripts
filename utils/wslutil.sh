@@ -2,7 +2,6 @@
 
 # shellcheck disable=SC2120
 core::mount_drives() {
-    : ".loader: core::mount_drives"
     core::hide_trace
 
     # OS check
@@ -25,13 +24,12 @@ core::mount_drives() {
         if [[ -d "$mount" ]]; then
             mountpoint -q "$mount" || sudo mount -t drvfs "$letter": "$mount" -o uid="$uid",gid="$gid",metadata &>/dev/null || {
                 core::warn -s "${letter^}:\\ not mounted on Windows :: Cannot mount to $mount [[$?]"
-                : "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
+                core::verbose "Unable to mount win drive $letter:\\ :: NOT_CONNECTED"
                 continue
             }
 
             [[ -d "$mount/.BACKUPS" ]] && export DRIVE="$mount"
         fi
-
     done
 }
 
@@ -50,7 +48,6 @@ init_wsl_tools() {
     DOWNLOADS="$WIN_USER/Downloads"
     DOCUMENTS="$WIN_USER/Documents"
 
-    docs() { cd "$DOCUMENTS"; }
-    down() { cd "$DOWNLOADS"; }
-
+    newnav docs "$DOCUMENTS"
+    newnav down "$DOWNLOADS"
 }

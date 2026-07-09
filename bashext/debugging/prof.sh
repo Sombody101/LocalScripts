@@ -84,15 +84,13 @@ prof.fbench() {
     local ms_real
     ms_real=$(echo "$raw_real" | tr -d '.')
     
-    command -v bc || {
-        core::warn "bc not found, no iteration-specific timings can be processed."
-
-        
+    ! cmdchk bc && {
+        core::warn "bc not found, no iteration-specific timings can be processed."        
         return
     }
 
     echo "Average time: $((ms_real / iter))ms per iteration"
 }
 
-register_module prof
+regmod prof
 export -f prof.start prof.stop

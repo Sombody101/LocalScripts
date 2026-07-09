@@ -55,7 +55,7 @@ using() {
 
             core::warn "Found multiple scripts starting with '$file':"
             for item in "${scripts[@]}"; do
-                printf '\t%s\n' "$item"
+                echo -e "\t$item"
             done
 
             addmimp 2 "[deeppink4_1]atmp_path:[/]" "$file"

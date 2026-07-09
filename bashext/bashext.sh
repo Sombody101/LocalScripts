@@ -6,31 +6,22 @@ alias grep='grep --color=auto'
 
 newnav() {
     core::hide_trace
-    : "bashext: newnav"
+    local name="$1" path="$2"
 
-    [[ ! "$1" ]] && {
-        core::warn "No arguments provided"
-        return 1
+    [[ ! "$name" ]] && {
+        core::error "No arguments provided"
+        return
     }
 
-    [[ ! "$2" ]] && {
-        core::warn "No path provided for '$1'"
-        return 1
+    [[ ! "$path" ]] && {
+        core::error "No path provided for nav '$1'"
+        return
     }
-
-    local name
-    name=$1
-
-    shift
 
     eval "$name() { \
-        local path=\"\$(path.pathify \"$*\" \"\$*\")\"; \
+        local path=\"\$(path.pathify \"$path\" \"\$*\")\"; \
         cd \"\$path\" || core::warn \"Failed to locate \$path\"; \
-    }"
-
-    # command -v complete &>/dev/null && {
-    #     complete -F __nav_autocomplete "$name"
-    # }
+    }" || core::error "Failed to generate nav for '$name'. path: $path"
 }
 
 __nav_autocomplete() {
@@ -44,13 +35,6 @@ BACKS="$LS/bashext"
 
 export BACKS
 
-# Quiet Un-Alias
-qunalias() { unalias "$1" 2>/dev/null; }
-
-# Support issues with pre-summer devices (requires unalias)
-qunalias drive
-qunalias home
-qunalias main
 newnav backs "$BACKS"
 flag WSL && newnav drive "$DRIVE"
 newnav home "$HOME"

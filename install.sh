@@ -9,7 +9,7 @@
 bash_rc="$HOME/.bashrc"
 LS=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
 
-function exit_script() {
+exit_script() {
     # In case someone sourced the file instead of running it with bash
     unset bash_rc
 

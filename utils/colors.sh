@@ -26,7 +26,7 @@ colors.make() {
         return
     }
 
-    [ -v "$name" ] && {
+    [[ -v "$name" ]] && {
         core::error "The variable '$name' is already defined."
         return
     }
@@ -55,7 +55,7 @@ colors.remove() {
 }
 
 colors.list() {
-    [ ! -f "$COLOR_SHEET" ] && {
+    [[ ! -f "$COLOR_SHEET" ]] && {
         core::error "No color sheet"
         return
     }
@@ -67,4 +67,4 @@ colors.list() {
     done <"$COLOR_SHEET"
 }
 
-register_module colors
+regmod colors

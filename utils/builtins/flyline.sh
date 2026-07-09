@@ -1,6 +1,6 @@
 #!/bin/bash
 flyline mouse --mode disabled
-flyline set-cursor --effect blink
+flyline set-cursor --effect blink --interpolate none
 
 flyline key bind Down tabCompletionAvailable=tabCompletionNextSuggestion
 flyline key bind Up tabCompletionAvailable=tabCompletionPrevSuggestion

@@ -1,11 +1,10 @@
 #!/bin/bash
 
-#alias ':'='core::warn "use of deprecated doc"'
+#
+# Quick shell configurations
+#
 
 [[ "$DEBUG" ]] && set -x
-
-# Print all ':' statements (usually used for debug lines only visible in with set-x)
-# PRINT_DEBUG_LINES=true
 
 # So the prompt never has colors bleeding from a previous command
 export PS1="\[\033[0m\]$PS1"
@@ -15,22 +14,22 @@ export PS4='#| \[$YELLOW\]$(basename ${BASH_SOURCE%.sh} 2>/dev/null):\[$RED\]${L
 
 LS="$(dirname "${BASH_SOURCE[0]}")"
 
-# Provides all "core" functions (warn, error, trace, etc)
-# shellcheck disable=SC1091
-source "$LS/core.sh"
-
 # Disable variable escaping in shell
 shopt -s direxpand
 
 # Determine machine
+# This has to happen before other tools are loaded or used, for core::flag
 [[ -v WSL_DISTRO_NAME ]] && export WSL=TRUE
 case $(hostname) in
 *"SchoolLT") export sdev=TRUE ;; # School laptop
 *"Desktop") export hdev=TRUE ;;  # Home PC
 "server") export server=TRUE ;;  # Server
-#"rasp"*) export server=TRUE ;;   # RaspberryPi
 *) export unknown=TRUE ;; # Anything else
 esac
+
+# Provides all "core" functions (warn, error, trace, etc)
+# shellcheck disable=SC1091
+source "$LS/core.sh"
 
 [[ "$WSL" && ! "$PATH" =~ "Microsoft VS Code" ]] && {
     PATH="$PATH:/mnt/c/Program Files/VSCodium/bin"
@@ -38,10 +37,12 @@ esac
 
 export PATH
 
-alias ed='nano'
-alias drive='[[ $DRIVE != "DRIVE_NOT_FOUND" ]] && cd $DRIVE || core::warn "Drive not found : $DRIVE"'
-# This is obsolete and was used before the whole "Local Scripts" library. It's still here for legacy installations.
-alias refresh='using .cmds.sh'
+if [[ "$(sudo -l -U "$USER")" =~ NOPASSWD ]]; then 
+    alias ed='sudo nano'
+else
+    alias ed="nano"
+fi
+
 alias .cmds.sh='ed $LS/.cmds.sh'
 alias .bashrc='ed $HOME/.bashrc'
 alias .loader='ed $LS/.loader.bashrc'
@@ -56,8 +57,6 @@ alias a='ls -a'
 alias ca='c;a'
 alias cl='c;ls'
 alias la='ls -CFa'
-alias home='cd $HOME/'
-alias main='cd /'
 alias ref='exec $SHELL'
 
 ###
@@ -107,11 +106,9 @@ init_wsl_tools
 
 export DRIVE_BIN="$BACKS/bin"
 
-regload "$LS/.loader.bashrc"
-
 [[ "$1" == "install" ]] && {
     # shellcheck disable=SC1091
-    source "./install.sh" "$2"
+    source "$LS/install.sh" "$2"
 }
 
 # Binary characters keep appearing in my main PCs history file.
@@ -124,4 +121,6 @@ regload "$LS/.loader.bashrc"
 # Source the independent file for each computer if it's there
 using "$HOME/.ind.sh" -f
 
+regload "$LS/.loader.bashrc"
+regmod export core
 return 0 # Mask return if there was no debug variable

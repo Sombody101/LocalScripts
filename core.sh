@@ -92,8 +92,8 @@ __print_log() {
     local color="$1" trace
     shift
 
-    if [[ "$1" == '-s' ]]; then
-        shift
+    if [[ "$2" == '-s' ]]; then
+        shift 2
     else
         trace="$(core::trace '3' '' ': ' "$1" :) "
     fi
@@ -126,7 +126,7 @@ core::verbose() {
     [[ ! "$VERBOSE" ]] && return 0
     core::show_trace
 
-    __print_log magenta "verbose: " "$@"
+    __print_log magenta "verbose:" "$@"
     return 0
 }
 
