@@ -39,11 +39,11 @@ source "$LS/core.sh"
 
 export PATH
 
-if [[ "$(sudo -l -U "$USER")" =~ NOPASSWD ]]; then 
-    alias ed='sudo nano'
-else
+#if [[ "$(sudo -l -U "$USER")" =~ NOPASSWD ]]; then 
+#    alias ed='sudo nano'
+#else
     alias ed="nano"
-fi
+#fi
 
 alias .cmds.sh='ed $LS/.cmds.sh'
 alias .bashrc='ed $HOME/.bashrc'
