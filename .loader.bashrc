@@ -104,7 +104,7 @@ flag WSL && {
 using "bashext/bashext.sh"
 
 # Configures additional paths, requires bashext
-init_wsl_tools
+flag WSL && init_wsl_tools
 
 export DRIVE_BIN="$BACKS/bin"
 
