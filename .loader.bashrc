@@ -114,7 +114,7 @@ export DRIVE_BIN="$BACKS/bin"
 }
 
 # Binary characters keep appearing in my main PCs history file.
-[[ "$(file -b ~/.bash_history)" == "data" ]] && {
+! grep -qI . ~/.bash_history && {
     core::verbose "Cleaning bash history"
     cat ~/.bash_history | col -b >~/.bash_history.spare
     mv ~/.bash_history.spare ~/.bash_history
