@@ -25,7 +25,7 @@ regmod() {
         cmds=()
 
         while IFS= read -r cmd; do
-            [[ $cmd =~ ^$module_name ]] && cmds+=("$cmd")
+            [[ $cmd == $module_name* ]] && cmds+=("$cmd")
             [[ "$export_mod" ]] && export -f "${cmd?}"
         done < <(declare -F | cut -d ' ' -f 3 | grep -E ^"$module_name\.|$module_name::")
 
