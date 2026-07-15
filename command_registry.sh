@@ -3,45 +3,48 @@
 __REGISTERED_COMMANDS=()
 _PAD_SIZE=20
 
-alias register_module='core::obsolete register_module regmod; regmod'
+#alias register_module='core::obsolete register_module regmod; regmod'
+obsolete register_module regmod
 
 regmod() {
     core::hide_trace
-    local export_mod=false module_name fn match_found
+    local export_mod=false module_name fn_list
 
-    [[ "$1" == export ]] && {
+    [[ "$1" == "export" ]] && {
         export_mod=true
         shift
     }
 
-    local all_funcs=()
-    readarray -t all_funcs < <(compgen -A function) 2>/dev/null || {
-        local line
-        while read -r line; do all_funcs+=("$line"); done < <(compgen -A function)
-    }
+    local -A fn_index=()
+    local name ns
+
+    while read -r name; do
+        ns=""
+        case "$name" in
+            *.*)  ns="${name%%.*}" ;;
+            *::*) ns="${name%%::*}" ;;
+        esac
+
+        [[ -n "$ns" ]] && fn_index["$ns"]+="$name "
+    done < <(compgen -A function)
 
     for module_name in "$@"; do
         [[ -z "$module_name" ]] && {
             core::error "No module names given"
-            return 1
+            return
         }
 
-        match_found=false
-        
-        for fn in "${all_funcs[@]}"; do
-            case "$fn" in
-                "${module_name}."* | "${module_name}::"*)
-                    __REGISTERED_COMMANDS+=("$fn")
-                    match_found=true
-                    "$export_mod" && export -f "${fn?}"
-                    ;;
-            esac
-        done
+        fn_list="${fn_index[$module_name]}"
 
-        [[ ! $match_found ]] && {
+        [[ -z "$fn_list" ]] && {
             core::error "Failed to find any defined commands for module '$module_name'"
-            return 1
+            return
         }
+
+        local matched_cmds=($fn_list)
+
+        __REGISTERED_COMMANDS+=("${matched_cmds[@]}")
+        $export_mod && export -f "${matched_cmds[@]}"
 
         core::verbose "[cyan]MODULE REGISTERED: ${module_name}[/]"
     done

@@ -146,6 +146,11 @@ core::obsolete() {
     return 101
 }
 
+obsolete() {
+    # shellcheck disable=SC2139
+    alias "$1"="core::obsolete '$1' '$2'; $2"
+}
+
 alias warn='core::obsolete warn core::warn; core::warn'
 alias error='core::obsolete error core::error; core::error'
 
